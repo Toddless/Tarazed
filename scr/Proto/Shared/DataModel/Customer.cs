@@ -1,36 +1,31 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace DataModel
+﻿namespace DataModel
 {
+    using System;
+    using System.ComponentModel.DataAnnotations;
+
     public class Customer
     {
-        public String Name
+        [Required]
+        [MinLength(5)]
+        [MaxLength(50)]
+        public string Name { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public string PasswortHash { get; set; } = string.Empty;
+
+        public Guid? UId
         {
             get; set;
         }
 
-        public string Email
-        {
-            get; set;
-        }
-
-        public string PasswortHash
-        {
-            get; set;
-        }
-
-        public Guid UId
-        {
-            get; set;
-        }
         [Key]
-        public long Id 
+        public long Id
         {
-            get => default;
-            set
-            {
-            }
+            get; set;
         }
     }
 }

@@ -1,21 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="DataModel.Exercise">
-    <Position X="1" Y="8.25" Width="1.5" />
+    <Position X="1" Y="7.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAABAAAAAAAAAQAADAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACAAAAAAAgBAAAAAACAAQAADAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Exercise.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DataModel.TrainingPlan">
-    <Position X="1" Y="4" Width="1.5" />
+    <Position X="1" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>TrainingPlan.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DataModel.ExerciseSet">
-    <Position X="1" Y="6.25" Width="1.5" />
+    <Position X="1" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAAAAAAAAEAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ExerciseSet.cs</FileName>
@@ -29,23 +29,23 @@
     </TypeIdentifier>
   </Class>
   <Class Name="DataModel.CustomerTrainingPlan">
-    <Position X="3.25" Y="3" Width="2" />
+    <Position X="3" Y="2.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAABAAQAAAAAAAAAA=</HashCode>
-      <FileName>CustomerPlan.cs</FileName>
+      <FileName>CustomerTrainingPlan.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DataModel.TrainingPlanExerciseSets">
-    <Position X="3.25" Y="5.25" Width="2" />
+    <Position X="3" Y="4.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAgCAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
       <FileName>TrainingPlanExerciseSets.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DataModel.ExerciseSetExercise">
-    <Position X="3.5" Y="7.75" Width="1.75" />
+    <Position X="3" Y="6.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAgCAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAgCAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAQAAA=</HashCode>
       <FileName>ExerciseSetExercise.cs</FileName>
     </TypeIdentifier>
   </Class>

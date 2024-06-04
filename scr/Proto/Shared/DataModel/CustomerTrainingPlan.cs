@@ -3,7 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public class TrainingPlanExerciseSets
+    public class CustomerTrainingPlan
     {
         [Key]
         public long Id
@@ -11,14 +11,14 @@
             get; set;
         }
 
-        [ForeignKey(nameof(ExerciseSet))]
-        public long TrainingPlanId
+        [ForeignKey(nameof(Customer))]
+        public long CustomerId
         {
             get; set;
         }
 
         [ForeignKey(nameof(TrainingPlan))]
-        public long ExerciseSetId
+        public long TrainingPlanId
         {
             get; set;
         }

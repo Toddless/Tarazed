@@ -2,10 +2,17 @@
   <PropertyGroup>
     <NeutralLanguage>de</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <NullableReferenceTypes>true</NullableReferenceTypes>
+    <Nullable>enable</Nullable>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.9.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

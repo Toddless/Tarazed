@@ -1,27 +1,26 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace DataModel
+﻿namespace DataModel
 {
+    using System.ComponentModel.DataAnnotations;
+
     public class ExerciseSet
     {
-        public Exercise Exercises
-        {
-            get; set;
-        }
-
-        public string Name
-        {
-            get; set;
-        }
+        [Required]
+        [MinLength(5)]
+        [MaxLength(50)]
+        public string Name { get; set; } = string.Empty;
 
         [Key]
         public long Id
         {
-            get => default;
-            set
-            {
-            }
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets or sets the Date of completion in UTC ticks.
+        /// </summary>
+        public long? CompletionDate
+        {
+            get; set;
         }
     }
-    
 }

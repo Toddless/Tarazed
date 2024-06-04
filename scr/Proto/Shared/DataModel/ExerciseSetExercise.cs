@@ -1,36 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
-
-namespace DataModel
+﻿namespace DataModel
 {
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+
     public class ExerciseSetExercise
     {
+        [Key]
         public long Id
         {
-            get => default;
-            set
-            {
-            }
+            get; set;
         }
 
         [ForeignKey(nameof(ExerciseSet))]
         public long ExerciseSetId
         {
-            get => default;
-            set
-            {
-            }
+            get; set;
         }
 
         [ForeignKey(nameof(Exercise))]
         public long ExerciseId
         {
-            get => default;
-            set
-            {
-            }
+            get; set;
         }
     }
 }

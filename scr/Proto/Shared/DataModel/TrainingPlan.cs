@@ -1,23 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace DataModel
+﻿namespace DataModel
 {
+    using System.ComponentModel.DataAnnotations;
+
     public class TrainingPlan
     {
-
-
-        public string Name
-        {
-            get; set;
-        }
+        [Required]
+        [MinLength(5)]
+        [MaxLength(50)]
+        public string Name { get; set; } = string.Empty;
 
         [Key]
         public long Id
         {
-            get => default;
-            set
-            {
-            }
+            get; set;
         }
     }
 }
