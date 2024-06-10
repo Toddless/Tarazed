@@ -1,5 +1,6 @@
 ﻿namespace DataAccessLayer
 {
+    using System.Threading.Tasks;
     using DataModel;
     using Microsoft.EntityFrameworkCore;
 
@@ -18,5 +19,7 @@
         DbSet<TrainingPlanExerciseSets> TrainingPlanExerciseSets { get; set; }
 
         DbSet<TrainingPlan> TrainingPlans { get; set; }
+
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

@@ -23,6 +23,5 @@
         public DbSet<TrainingPlan> TrainingPlans { get; set; }
 
         public DbSet<TrainingPlanExerciseSets> TrainingPlanExerciseSets { get; set; }
-
     }
 }

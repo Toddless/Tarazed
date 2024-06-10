@@ -22,9 +22,8 @@
             services.AddMvc((x) => { x.EnableEndpointRouting = false; });
             services.AddControllers().AddXmlSerializerFormatters();
 
-            services.AddDbContext<DatabaseContext>(options =>
-                options.UseSqlServer("Server=tcp:tarazed.database.windows.net,1433;Initial Catalog=TarazedDatabase;Persist Security Info=False;User ID=Odmin;Password=Dsad123cxz@12W;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
-
+            services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
+                options.UseSqlServer("Server=tcp:tarazed.database.windows.net,1433;Initial Catalog=TarazedDatabase;Persist Security Info=False;User ID=Odmin;Password=Dsad123cxz@12W;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;", o => o.EnableRetryOnFailure()));
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen((c) =>
