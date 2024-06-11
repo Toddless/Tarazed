@@ -13,9 +13,8 @@ public class Program
          .ConfigureAppConfiguration((hostContext, config) =>
          {
              // delete all default configuration providers
-             config.Sources.Clear();
-             config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-             config.AddJsonFile($"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true);
+             // config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+             // config.AddJsonFile($"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true);
          })
         .UseStartup<Startup>()
         .Build();

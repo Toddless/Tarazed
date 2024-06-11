@@ -7,12 +7,13 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.OpenApi.Models;
+    using Server.Filters;
 
     public class Startup
     {
         public Startup(IConfiguration configuration)
         {
-            this.Configuration = configuration;
+            Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -20,10 +21,12 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc((x) => { x.EnableEndpointRouting = false; });
+            services.AddSingleton<ExceptionFilter>();
             services.AddControllers().AddXmlSerializerFormatters();
 
             services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
-                options.UseSqlServer("Server=tcp:tarazed.database.windows.net,1433;Initial Catalog=TarazedDatabase;Persist Security Info=False;User ID=Odmin;Password=Dsad123cxz@12W;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;", o => o.EnableRetryOnFailure()));
+                options.UseSqlServer(Configuration["DatabaseInfo:ConnectionString"], o => o.EnableRetryOnFailure()));
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen((c) =>
@@ -50,8 +53,8 @@
                 });
             }
 
-            app.UseRouting();
             app.UseHttpsRedirection();
+            app.UseRouting();
             app.UseAuthorization();
             app.UseMvc();
         }
