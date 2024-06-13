@@ -1,7 +1,5 @@
 ﻿namespace DataModel
 {
-    using System;
-
     public class ErrorModel
     {
         public ErrorModel(int statusCode, string? message, string? details = null)
@@ -11,7 +9,9 @@
             Details = details;
         }
 
-        public Exception Ec { get; set; }
+        private ErrorModel()
+        {
+        }
 
         public int StatusCode { get; set; }
 

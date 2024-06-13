@@ -22,6 +22,10 @@
         {
             services.AddMvc((x) => { x.EnableEndpointRouting = false; });
             services.AddSingleton<ExceptionFilter>();
+            services.AddControllers(o =>
+            {
+                o.Filters.AddService<ExceptionFilter>();
+            });
             services.AddControllers().AddXmlSerializerFormatters();
 
             services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
