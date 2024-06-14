@@ -7,6 +7,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.OpenApi.Models;
+    using Serilog;
     using Server.Filters;
 
     public class Startup
@@ -26,6 +27,7 @@
             {
                 o.Filters.AddService<ExceptionFilter>();
             });
+
             services.AddControllers().AddXmlSerializerFormatters();
 
             services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
@@ -46,6 +48,7 @@
                 var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>();
                 context.Database.EnsureCreated();
             }
+
 
             if (env.IsDevelopment())
             {

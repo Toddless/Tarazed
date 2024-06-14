@@ -27,6 +27,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="DataModel.XmlSerializers">
+      <HintPath>$(ProjectDir)$(OutDir)DataModel.XmlSerializers.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Update="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.10.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

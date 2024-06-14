@@ -2,19 +2,24 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EntityFramework" Version="6.4.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Microsoft.XmlSerializer.Generator" Version="8.0.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageReference Include="System.Memory" Version="4.5.5" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.10.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <DotNetCliToolReference Include="Microsoft.XmlSerializer.Generator" Version="8.0.0" />
   </ItemGroup>
-
+  <Target Name="RemoveRefAssembliesBeforeSGen" BeforeTargets="GenerateSerializationAssemblies">
+    <ItemGroup>
+      <!-- SGen doesn't work with reference assemblies https://github.com/dotnet/msbuild/issues/2707-->
+      <_RefAssembliesPath Include="@(ReferencePath)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Directory)', '\\ref\\net.*\\'))" />
+      <ReferencePath Remove="@(_RefAssembliesPath)" />
+    </ItemGroup>
+    <Message Importance="normal" Text="Removing reference assemblies from ReferencePath before running SGen." />
+  </Target>
+  
 </Project>
