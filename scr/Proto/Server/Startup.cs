@@ -7,7 +7,6 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.OpenApi.Models;
-    using Serilog;
     using Server.Filters;
 
     public class Startup
@@ -33,7 +32,6 @@
             services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
                 options.UseSqlServer(Configuration["DatabaseInfo:ConnectionString"], o => o.EnableRetryOnFailure()));
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen((c) =>
             {
@@ -41,14 +39,13 @@
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope())
             {
-                var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>();
-                context.Database.EnsureCreated();
+                var context = serviceScope?.ServiceProvider.GetRequiredService<DatabaseContext>();
+                context?.Database.EnsureCreated();
             }
-
 
             if (env.IsDevelopment())
             {

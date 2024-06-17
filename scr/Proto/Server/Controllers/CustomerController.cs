@@ -1,47 +1,98 @@
 ﻿namespace Server.Controllers
 {
+    using System;
+    using System.ComponentModel.DataAnnotations;
     using DataAccessLayer;
     using DataModel;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     [Route("[controller]")]
     public class CustomerController : Controller
     {
-        private readonly IDatabaseContext _context;
+        private readonly IDatabaseContext? _context;
+        private readonly ILogger? _logger;
 
-        public CustomerController(IDatabaseContext databaseContext)
+        public CustomerController(IDatabaseContext databaseContext, ILogger<CustomerController> logger)
         {
             ArgumentNullException.ThrowIfNull(databaseContext);
+            ArgumentNullException.ThrowIfNull(logger);
             _context = databaseContext;
+            _logger = logger;
         }
 
-        [HttpPut()]
-        public async Task<Customer> CreateCustomerAsync(Customer customer)
+        [HttpPut("{name}, {email}, {pass}")]
+        public async Task<Customer?> CreateCustomersAsync(string? name, string? email, string? pass)
         {
-            throw new NotImplementedException();
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
+            var context = _context;
+            if (context == null)
+            {
+                _logger?.LogDebug("Context not set");
+                return null;
+            }
+
+            var customer = new Customer
+            {
+                Name = name ?? string.Empty,
+                Email = email ?? string.Empty,
+                PasswortHash = pass ?? string.Empty,
+                UId = Guid.NewGuid(),
+            };
+
+            var validationContext = new ValidationContext(customer, serviceProvider: null, items: null);
+            var results = new List<ValidationResult>();
+
+            var isValid = Validator.TryValidateObject(customer, validationContext, results, true);
+
+            if (!isValid)
+            {
+                results.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
+                return null;
+            }
+
+            context.Customers.Add(customer);
+            await context.SaveChangesAsync();
             return customer;
         }
 
-        [HttpPut("{name}, {email}")]
-        public async Task<Customer> CreateCustomersAsync(Customer customer, string name, string email)
+        [HttpDelete("{uid}")]
+        public async Task<bool?> DeleteCustomerAsync(Guid? uid)
         {
-            customer.Name = name;
-            customer.Email = email;
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
-            return customer;
+            var context = _context;
+            if (context == null)
+            {
+                _logger?.LogDebug("Context not set");
+                return null;
+            }
+
+            if (uid == null || uid == Guid.Empty)
+            {
+                _logger?.LogError($"Customer with uId {uid} not found");
+                throw new Exception("Id not found");
+            }
+
+            var customer = await context.Customers.FirstOrDefaultAsync(x => x.UId == uid);
+            if (customer == null)
+            {
+                return null;
+            }
+
+            context.Customers.Remove(customer);
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        [HttpDelete("{id}")]
-        public async Task<Customer> DeleteCustomerAsync(Customer customer, int id)
-        {
-            customer.Id = id;
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
-            return customer;
-        }
+        // [HttpGet("{name}")]
+        // public async Task<long?> GetCustomerAsync(Guid? guid)
+        // {
+        //    if (string.IsNullOrWhiteSpace(name))
+        //    {
+        //        throw new Exception("User not found");
+        //    }
+
+        // var customer = await _context.Customers.FirstOrDefaultAsync(x => (x.UId ?? Guid.Empty).ToString("D", CultureInfo.InvariantCulture) == (guid ?? Guid.Empty).ToString("D", CultureInfo.InvariantCulture));
+        //    return customer?.Id;
+        // }
     }
 }

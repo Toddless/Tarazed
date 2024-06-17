@@ -1,6 +1,6 @@
+using System.Reflection;
 using Microsoft.AspNetCore;
 using Serilog;
-using Serilog.Events;
 using Server;
 
 public class Program
@@ -12,18 +12,6 @@ public class Program
 
     public static IWebHost BuildWebHost(string[] args)
     {
-        Log.Logger = new LoggerConfiguration()
-      .WriteTo.Console()
-      .WriteTo.File(
-          "logs/log.txt",
-          rollingInterval: RollingInterval.Day,
-          rollOnFileSizeLimit: true,
-          fileSizeLimitBytes: 1024 * 1024 * 1024)
-      .MinimumLevel.Override("Microsoft.AspNetCore.Hosting", LogEventLevel.Debug)
-      .MinimumLevel.Override("Microsoft.AspNetCore.Mvc", LogEventLevel.Debug)
-      .MinimumLevel.Override("Microsoft.AspNetCore.Routing", LogEventLevel.Debug)
-      .CreateLogger();
-
         var builder = WebHost.CreateDefaultBuilder(args)
              .ConfigureAppConfiguration((hostContext, config) =>
              {
@@ -32,8 +20,29 @@ public class Program
                  // config.AddJsonFile($"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true);
              });
         return builder!
-            .ConfigureLogging(x => x.AddSerilog())
+            .UseContentRoot(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) !)
+            .ConfigureLogging(SetupLogging)
             .UseStartup<Startup>()
             .Build();
+    }
+
+    private static void SetupLogging(WebHostBuilderContext context, ILoggingBuilder builder)
+    {
+        var path = Path.Combine(context.HostingEnvironment.ContentRootPath, "logs", "log.txt");
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+#if DEBUG
+     .WriteTo.Console()
+     .WriteTo.Debug()
+#endif
+     .WriteTo.File(
+         path,
+         restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose,
+         rollingInterval: RollingInterval.Day,
+         rollOnFileSizeLimit: true,
+         fileSizeLimitBytes: 1024 * 1024 * 100)
+     .CreateLogger();
+
+        builder.AddSerilog();
     }
 }

@@ -13,6 +13,7 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.XmlSerializer.Generator" Version="8.0.0" />
   </ItemGroup>
+ 
   <Target Name="RemoveRefAssembliesBeforeSGen" BeforeTargets="GenerateSerializationAssemblies">
     <ItemGroup>
       <!-- SGen doesn't work with reference assemblies https://github.com/dotnet/msbuild/issues/2707-->

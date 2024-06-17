@@ -14,6 +14,5 @@
 
             logger.LogError($"Class:{caller.GetType().Name} Method:{methodName} Message:{message}");
         }
-
     }
 }
