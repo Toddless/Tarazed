@@ -1,6 +1,6 @@
 ﻿namespace Server.Filters
 {
-    using System.Globalization;
+    using System.Net;
     using DataModel;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;
@@ -18,12 +18,17 @@
 
         public void OnException(ExceptionContext context)
         {
-            var error = new ErrorModel(
-                    500,
-                    context.Exception.Message,
-                    context.Exception.StackTrace?.ToString(CultureInfo.InvariantCulture));
-            context.Result = new BadRequestObjectResult(error);
-            _logger.LogError(this, $"StatusCode: {error.StatusCode}, Message: {error.Message}");
+            ErrorModel? error = null;
+            switch (context.Exception)
+            {
+                case ServerException ex:
+                    error = new ErrorModel(HttpStatusCode.BadRequest, ex.RescourceName);
+                    _logger.LogError(this, $"StatusCode: {error.StatusCode}, Message: {ex.Message}, Details: {ex.StackTrace}");
+                    break;
+                //default:
+            }
+
+            context.Result = new ObjectResult(error);
         }
     }
 }

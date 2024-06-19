@@ -1,8 +1,10 @@
 ﻿namespace DataModel
 {
+    using System.Net;
+
     public class ErrorModel
     {
-        public ErrorModel(int statusCode, string? message, string? details = null)
+        public ErrorModel(HttpStatusCode statusCode, string? message, string? details = null)
         {
             StatusCode = statusCode;
             Message = message;
@@ -13,7 +15,7 @@
         {
         }
 
-        public int StatusCode { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
 
         public string? Message { get; set; }
 

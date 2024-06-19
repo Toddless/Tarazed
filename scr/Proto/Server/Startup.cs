@@ -1,5 +1,6 @@
 ﻿namespace Server
 {
+    using System.Globalization;
     using DataAccessLayer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -59,6 +60,21 @@
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                ApplyCurrentCultureToResponseHeaders = true,
+                DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en"),
+                SupportedUICultures = new List<CultureInfo>
+                {
+                    new CultureInfo("en"),
+                    new CultureInfo("de"),
+                },
+                SupportedCultures = new List<CultureInfo>
+                {
+                    new CultureInfo("en"),
+                    new CultureInfo("de"),
+                },
+            });
             app.UseAuthorization();
             app.UseMvc();
         }

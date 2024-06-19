@@ -6,21 +6,12 @@
     public class TrainingPlanExerciseSets
     {
         [Key]
-        public long Id
-        {
-            get; set;
-        }
+        public long Id { get; set; }
 
         [ForeignKey(nameof(ExerciseSet))]
-        public long TrainingPlanId
-        {
-            get; set;
-        }
+        public long TrainingPlanId { get; set; }
 
         [ForeignKey(nameof(TrainingPlan))]
-        public long ExerciseSetId
-        {
-            get; set;
-        }
+        public long ExerciseSetId { get; set; }
     }
 }

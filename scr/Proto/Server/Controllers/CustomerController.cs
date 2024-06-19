@@ -6,6 +6,8 @@
     using DataModel;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using Server.Extensions;
+    using Server.Filters;
 
     [ApiController]
     [Route("[controller]")]
@@ -14,23 +16,19 @@
         private readonly IDatabaseContext? _context;
         private readonly ILogger? _logger;
 
-        public CustomerController(IDatabaseContext databaseContext, ILogger<CustomerController> logger)
+        public CustomerController(IDatabaseContext context, ILogger<CustomerController> logger)
         {
-            ArgumentNullException.ThrowIfNull(databaseContext);
+            ArgumentNullException.ThrowIfNull(context);
             ArgumentNullException.ThrowIfNull(logger);
-            _context = databaseContext;
+            _context = context;
             _logger = logger;
         }
 
         [HttpPut("{name}, {email}, {pass}")]
         public async Task<Customer?> CreateCustomersAsync(string? name, string? email, string? pass)
         {
-            var context = _context;
-            if (context == null)
-            {
-                _logger?.LogDebug("Context not set");
-                return null;
-            }
+            // mögliches null
+            var context = _context.CheckContext();
 
             var customer = new Customer
             {
@@ -40,15 +38,11 @@
                 UId = Guid.NewGuid(),
             };
 
-            var validationContext = new ValidationContext(customer, serviceProvider: null, items: null);
-            var results = new List<ValidationResult>();
-
-            var isValid = Validator.TryValidateObject(customer, validationContext, results, true);
-
+            bool isValid = IValidateObjectExtension.ValidateObject(customer, out List<ValidationResult> results);
             if (!isValid)
             {
                 results.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
-                return null;
+                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
             }
 
             context.Customers.Add(customer);
@@ -59,40 +53,96 @@
         [HttpDelete("{uid}")]
         public async Task<bool?> DeleteCustomerAsync(Guid? uid)
         {
-            var context = _context;
-            if (context == null)
-            {
-                _logger?.LogDebug("Context not set");
-                return null;
-            }
+            var context = _context.CheckContext();
 
             if (uid == null || uid == Guid.Empty)
             {
-                _logger?.LogError($"Customer with uId {uid} not found");
-                throw new Exception("Id not found");
+                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
             }
 
-            var customer = await context.Customers.FirstOrDefaultAsync(x => x.UId == uid);
-            if (customer == null)
-            {
-                return null;
-            }
-
+            // mögliches null
+            Customer? customer = await FindCustomerAsync(uid, context);
             context.Customers.Remove(customer);
-            await context.SaveChangesAsync();
+
+            var changedCount = await context.SaveChangesAsync();
+            if (changedCount != 1)
+            {
+                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotDeleted));
+            }
+
             return true;
         }
 
-        // [HttpGet("{name}")]
-        // public async Task<long?> GetCustomerAsync(Guid? guid)
+        [HttpGet("{uid}")]
+        public async Task<Customer> GetCustomerAsync(Guid? uid)
+        {
+            var context = _context.CheckContext();
+
+            if (uid == null || uid == Guid.Empty)
+            {
+                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
+            }
+
+            // mögliches null
+            Customer? customer = await FindCustomerAsync(uid, context);
+            return customer;
+        }
+
+        [HttpPost]
+        public async Task<Customer> UpdateCustomerAsync(Customer? customer)
+        {
+            var context = _context.CheckContext();
+
+            if (customer == null || customer.Id == 0L)
+            {
+                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
+            }
+
+            bool isValid = IValidateObjectExtension.ValidateObject(customer, out List<ValidationResult> results);
+            if (!isValid)
+            {
+                results.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
+                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+            }
+
+            context.Customers.Update(customer!);
+            var changedCount = await context.SaveChangesAsync();
+            if (changedCount != 1)
+            {
+                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
+            }
+
+            _logger?.LogInformation($"Customer with uId {customer.UId} changed his name and email to {customer.Name} , {customer.Email}.");
+            return customer;
+        }
+
+        private static async Task<Customer?> FindCustomerAsync(Guid? uid, IDatabaseContext context)
+        {
+            var customer = await context.Customers.FirstOrDefaultAsync(x => x.UId == uid);
+            if (customer == null)
+            {
+                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
+            }
+
+            return customer;
+        }
+
+        // private static bool ValidateUser(Customer customer, out List<ValidationResult> results)
         // {
-        //    if (string.IsNullOrWhiteSpace(name))
+        //    var validationContext = new ValidationContext(customer, serviceProvider: null, items: null);
+        //    results = new List<ValidationResult>();
+        //    return Validator.TryValidateObject(customer, validationContext, results, true);
+        // }
+
+        // private IDatabaseContext CheckContext()
+        // {
+        //    var context = _context;
+        //    if (context == null)
         //    {
-        //        throw new Exception("User not found");
+        //        throw new ServerException(nameof(DataModel.Resources.Errors.ContextNotSet));
         //    }
 
-        // var customer = await _context.Customers.FirstOrDefaultAsync(x => (x.UId ?? Guid.Empty).ToString("D", CultureInfo.InvariantCulture) == (guid ?? Guid.Empty).ToString("D", CultureInfo.InvariantCulture));
-        //    return customer?.Id;
+        // return context;
         // }
     }
 }

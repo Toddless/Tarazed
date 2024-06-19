@@ -6,21 +6,12 @@
     public class CustomerTrainingPlan
     {
         [Key]
-        public long Id
-        {
-            get; set;
-        }
+        public long Id { get; set; }
 
         [ForeignKey(nameof(Customer))]
-        public long CustomerId
-        {
-            get; set;
-        }
+        public long CustomerId { get; set; }
 
         [ForeignKey(nameof(TrainingPlan))]
-        public long TrainingPlanId
-        {
-            get; set;
-        }
+        public long TrainingPlanId { get; set; }
     }
 }
