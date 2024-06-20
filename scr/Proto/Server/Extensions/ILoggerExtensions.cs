@@ -12,7 +12,7 @@
                 return;
             }
 
-            logger.LogError($"Class:{caller.GetType().Name} Method:{methodName} Message:{message}");
+            logger.LogError($"Class:{caller.GetType().Name} Method:{methodName} Message:{message} ");
         }
     }
 }

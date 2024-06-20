@@ -4,7 +4,7 @@
     using System.ComponentModel.DataAnnotations;
     using DataModel.Resources;
 
-    public class Customer
+    public class Customer : IEntity
     {
         [Required(ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.NameIsRequired))]
         [MinLength(5, ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.NameIsToShort))]

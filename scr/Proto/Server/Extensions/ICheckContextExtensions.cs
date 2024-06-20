@@ -5,11 +5,11 @@
 
     public static class ICheckContextExtensions
     {
-        public static IDatabaseContext CheckContext(this IDatabaseContext context)
+        public static IDatabaseContext CheckContext(this IDatabaseContext? context)
         {
             if (context == null)
             {
-                throw new ServerException(nameof(DataModel.Resources.Errors.ContextNotSet));
+                throw new InternalServerException(nameof(DataModel.Resources.Errors.ContextNotSet));
             }
 
             return context;

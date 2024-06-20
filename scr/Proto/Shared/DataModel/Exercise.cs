@@ -3,7 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using DataModel.Resources;
 
-    public class Exercise
+    public class Exercise : IEntity
     {
         [Range(1, 100)]
         public int Reps { get; set; }
@@ -27,4 +27,5 @@
         [MaxLength(800, ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.DescriptionsIsToLong))]
         public string Description { get; set; } = string.Empty;
     }
+
 }

@@ -1,7 +1,6 @@
 ﻿namespace Server.Controllers
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
     using DataAccessLayer;
     using DataModel;
     using Microsoft.AspNetCore.Mvc;
@@ -11,58 +10,42 @@
 
     [ApiController]
     [Route("[controller]")]
-    public class CustomerController : Controller
+    public class CustomerController : ControllerBase<Customer>
     {
-        private readonly IDatabaseContext? _context;
-        private readonly ILogger? _logger;
-
         public CustomerController(IDatabaseContext context, ILogger<CustomerController> logger)
+            : base(context, logger)
         {
-            ArgumentNullException.ThrowIfNull(context);
-            ArgumentNullException.ThrowIfNull(logger);
-            _context = context;
-            _logger = logger;
         }
 
-        [HttpPut("{name}, {email}, {pass}")]
-        public async Task<Customer?> CreateCustomersAsync(string? name, string? email, string? pass)
+        [HttpPut]
+        public override async Task<Customer?> CreateAsync(Customer? item)
         {
-            // mögliches null
-            var context = _context.CheckContext();
-
-            var customer = new Customer
+            if (item.UId.HasValue)
             {
-                Name = name ?? string.Empty,
-                Email = email ?? string.Empty,
-                PasswortHash = pass ?? string.Empty,
-                UId = Guid.NewGuid(),
-            };
-
-            bool isValid = IValidateObjectExtension.ValidateObject(customer, out List<ValidationResult> results);
-            if (!isValid)
-            {
-                results.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
-                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                throw new ServerException(nameof(DataModel.Resources.Errors.));
             }
 
-            context.Customers.Add(customer);
-            await context.SaveChangesAsync();
-            return customer;
+            item.UId = Guid.NewGuid();
+            return await base.CreateAsync(item);
         }
 
-        [HttpDelete("{uid}")]
-        public async Task<bool?> DeleteCustomerAsync(Guid? uid)
+        public override Task<bool?> DeleteAsync(long? id)
         {
-            var context = _context.CheckContext();
+            throw new ServerException(nameof(DataModel.Resources.Errors.DeletingById));
+        }
+
+        [HttpDelete]
+        public async Task<bool?> DeleteByGuidAsync(Guid? uid)
+        {
+            var context = Context.CheckContext();
 
             if (uid == null || uid == Guid.Empty)
             {
                 throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
             }
 
-            // mögliches null
             Customer? customer = await FindCustomerAsync(uid, context);
-            context.Customers.Remove(customer);
+            context.Customers.Remove(customer!);
 
             var changedCount = await context.SaveChangesAsync();
             if (changedCount != 1)
@@ -73,46 +56,17 @@
             return true;
         }
 
-        [HttpGet("{uid}")]
-        public async Task<Customer> GetCustomerAsync(Guid? uid)
+        [HttpGet]
+        public async Task<Customer?> GetCustomerAsync(Guid? uid)
         {
-            var context = _context.CheckContext();
+            var context = Context.CheckContext();
 
             if (uid == null || uid == Guid.Empty)
             {
                 throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
             }
 
-            // mögliches null
             Customer? customer = await FindCustomerAsync(uid, context);
-            return customer;
-        }
-
-        [HttpPost]
-        public async Task<Customer> UpdateCustomerAsync(Customer? customer)
-        {
-            var context = _context.CheckContext();
-
-            if (customer == null || customer.Id == 0L)
-            {
-                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
-            }
-
-            bool isValid = IValidateObjectExtension.ValidateObject(customer, out List<ValidationResult> results);
-            if (!isValid)
-            {
-                results.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
-                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
-            }
-
-            context.Customers.Update(customer!);
-            var changedCount = await context.SaveChangesAsync();
-            if (changedCount != 1)
-            {
-                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
-            }
-
-            _logger?.LogInformation($"Customer with uId {customer.UId} changed his name and email to {customer.Name} , {customer.Email}.");
             return customer;
         }
 
@@ -126,23 +80,5 @@
 
             return customer;
         }
-
-        // private static bool ValidateUser(Customer customer, out List<ValidationResult> results)
-        // {
-        //    var validationContext = new ValidationContext(customer, serviceProvider: null, items: null);
-        //    results = new List<ValidationResult>();
-        //    return Validator.TryValidateObject(customer, validationContext, results, true);
-        // }
-
-        // private IDatabaseContext CheckContext()
-        // {
-        //    var context = _context;
-        //    if (context == null)
-        //    {
-        //        throw new ServerException(nameof(DataModel.Resources.Errors.ContextNotSet));
-        //    }
-
-        // return context;
-        // }
     }
 }

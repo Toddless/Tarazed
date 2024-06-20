@@ -135,6 +135,9 @@
   <data name="Customer_Password" xml:space="preserve">
     <value>The password needs to be set.</value>
   </data>
+  <data name="DeletingById" xml:space="preserve">
+    <value>Deleting by id is not supported.</value>
+  </data>
   <data name="DescriptionIsRequired" xml:space="preserve">
     <value>The description is required.</value>
   </data>
@@ -143,6 +146,9 @@
   </data>
   <data name="DescriptionsIsToLong" xml:space="preserve">
     <value>The description need to be no more than 800 chars.</value>
+  </data>
+  <data name="Exercise_NotDeleted" xml:space="preserve">
+    <value>Exercise was not deleted.</value>
   </data>
   <data name="Exercise_NotFound" xml:space="preserve">
     <value>An exercise is not found or doesn't exist.</value>

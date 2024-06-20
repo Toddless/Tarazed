@@ -24,11 +24,13 @@
                 case ServerException ex:
                     error = new ErrorModel(HttpStatusCode.BadRequest, ex.RescourceName);
                     _logger.LogError(this, $"StatusCode: {error.StatusCode}, Message: {ex.Message}, Details: {ex.StackTrace}");
+                    context.Result = new ObjectResult(error);
                     break;
-                //default:
-            }
 
-            context.Result = new ObjectResult(error);
+                default:
+                    _logger.LogError(this, $"Internal Exception : {context.Exception}");
+                    break;
+            }
         }
     }
 }

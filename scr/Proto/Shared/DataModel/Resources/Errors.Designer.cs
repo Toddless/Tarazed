@@ -115,6 +115,15 @@ namespace DataModel.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Deleting by id is not supported..
+        /// </summary>
+        public static string DeletingById {
+            get {
+                return ResourceManager.GetString("DeletingById", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The description is required..
         /// </summary>
         public static string DescriptionIsRequired {
@@ -138,6 +147,15 @@ namespace DataModel.Resources {
         public static string DescriptionsIsToLong {
             get {
                 return ResourceManager.GetString("DescriptionsIsToLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exercise was not deleted..
+        /// </summary>
+        public static string Exercise_NotDeleted {
+            get {
+                return ResourceManager.GetString("Exercise_NotDeleted", resourceCulture);
             }
         }
         

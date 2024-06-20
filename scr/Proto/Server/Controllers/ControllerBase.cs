@@ -1,0 +1,100 @@
+﻿namespace Server.Controllers
+{
+    using System.ComponentModel.DataAnnotations;
+    using DataAccessLayer;
+    using DataModel;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using Server.Extensions;
+    using Server.Filters;
+
+    public abstract class ControllerBase<TU> : Controller
+        where TU : class, IEntity
+    {
+        public ControllerBase(IDatabaseContext context, ILogger logger)
+        {
+            ArgumentNullException.ThrowIfNull(context);
+            ArgumentNullException.ThrowIfNull(logger);
+            Context = context;
+            Logger = logger;
+        }
+
+        protected IDatabaseContext Context { get; private set; }
+
+        protected ILogger Logger { get; private set; }
+
+        [HttpPut]
+        public virtual async Task<TU?> CreateAsync(TU item)
+        {
+            var context = Context.CheckContext();
+            if (item.Id != 0)
+            {
+                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+            }
+
+            bool isValid = item.ValidateObject(out List<ValidationResult> result);
+            if (!isValid)
+            {
+                result.ForEach(x => Logger?.LogDebug(x.ErrorMessage));
+                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+            }
+
+            context.Set<TU>().Add(item);
+            await context.SaveChangesAsync();
+            return item;
+        }
+
+        [HttpPost]
+        public virtual async Task<TU?> UpdateAsync(TU item)
+        {
+            var context = Context.CheckContext();
+            if (item == null || item.Id == 0)
+            {
+                throw new ServerException(nameof(DataModel.Resources.Errors.Exercise_NotFound));
+            }
+
+            bool isValid = item.ValidateObject(out List<ValidationResult> results);
+            if (!isValid)
+            {
+                results.ForEach(x => Logger?.LogDebug(x.ErrorMessage));
+                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+            }
+
+            context.Set<TU>().Update(item);
+            var changedCount = await context.SaveChangesAsync();
+            if (changedCount != 1)
+            {
+                throw new ServerException(nameof(DataModel.Resources.Errors.Exercise_NotFound));
+            }
+
+            return item;
+        }
+
+        [HttpDelete]
+        public virtual async Task<bool?> DeleteAsync(long? id)
+        {
+            var context = Context.CheckContext();
+
+            if (id == null || id == 0)
+            {
+                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+            }
+
+            var set = context.Set<TU>();
+            var existingItem = await set.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingItem == null)
+            {
+                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+            }
+
+            set.Remove(existingItem);
+            var changedCount = await context.SaveChangesAsync();
+            if (changedCount != 1)
+            {
+                throw new ServerException(nameof(DataModel.Resources.Errors.Exercise_NotDeleted));
+            }
+
+            return true;
+        }
+    }
+}

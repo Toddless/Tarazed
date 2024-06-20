@@ -3,9 +3,15 @@
     using System.Threading.Tasks;
     using DataModel;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Infrastructure;
 
     public interface IDatabaseContext : IDisposable
     {
+        DbSet<TU> Set<TU>()
+            where TU : class;
+
+        DatabaseFacade Database { get; }
+
         DbSet<Customer> Customers { get; set; }
 
         DbSet<CustomerTrainingPlan> CustomerTrainingPlans { get; set; }
