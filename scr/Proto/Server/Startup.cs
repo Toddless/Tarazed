@@ -37,6 +37,23 @@
             services.AddSwaggerGen((c) =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Sample API", Version = "v1" });
+                c.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Description = "JWT Authorization header using the Bearer scheme.",
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearerAuth" },
+                        },
+                        new string[] { }
+                    },
+                });
             });
         }
 
@@ -45,7 +62,8 @@
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope())
             {
                 var context = serviceScope?.ServiceProvider.GetRequiredService<DatabaseContext>();
-                //context?.Database.EnsureCreated();
+
+                // context?.Database.EnsureCreated();
                 context?.Database.Migrate();
             }
 

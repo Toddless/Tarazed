@@ -221,5 +221,14 @@ namespace DataModel.Resources {
                 return ResourceManager.GetString("NameIsToShort", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} not saved..
+        /// </summary>
+        public static string NotSaved {
+            get {
+                return ResourceManager.GetString("NotSaved", resourceCulture);
+            }
+        }
     }
 }

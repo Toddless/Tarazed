@@ -20,30 +20,17 @@
         [HttpPut]
         public override async Task<Customer?> CreateAsync(Customer? item)
         {
-            using (var transaktion = await Context.Database.BeginTransactionAsync())
+            if (item == null)
             {
-                try
-                {
-                    if (item == null)
-                    {
-                        throw new ArgumentNullException(nameof(item));
-                    }
-
-                    if (item.UId.HasValue)
-                    {
-                        throw new ServerException(nameof(DataModel.Resources.Errors.AlreadyExist));
-                    }
-
-                    item.UId = Guid.NewGuid();
-                    await transaktion.CommitAsync();
-                    return await base.CreateAsync(item);
-                }
-                catch (Exception)
-                {
-                    await transaktion.RollbackAsync();
-                    throw new ServerException(nameof(DataModel.Resources.Errors.InternalException));
-                }
+                throw new ArgumentNullException(nameof(item));
             }
+
+            if (item.UId.HasValue)
+            {
+                throw new ServerException(nameof(DataModel.Resources.Errors.AlreadyExist));
+            }
+
+            return await base.CreateAsync(item);
         }
 
         public override Task<bool?> DeleteAsync(long? id)
@@ -54,84 +41,74 @@
         [HttpDelete("DeleteByGuid")]
         public async Task<bool?> DeleteByGuidAsync(Guid? uid)
         {
-            using (var transaktion = await Context.Database.BeginTransactionAsync())
+            if (uid == null || uid == Guid.Empty)
             {
-                try
+                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
+            }
+
+            try
+            {
+                var context = Context.CheckContext();
+
+                Customer? customer = await FindCustomerAsync(uid, context);
+                context.Customers.Remove(customer!);
+
+                var changedCount = await context.SaveChangesAsync();
+                if (changedCount != 1)
                 {
-                    var context = Context.CheckContext();
-
-                    if (uid == null || uid == Guid.Empty)
-                    {
-                        throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
-                    }
-
-                    Customer? customer = await FindCustomerAsync(uid, context);
-                    context.Customers.Remove(customer!);
-
-                    var changedCount = await context.SaveChangesAsync();
-                    if (changedCount != 1)
-                    {
-                        throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotDeleted));
-                    }
-
-                    await transaktion.CommitAsync();
-                    return true;
+                    throw new InternalServerException(string.Format(nameof(DataModel.Resources.Errors.NotSaved), typeof(Customer).Name));
                 }
-                catch (Exception)
-                {
-                    await transaktion.RollbackAsync();
-                    throw new ServerException(nameof(DataModel.Resources.Errors.InternalException));
-                }
+
+                return true;
+            }
+            catch (ServerException)
+            {
+                throw;
+            }
+            catch (InternalServerException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
             }
         }
 
         [HttpGet]
         public async Task<Customer?> GetCustomerAsync(Guid? uid)
         {
-            using (var transaktion = await Context.Database.BeginTransactionAsync())
+            if (uid == null || uid == Guid.Empty)
             {
-                try
-                {
-                    var context = Context.CheckContext();
+                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
+            }
 
-                    if (uid == null || uid == Guid.Empty)
-                    {
-                        throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
-                    }
+            try
+            {
+                var context = Context.CheckContext();
 
-                    Customer? customer = await FindCustomerAsync(uid, context);
-                    await transaktion.CommitAsync();
-                    return customer;
-                }
-                catch (Exception)
-                {
-                    await transaktion.RollbackAsync();
-                    throw new ServerException(nameof(DataModel.Resources.Errors.InternalException));
-                }
+                Customer? customer = await FindCustomerAsync(uid, context);
+                return customer;
+            }
+            catch (ServerException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
             }
         }
 
         private static async Task<Customer?> FindCustomerAsync(Guid? uid, IDatabaseContext context)
         {
-            using (var transaction = await context.Database.BeginTransactionAsync())
+            var customer = await context.Customers.FirstOrDefaultAsync(x => x.UId == uid);
+            if (customer == null)
             {
-                try
-                {
-                    var customer = await context.Customers.FirstOrDefaultAsync(x => x.UId == uid);
-                    if (customer == null)
-                    {
-                        throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
-                    }
-
-                    await transaction.CommitAsync();
-                    return customer;
-                }
-                catch (Exception)
-                {
-                    await transaction.RollbackAsync();
-                    throw new ServerException(nameof(DataModel.Resources.Errors.InternalException));
-                }
+                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
             }
+
+            return customer;
         }
     }
 }

@@ -171,4 +171,7 @@
   <data name="NameIsToShort" xml:space="preserve">
     <value>The name needs to be at least 5 chars.</value>
   </data>
+  <data name="NotSaved" xml:space="preserve">
+    <value>{0} not saved.</value>
+  </data>
 </root>
