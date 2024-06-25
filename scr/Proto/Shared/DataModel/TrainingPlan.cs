@@ -3,7 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using DataModel.Resources;
 
-    public class TrainingPlan
+    public class TrainingPlan : IEntity
     {
         [Required(ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.NameIsRequired))]
         [MinLength(5, ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.NameIsToShort))]

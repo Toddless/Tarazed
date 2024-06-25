@@ -26,75 +26,111 @@
         [HttpPut]
         public virtual async Task<TU?> CreateAsync(TU item)
         {
-            var context = Context.CheckContext();
-            if (item.Id != 0)
+            using (var transaktion = await Context.Database.BeginTransactionAsync())
             {
-                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
-            }
+                try
+                {
+                    var context = Context.CheckContext();
+                    if (item.Id != 0)
+                    {
+                        throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    }
 
-            bool isValid = item.ValidateObject(out List<ValidationResult> result);
-            if (!isValid)
-            {
-                result.ForEach(x => Logger?.LogDebug(x.ErrorMessage));
-                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
-            }
+                    bool isValid = item.ValidateObject(out List<ValidationResult> result);
+                    if (!isValid)
+                    {
+                        result.ForEach(x => Logger?.LogDebug(x.ErrorMessage));
+                        throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    }
 
-            context.Set<TU>().Add(item);
-            await context.SaveChangesAsync();
-            return item;
+                    context.Set<TU>().Add(item);
+                    await context.SaveChangesAsync();
+                    await transaktion.CommitAsync();
+                    return item;
+                }
+                catch (Exception)
+                {
+                    await transaktion.RollbackAsync();
+                    throw new ServerException(nameof(DataModel.Resources.Errors.InternalException));
+                }
+            }
         }
 
         [HttpPost]
         public virtual async Task<TU?> UpdateAsync(TU item)
         {
-            var context = Context.CheckContext();
-            if (item == null || item.Id == 0)
+            using (var transaktion = await Context.Database.BeginTransactionAsync())
             {
-                throw new ServerException(nameof(DataModel.Resources.Errors.Exercise_NotFound));
-            }
+                try
+                {
+                    var context = Context.CheckContext();
+                    if (item == null || item.Id == 0)
+                    {
+                        throw new ServerException(nameof(DataModel.Resources.Errors.Exercise_NotFound));
+                    }
 
-            bool isValid = item.ValidateObject(out List<ValidationResult> results);
-            if (!isValid)
-            {
-                results.ForEach(x => Logger?.LogDebug(x.ErrorMessage));
-                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
-            }
+                    bool isValid = item.ValidateObject(out List<ValidationResult> results);
+                    if (!isValid)
+                    {
+                        results.ForEach(x => Logger?.LogDebug(x.ErrorMessage));
+                        throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    }
 
-            context.Set<TU>().Update(item);
-            var changedCount = await context.SaveChangesAsync();
-            if (changedCount != 1)
-            {
-                throw new ServerException(nameof(DataModel.Resources.Errors.Exercise_NotFound));
-            }
+                    context.Set<TU>().Update(item);
+                    var changedCount = await context.SaveChangesAsync();
+                    if (changedCount != 1)
+                    {
+                        throw new ServerException(nameof(DataModel.Resources.Errors.Exercise_NotFound));
+                    }
 
-            return item;
+                    await transaktion.CommitAsync();
+                    return item;
+                }
+                catch (Exception)
+                {
+                    await transaktion.RollbackAsync();
+                    throw new ServerException(nameof(DataModel.Resources.Errors.InternalException));
+                }
+            }
         }
 
         [HttpDelete]
         public virtual async Task<bool?> DeleteAsync(long? id)
         {
-            var context = Context.CheckContext();
-
-            if (id == null || id == 0)
+            using (var transaktion = await Context.Database.BeginTransactionAsync())
             {
-                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
-            }
+                try
+                {
+                    var context = Context.CheckContext();
 
-            var set = context.Set<TU>();
-            var existingItem = await set.FirstOrDefaultAsync(x => x.Id == id);
-            if (existingItem == null)
-            {
-                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
-            }
+                    if (id == null || id == 0)
+                    {
+                        throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    }
 
-            set.Remove(existingItem);
-            var changedCount = await context.SaveChangesAsync();
-            if (changedCount != 1)
-            {
-                throw new ServerException(nameof(DataModel.Resources.Errors.Exercise_NotDeleted));
-            }
+                    var set = context.Set<TU>();
+                    var existingItem = await set.FirstOrDefaultAsync(x => x.Id == id);
+                    if (existingItem == null)
+                    {
+                        throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    }
 
-            return true;
+                    set.Remove(existingItem);
+                    var changedCount = await context.SaveChangesAsync();
+                    if (changedCount != 1)
+                    {
+                        throw new ServerException(nameof(DataModel.Resources.Errors.Exercise_NotDeleted));
+                    }
+
+                    await transaktion.CommitAsync();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    await transaktion.RollbackAsync();
+                    throw new ServerException(nameof(DataModel.Resources.Errors.InternalException));
+                }
+            }
         }
     }
 }

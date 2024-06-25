@@ -13,7 +13,6 @@
         where TV : class, IEntity
         where TW : class, IMappingEntity
     {
-
         public TableControllerBase()
         {
         }
@@ -48,23 +47,33 @@
                     mapping.CreateMapping(relationId, item.Id);
                     Context.Set<TW>().Add(mapping);
                     await context.SaveChangesAsync();
+                    await transaction.CommitAsync();
                     return item;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    transaction.Rollback();
-                    // log
-                    throw ex;
+                    await transaction.RollbackAsync();
+                    throw new ServerException(nameof(DataModel.Resources.Errors.InternalException));
                 }
             }
         }
 
-        public virtual async Task<TU> DeleteAsync (TU item, long relationId)
-        {
-            using (var transaction = await Context.Database.BeginTransactionAsync())
-            {
-
-            }
-        }
+        //public virtual async Task<bool> DeleteAsync(TU item)
+        //{
+        //    using (var transaction = await Context.Database.BeginTransactionAsync())
+        //    {
+        //        try
+        //        {
+        //            var set = Context.Set<TU>();
+        //            var existingItem = await set.FirstOrDefaultAsync(x => x.Id == item.Id);
+        //            set.Remove(existingItem);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            await transaction.RollbackAsync();
+        //            throw ex;
+        //        }
+        //    }
+        //}
     }
 }

@@ -14,10 +14,19 @@
         [ForeignKey(nameof(Exercise))]
         public long ExerciseId { get; set; }
 
+        public ExerciseSet? ExerciseSet { get; set; }
+
+        public Exercise? Exercise { get; set; }
+
         public void CreateMapping(long souceId, long targetId)
         {
             ExerciseSetId = souceId;
             ExerciseId = targetId;
+        }
+
+        public void DeleteMapping(long mappingId)
+        {
+            Id = mappingId;
         }
     }
 }

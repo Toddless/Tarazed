@@ -45,7 +45,8 @@
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope())
             {
                 var context = serviceScope?.ServiceProvider.GetRequiredService<DatabaseContext>();
-                context?.Database.EnsureCreated();
+                //context?.Database.EnsureCreated();
+                context?.Database.Migrate();
             }
 
             if (env.IsDevelopment())

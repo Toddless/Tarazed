@@ -13,5 +13,9 @@
 
         [ForeignKey(nameof(TrainingPlan))]
         public long ExerciseSetId { get; set; }
+
+        public TrainingPlan? TrainingPlan { get; set; }
+
+        public ExerciseSet? ExerciseSet { get; set; }
     }
 }

@@ -61,6 +61,15 @@ namespace DataModel.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Customer already exists..
+        /// </summary>
+        public static string AlreadyExist {
+            get {
+                return ResourceManager.GetString("AlreadyExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Context not set..
         /// </summary>
         public static string ContextNotSet {
@@ -165,6 +174,15 @@ namespace DataModel.Resources {
         public static string Exercise_NotFound {
             get {
                 return ResourceManager.GetString("Exercise_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something has gone wrong. Please try again later..
+        /// </summary>
+        public static string InternalException {
+            get {
+                return ResourceManager.GetString("InternalException", resourceCulture);
             }
         }
         

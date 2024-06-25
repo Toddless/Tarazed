@@ -27,5 +27,4 @@
         [MaxLength(800, ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.DescriptionsIsToLong))]
         public string Description { get; set; } = string.Empty;
     }
-
 }
