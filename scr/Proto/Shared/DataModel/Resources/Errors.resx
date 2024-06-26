@@ -150,11 +150,23 @@
   <data name="DescriptionsIsToLong" xml:space="preserve">
     <value>The description need to be no more than 800 chars.</value>
   </data>
+  <data name="EmailOrPassword" xml:space="preserve">
+    <value>Email or password is incorrect.</value>
+  </data>
   <data name="Exercise_NotDeleted" xml:space="preserve">
     <value>Exercise was not deleted.</value>
   </data>
   <data name="Exercise_NotFound" xml:space="preserve">
     <value>An exercise is not found or doesn't exist.</value>
+  </data>
+  <data name="FieldIsRequired" xml:space="preserve">
+    <value>The Field needs to be set.</value>
+  </data>
+  <data name="FieldIsToLong" xml:space="preserve">
+    <value>The Field need to be no more than 50 chars.</value>
+  </data>
+  <data name="FieldIsToShort" xml:space="preserve">
+    <value>The Field need to be at least 4 chars.</value>
   </data>
   <data name="InternalException" xml:space="preserve">
     <value>Something has gone wrong. Please try again later.</value>
@@ -162,16 +174,7 @@
   <data name="InvalidRequest" xml:space="preserve">
     <value>Invalid request.</value>
   </data>
-  <data name="NameIsRequired" xml:space="preserve">
-    <value>The name needs to be set.</value>
-  </data>
-  <data name="NameIsToLong" xml:space="preserve">
-    <value>The name need to be no more than 50 chars.</value>
-  </data>
-  <data name="NameIsToShort" xml:space="preserve">
-    <value>The name needs to be at least 5 chars.</value>
-  </data>
   <data name="NotSaved" xml:space="preserve">
-    <value>{0} not saved.</value>
+    <value>Value was not saved.</value>
   </data>
 </root>

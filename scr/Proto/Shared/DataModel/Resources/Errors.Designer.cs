@@ -160,6 +160,15 @@ namespace DataModel.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Email or password is incorrect..
+        /// </summary>
+        public static string EmailOrPassword {
+            get {
+                return ResourceManager.GetString("EmailOrPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exercise was not deleted..
         /// </summary>
         public static string Exercise_NotDeleted {
@@ -174,6 +183,33 @@ namespace DataModel.Resources {
         public static string Exercise_NotFound {
             get {
                 return ResourceManager.GetString("Exercise_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Field needs to be set..
+        /// </summary>
+        public static string FieldIsRequired {
+            get {
+                return ResourceManager.GetString("FieldIsRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Field need to be no more than 50 chars..
+        /// </summary>
+        public static string FieldIsToLong {
+            get {
+                return ResourceManager.GetString("FieldIsToLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Field need to be at least 4 chars..
+        /// </summary>
+        public static string FieldIsToShort {
+            get {
+                return ResourceManager.GetString("FieldIsToShort", resourceCulture);
             }
         }
         
@@ -196,34 +232,7 @@ namespace DataModel.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name needs to be set..
-        /// </summary>
-        public static string NameIsRequired {
-            get {
-                return ResourceManager.GetString("NameIsRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name need to be no more than 50 chars..
-        /// </summary>
-        public static string NameIsToLong {
-            get {
-                return ResourceManager.GetString("NameIsToLong", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name needs to be at least 5 chars..
-        /// </summary>
-        public static string NameIsToShort {
-            get {
-                return ResourceManager.GetString("NameIsToShort", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} not saved..
+        ///   Looks up a localized string similar to Value was not saved..
         /// </summary>
         public static string NotSaved {
             get {
