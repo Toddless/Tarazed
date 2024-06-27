@@ -3,11 +3,13 @@
     using System.ComponentModel.DataAnnotations;
     using DataAccessLayer;
     using DataModel;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Server.Extensions;
     using Server.Filters;
 
+    [Authorize]
     public abstract class ControllerBase<TU> : Controller
         where TU : class, IEntity
     {

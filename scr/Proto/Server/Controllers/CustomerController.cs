@@ -6,25 +6,26 @@
     using DataAccessLayer;
     using DataModel;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.IdentityModel.Tokens;
     using Server.Extensions;
     using Server.Filters;
+    using Server.Resources;
 
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class CustomerController : ControllerBase<Customer>
     {
         private readonly ICustomerService _customerService;
-        private IConfiguration _configuration;
+        private readonly MyConfigKeys _configKeys;
 
-        public CustomerController(IDatabaseContext context, ILogger<CustomerController> logger, IConfiguration configuration, ICustomerService customerService)
+        public CustomerController(IDatabaseContext context, ILogger<CustomerController> logger, IConfiguration configuration, ICustomerService customerService, MyConfigKeys configKeys)
             : base(context, logger)
         {
-            _configuration = configuration;
             _customerService = customerService;
+            _configKeys = configKeys;
         }
 
         [HttpPut]
@@ -38,6 +39,11 @@
             if (item.UId.HasValue)
             {
                 throw new ServerException(nameof(DataModel.Resources.Errors.AlreadyExist));
+            }
+
+            if (item.UId == null || item.UId == Guid.Empty)
+            {
+                item.UId = Guid.NewGuid();
             }
 
             return await base.CreateAsync(item);
@@ -140,26 +146,29 @@
         #endregion
 
         [HttpPost("Login")]
+        [AllowAnonymous]
         public async Task<ActionResult> Login([FromBody] LoginModel model)
         {
+            var customerService = _customerService;
+            var configKeys = _configKeys;
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var customer = await _customerService.AuthenticateAsync(model.UserEmail, model.Password);
+            var customer = await customerService.AuthenticateAsync(model.UserEmail, model.Password);
 
             if (customer == null)
             {
                 throw new ServerException(nameof(DataModel.Resources.Errors.EmailOrPassword));
             }
 
-            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Jwt:Key"] !));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configKeys.JWTKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var sectoken = new JwtSecurityToken(
-                _configuration["Jwt:Issuer"],
-                _configuration["Jwt:Key"],
+                configKeys.JWTIssuer,
+                configKeys.JWTIssuer,
                 null,
                 expires: DateTime.Now.AddMinutes(120),
                 signingCredentials: credentials);

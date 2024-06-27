@@ -1,7 +1,6 @@
 ﻿namespace DataModel
 {
     using DataAccessLayer;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     using Server.Extensions;
     using Server.Filters;
@@ -9,24 +8,22 @@
     public class CustomerServise : ICustomerService
     {
         private readonly IDatabaseContext _dbContext;
-        private readonly IPasswordHasher<Customer> _passwordHasher;
 
-        public CustomerServise(IDatabaseContext dbContext, IPasswordHasher<Customer> passwordHasher)
+        public CustomerServise(IDatabaseContext dbContext)
         {
             _dbContext = dbContext;
-            _passwordHasher = passwordHasher;
         }
 
-        public async Task<Customer> AuthenticateAsync(string email, string password)
+        public async Task<Customer> AuthenticateAsync(string email, string passwordHash)
         {
-            var customer = await _dbContext.Set<Customer>().FirstOrDefaultAsync(c => c.Email == email);
+            var context = _dbContext.CheckContext();
+            var customer = await context.Set<Customer>().FirstOrDefaultAsync(c => c.Email == email);
             if (customer == null)
             {
                 throw new ServerException(nameof(Resources.Errors.EmailOrPassword));
             }
 
-            var verificationResult = _passwordHasher.VerifyHashedPassword(customer, customer.PasswortHash, password);
-            if (verificationResult == PasswordVerificationResult.Failed)
+            if (customer.PasswortHash != passwordHash)
             {
                 throw new ServerException(nameof(Resources.Errors.EmailOrPassword));
             }

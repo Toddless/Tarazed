@@ -7,7 +7,6 @@
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -15,12 +14,16 @@
     using Microsoft.OpenApi.Models;
     using Server.Extensions;
     using Server.Filters;
+    using Server.Resources;
 
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly MyConfigKeys _configKeys;
+
+        public Startup(IConfiguration configuration, MyConfigKeys myConfigKeys)
         {
             Configuration = configuration;
+            _configKeys = myConfigKeys;
         }
 
         public IConfiguration Configuration { get; }
@@ -34,12 +37,9 @@
                 o.Filters.AddService<ExceptionFilter>();
             });
             services.AddControllers().AddXmlSerializerFormatters();
-
+            services.AddSingleton<MyConfigKeys>();
             services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
                 options.UseSqlServer(Configuration["DatabaseInfo:ConnectionString"], o => o.EnableRetryOnFailure()));
-
-            var jwtIssuer = Configuration.GetSection("Jwt:Issuer").Get<string>();
-            var jwtKey = Configuration.GetSection("Jwt:Key").Get<string>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
@@ -49,9 +49,9 @@
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtIssuer,
-                    ValidAudience = jwtIssuer,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtKey!)),
+                    ValidIssuer = _configKeys.JWTIssuer,
+                    ValidAudience = _configKeys.JWTIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configKeys.JWTKey)),
                 };
             });
             services.AddAuthorization(options =>
@@ -60,7 +60,6 @@
                 policy.RequireRole("Admin", "User", "Trainer"));
             });
             services.AddScoped<ICustomerService, CustomerServise>();
-            services.AddSingleton<IPasswordHasher<Customer>, PasswordHasher<Customer>>();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen((c) =>
             {
@@ -71,6 +70,7 @@
                     Type = SecuritySchemeType.Http,
                     In = ParameterLocation.Header,
                     Scheme = "Bearer",
+                    BearerFormat = "JWT",
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
