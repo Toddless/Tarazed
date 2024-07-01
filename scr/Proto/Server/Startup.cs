@@ -7,6 +7,8 @@
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Routing;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -18,12 +20,13 @@
 
     public class Startup
     {
-        private readonly MyConfigKeys _configKeys;
+        private readonly MyConfigKeys _config;
 
-        public Startup(IConfiguration configuration, MyConfigKeys myConfigKeys)
+        public Startup(IConfiguration configuration)
         {
+            ArgumentNullException.ThrowIfNull(configuration);
             Configuration = configuration;
-            _configKeys = myConfigKeys;
+            _config = new MyConfigKeys(configuration);
         }
 
         public IConfiguration Configuration { get; }
@@ -31,16 +34,23 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc((x) => { x.EnableEndpointRouting = false; });
+            services.AddSingleton(_config);
             services.AddSingleton<ExceptionFilter>();
             services.AddControllers(o =>
             {
                 o.Filters.AddService<ExceptionFilter>();
             });
             services.AddControllers().AddXmlSerializerFormatters();
-            services.AddSingleton<MyConfigKeys>();
             services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
+#if !DEBUG
                 options.UseSqlServer(Configuration["DatabaseInfo:ConnectionString"], o => o.EnableRetryOnFailure()));
-
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration["DatabaseInfo:ConnectionString"], o => o.EnableRetryOnFailure()));
+#else
+                options.UseSqlServer(Configuration["DatabaseInfo:LocalConnectionString"], o => o.EnableRetryOnFailure()));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration["DatabaseInfo:LocalConnectionString"], o => o.MigrationsHistoryTable(
+                tableName: "__EFIdentityMigrationsHistory",
+                schema: "Identity")));
+#endif
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -49,9 +59,9 @@
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = _configKeys.JWTIssuer,
-                    ValidAudience = _configKeys.JWTIssuer,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configKeys.JWTKey)),
+                    ValidIssuer = _config.JWTIssuer,
+                    ValidAudience = _config.JWTIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.JWTKey)),
                 };
             });
             services.AddAuthorization(options =>
@@ -59,6 +69,13 @@
                 options.AddPolicy("Rights", policy =>
                 policy.RequireRole("Admin", "User", "Trainer"));
             });
+            services.AddIdentityApiEndpoints<IdentityUser>(o =>
+            {
+                o.Password.RequiredLength = 5;
+                o.User.RequireUniqueEmail = true;
+                o.Password.RequireNonAlphanumeric = false;
+                o.SignIn.RequireConfirmedPhoneNumber = false;
+            }).AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddScoped<ICustomerService, CustomerServise>();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen((c) =>
@@ -90,9 +107,18 @@
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope())
             {
                 var context = serviceScope?.ServiceProvider.GetRequiredService<DatabaseContext>();
+                var identityContext = serviceScope?.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                if (!identityContext.Database.IsInMemory())
+                {
+                    identityContext?.Database.Migrate();
+                }
 
                 // context?.Database.EnsureCreated();
-                context?.Database.Migrate();
+                if (!context.Database.IsInMemory())
+                {
+                    context?.Database.Migrate();
+                }
             }
 
             if (env.IsDevelopment())
@@ -124,6 +150,11 @@
             });
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapIdentityApi<IdentityUser>();
+                endpoints.MapSwagger();
+            });
             app.UseMvc();
         }
     }

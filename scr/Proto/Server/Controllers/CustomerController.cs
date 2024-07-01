@@ -21,7 +21,11 @@
         private readonly ICustomerService _customerService;
         private readonly MyConfigKeys _configKeys;
 
-        public CustomerController(IDatabaseContext context, ILogger<CustomerController> logger, IConfiguration configuration, ICustomerService customerService, MyConfigKeys configKeys)
+        public CustomerController(
+            IDatabaseContext context,
+            ILogger<CustomerController> logger,
+            ICustomerService customerService,
+            MyConfigKeys configKeys)
             : base(context, logger)
         {
             _customerService = customerService;
@@ -29,6 +33,7 @@
         }
 
         [HttpPut]
+        [AllowAnonymous]
         public override async Task<Customer?> CreateAsync(Customer? item)
         {
             if (item == null)
@@ -170,7 +175,7 @@
                 configKeys.JWTIssuer,
                 configKeys.JWTIssuer,
                 null,
-                expires: DateTime.Now.AddMinutes(120),
+                expires: DateTime.Now.AddMinutes(10),
                 signingCredentials: credentials);
 
             var token = new JwtSecurityTokenHandler().WriteToken(sectoken);

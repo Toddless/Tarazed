@@ -20,7 +20,7 @@ public class Program
                  // config.AddJsonFile($"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true);
              });
         return builder!
-            .UseContentRoot(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) !)
+            .UseContentRoot(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!)
             .ConfigureLogging(SetupLogging)
             .UseStartup<Startup>()
             .Build();

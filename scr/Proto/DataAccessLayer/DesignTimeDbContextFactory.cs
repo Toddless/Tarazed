@@ -14,7 +14,11 @@
             .Build();
 
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
+#if !DEBUG
             optionsBuilder.UseSqlServer(configuration["DatabaseInfo:ConnectionString"]);
+#else
+            optionsBuilder.UseSqlServer(configuration["DatabaseInfo:LocalConnectionString"]);
+#endif
 
             return new DatabaseContext(optionsBuilder.Options);
         }
