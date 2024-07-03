@@ -1,10 +1,7 @@
 ﻿namespace Server
 {
     using System.Globalization;
-    using System.Text;
     using DataAccessLayer;
-    using DataModel;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
@@ -12,9 +9,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.IdentityModel.Tokens;
     using Microsoft.OpenApi.Models;
-    using Server.Extensions;
     using Server.Filters;
     using Server.Resources;
 
@@ -44,39 +39,43 @@
             services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
 #if !DEBUG
                 options.UseSqlServer(Configuration["DatabaseInfo:ConnectionString"], o => o.EnableRetryOnFailure()));
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration["DatabaseInfo:ConnectionString"], o => o.EnableRetryOnFailure()));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration["DatabaseInfo:ConnectionString"], o => o.MigrationsHistoryTable(
+                tableName: "__EFIdentityMigrationsHistory",
+                schema: "Identity")));
 #else
                 options.UseSqlServer(Configuration["DatabaseInfo:LocalConnectionString"], o => o.EnableRetryOnFailure()));
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration["DatabaseInfo:LocalConnectionString"], o => o.MigrationsHistoryTable(
                 tableName: "__EFIdentityMigrationsHistory",
                 schema: "Identity")));
 #endif
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = _config.JWTIssuer,
-                    ValidAudience = _config.JWTIssuer,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.JWTKey)),
-                };
-            });
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Rights", policy =>
-                policy.RequireRole("Admin", "User", "Trainer"));
-            });
+
+            #region 
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            //{
+            //    options.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        ValidateIssuer = true,
+            //        ValidateAudience = true,
+            //        ValidateLifetime = true,
+            //        ValidateIssuerSigningKey = true,
+            //        ValidIssuer = _config.JWTIssuer,
+            //        ValidAudience = _config.JWTIssuer,
+            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.JWTKey)),
+            //    };
+            //});
+            #endregion
+
+            services.AddAuthentication().AddJwtBearer();
+            services.AddAuthorization();
             services.AddIdentityApiEndpoints<IdentityUser>(o =>
             {
                 o.Password.RequiredLength = 5;
                 o.User.RequireUniqueEmail = true;
                 o.Password.RequireNonAlphanumeric = false;
                 o.SignIn.RequireConfirmedPhoneNumber = false;
-            }).AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddScoped<ICustomerService, CustomerServise>();
+            }).AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen((c) =>
             {

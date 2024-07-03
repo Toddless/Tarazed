@@ -13,8 +13,8 @@
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.HasDefaultSchema("Identity");
             base.OnModelCreating(builder);
+            builder.HasDefaultSchema("Identity");
         }
     }
 }

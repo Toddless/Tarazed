@@ -1,14 +1,11 @@
 ﻿namespace Server.Controllers
 {
     using System;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Text;
     using DataAccessLayer;
     using DataModel;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.IdentityModel.Tokens;
     using Server.Extensions;
     using Server.Filters;
     using Server.Resources;
@@ -18,17 +15,14 @@
     [Route("[controller]")]
     public class CustomerController : ControllerBase<Customer>
     {
-        private readonly ICustomerService _customerService;
         private readonly MyConfigKeys _configKeys;
 
         public CustomerController(
             IDatabaseContext context,
             ILogger<CustomerController> logger,
-            ICustomerService customerService,
             MyConfigKeys configKeys)
             : base(context, logger)
         {
-            _customerService = customerService;
             _configKeys = configKeys;
         }
 
@@ -44,11 +38,6 @@
             if (item.UId.HasValue)
             {
                 throw new ServerException(nameof(DataModel.Resources.Errors.AlreadyExist));
-            }
-
-            if (item.UId == null || item.UId == Guid.Empty)
-            {
-                item.UId = Guid.NewGuid();
             }
 
             return await base.CreateAsync(item);
@@ -122,19 +111,20 @@
         }
 
         #region NotFinished
-        //[HttpPut("Something")]
-        //public async Task<Customer?> ChangeRoleAsync(Guid? uid, string role)
-        //{
+
+        // [HttpPut("Something")]
+        // public async Task<Customer?> ChangeRoleAsync(Guid? uid, string role)
+        // {
         //    if (uid == null || uid == Guid.Empty)
         //    {
         //        throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
         //    }
 
-        //    try
+        // try
         //    {
         //        var context = Context.CheckContext();
 
-        //        Customer? customer = await FindCustomerAsync(uid, context);
+        // Customer? customer = await FindCustomerAsync(uid, context);
         //        customer!.Role = role;
         //        return customer;
         //    }
@@ -146,42 +136,41 @@
         //    {
         //        throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
         //    }
-        //}
+        // }
 
         #endregion
 
-        [HttpPost("Login")]
-        [AllowAnonymous]
-        public async Task<ActionResult> Login([FromBody] LoginModel model)
-        {
-            var customerService = _customerService;
-            var configKeys = _configKeys;
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //[HttpPost("Login")]
+        //[AllowAnonymous]
+        //public async Task<ActionResult> Login([FromBody] LoginModel model)
+        //{
+        //    var configKeys = _configKeys;
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            var customer = await customerService.AuthenticateAsync(model.UserEmail, model.Password);
+        //    // var customer = await customerService.AuthenticateAsync(model.UserEmail, model.Password);
 
-            if (customer == null)
-            {
-                throw new ServerException(nameof(DataModel.Resources.Errors.EmailOrPassword));
-            }
+        //    // if (customer == null)
+        //    // {
+        //    //    throw new ServerException(nameof(DataModel.Resources.Errors.EmailOrPassword));
+        //    // }
 
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configKeys.JWTKey));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        //    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configKeys.JWTKey));
+        //    var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var sectoken = new JwtSecurityToken(
-                configKeys.JWTIssuer,
-                configKeys.JWTIssuer,
-                null,
-                expires: DateTime.Now.AddMinutes(10),
-                signingCredentials: credentials);
+        //    var sectoken = new JwtSecurityToken(
+        //        configKeys.JWTIssuer,
+        //        configKeys.JWTIssuer,
+        //        null,
+        //        expires: DateTime.Now.AddMinutes(10),
+        //        signingCredentials: credentials);
 
-            var token = new JwtSecurityTokenHandler().WriteToken(sectoken);
+        //    var token = new JwtSecurityTokenHandler().WriteToken(sectoken);
 
-            return Ok(token);
-        }
+        //    return Ok(token);
+        //}
 
         private static async Task<Customer?> FindCustomerAsync(Guid? uid, IDatabaseContext context)
         {

@@ -20,7 +20,7 @@
 
         [MinLength(4, ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.FieldIsToShort))]
         [MaxLength(15, ErrorMessageResourceType = typeof(Errors), ErrorMessage = nameof(Errors.FieldIsToLong))]
-        public string Role { get; set; } = "User";
+        public string Role { get; set; } = string.Empty;
 
         public Guid? UId { get; set; }
 
