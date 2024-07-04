@@ -4,6 +4,7 @@
     using DataAccessLayer;
     using DataModel;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Server.Extensions;
@@ -13,17 +14,21 @@
     public abstract class ControllerBase<TU> : Controller
         where TU : class, IEntity
     {
-        public ControllerBase(IDatabaseContext context, ILogger logger)
+        public ControllerBase(IDatabaseContext context, UserManager<IdentityUser> manager, ILogger logger)
         {
             ArgumentNullException.ThrowIfNull(context);
+            ArgumentNullException.ThrowIfNull(manager);
             ArgumentNullException.ThrowIfNull(logger);
             Context = context;
             Logger = logger;
+            Manager = manager;
         }
 
-        protected IDatabaseContext Context { get; private set; }
+        protected IDatabaseContext Context { get; }
 
-        protected ILogger Logger { get; private set; }
+        protected ILogger Logger { get;   }
+
+        protected UserManager<IdentityUser> Manager { get; }
 
         [HttpPut]
         public async virtual Task<TU?> CreateAsync(TU item)

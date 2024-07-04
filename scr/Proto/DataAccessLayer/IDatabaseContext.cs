@@ -12,8 +12,6 @@
 
         DatabaseFacade Database { get; }
 
-        DbSet<Customer> Customers { get; set; }
-
         DbSet<CustomerTrainingPlan> CustomerTrainingPlans { get; set; }
 
         DbSet<Exercise> Exercises { get; set; }

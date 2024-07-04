@@ -31,6 +31,7 @@
             services.AddMvc((x) => { x.EnableEndpointRouting = false; });
             services.AddSingleton(_config);
             services.AddSingleton<ExceptionFilter>();
+            services.AddTransient<IUserStore<IdentityUser>, Server.UserStore>();
             services.AddControllers(o =>
             {
                 o.Filters.AddService<ExceptionFilter>();
@@ -39,14 +40,8 @@
             services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
 #if !DEBUG
                 options.UseSqlServer(Configuration["DatabaseInfo:ConnectionString"], o => o.EnableRetryOnFailure()));
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration["DatabaseInfo:ConnectionString"], o => o.MigrationsHistoryTable(
-                tableName: "__EFIdentityMigrationsHistory",
-                schema: "Identity")));
 #else
                 options.UseSqlServer(Configuration["DatabaseInfo:LocalConnectionString"], o => o.EnableRetryOnFailure()));
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration["DatabaseInfo:LocalConnectionString"], o => o.MigrationsHistoryTable(
-                tableName: "__EFIdentityMigrationsHistory",
-                schema: "Identity")));
 #endif
 
             #region 
@@ -62,18 +57,20 @@
             //        ValidAudience = _config.JWTIssuer,
             //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.JWTKey)),
             //    };
-            //});
+            //})
             #endregion
 
             services.AddAuthentication().AddJwtBearer();
             services.AddAuthorization();
             services.AddIdentityApiEndpoints<IdentityUser>(o =>
             {
+                o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(20);
                 o.Password.RequiredLength = 5;
                 o.User.RequireUniqueEmail = true;
                 o.Password.RequireNonAlphanumeric = false;
                 o.SignIn.RequireConfirmedPhoneNumber = false;
-            }).AddEntityFrameworkStores<ApplicationDbContext>()
+            }).AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<DatabaseContext>()
             .AddDefaultTokenProviders();
 
             services.AddEndpointsApiExplorer();
@@ -106,12 +103,6 @@
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope())
             {
                 var context = serviceScope?.ServiceProvider.GetRequiredService<DatabaseContext>();
-                var identityContext = serviceScope?.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-                if (!identityContext.Database.IsInMemory())
-                {
-                    identityContext?.Database.Migrate();
-                }
 
                 // context?.Database.EnsureCreated();
                 if (!context.Database.IsInMemory())

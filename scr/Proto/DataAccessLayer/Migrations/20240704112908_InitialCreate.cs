@@ -1,22 +1,18 @@
 ﻿#nullable disable
 
-namespace DataAccessLayer.Migrations.ApplicationDb
+namespace DataAccessLayer.Migrations
 {
     using System;
     using Microsoft.EntityFrameworkCore.Migrations;
 
     /// <inheritdoc />
-    public partial class IdititalCreateApplicationDbContext : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
-                name: "Identity");
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -31,7 +27,6 @@ namespace DataAccessLayer.Migrations.ApplicationDb
 
             migrationBuilder.CreateTable(
                 name: "AspNetUsers",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -56,8 +51,51 @@ namespace DataAccessLayer.Migrations.ApplicationDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "Exercises",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Reps = table.Column<int>(type: "int", nullable: false),
+                    Set = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Weight = table.Column<double>(type: "float", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(800)", maxLength: 800, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Exercises", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ExerciseSets",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CompletionDate = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExerciseSets", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TrainingPlans",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrainingPlans", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -72,7 +110,6 @@ namespace DataAccessLayer.Migrations.ApplicationDb
                     table.ForeignKey(
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
-                        principalSchema: "Identity",
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -80,7 +117,6 @@ namespace DataAccessLayer.Migrations.ApplicationDb
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -95,7 +131,6 @@ namespace DataAccessLayer.Migrations.ApplicationDb
                     table.ForeignKey(
                         name: "FK_AspNetUserClaims_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "Identity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -103,7 +138,6 @@ namespace DataAccessLayer.Migrations.ApplicationDb
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserLogins",
-                schema: "Identity",
                 columns: table => new
                 {
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -117,7 +151,6 @@ namespace DataAccessLayer.Migrations.ApplicationDb
                     table.ForeignKey(
                         name: "FK_AspNetUserLogins_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "Identity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -125,7 +158,6 @@ namespace DataAccessLayer.Migrations.ApplicationDb
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserRoles",
-                schema: "Identity",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -137,14 +169,12 @@ namespace DataAccessLayer.Migrations.ApplicationDb
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
                         column: x => x.RoleId,
-                        principalSchema: "Identity",
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "Identity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -152,7 +182,6 @@ namespace DataAccessLayer.Migrations.ApplicationDb
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserTokens",
-                schema: "Identity",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -166,21 +195,96 @@ namespace DataAccessLayer.Migrations.ApplicationDb
                     table.ForeignKey(
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "Identity",
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ExerciseSetsExercise",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExerciseSetId = table.Column<long>(type: "bigint", nullable: false),
+                    ExerciseId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExerciseSetsExercise", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ExerciseSetsExercise_ExerciseSets_ExerciseSetId",
+                        column: x => x.ExerciseSetId,
+                        principalTable: "ExerciseSets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExerciseSetsExercise_Exercises_ExerciseId",
+                        column: x => x.ExerciseId,
+                        principalTable: "Exercises",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CustomerTrainingPlans",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TrainingPlanId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomerTrainingPlans", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CustomerTrainingPlans_AspNetUsers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CustomerTrainingPlans_TrainingPlans_TrainingPlanId",
+                        column: x => x.TrainingPlanId,
+                        principalTable: "TrainingPlans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TrainingPlanExerciseSets",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TrainingPlanId = table.Column<long>(type: "bigint", nullable: false),
+                    ExerciseSetId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrainingPlanExerciseSets", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TrainingPlanExerciseSets_ExerciseSets_ExerciseSetId",
+                        column: x => x.ExerciseSetId,
+                        principalTable: "ExerciseSets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TrainingPlanExerciseSets_TrainingPlans_TrainingPlanId",
+                        column: x => x.TrainingPlanId,
+                        principalTable: "TrainingPlans",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
-                schema: "Identity",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
-                schema: "Identity",
                 table: "AspNetRoles",
                 column: "NormalizedName",
                 unique: true,
@@ -188,67 +292,103 @@ namespace DataAccessLayer.Migrations.ApplicationDb
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
-                schema: "Identity",
                 table: "AspNetUserClaims",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserLogins_UserId",
-                schema: "Identity",
                 table: "AspNetUserLogins",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserRoles_RoleId",
-                schema: "Identity",
                 table: "AspNetUserRoles",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
-                schema: "Identity",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
-                schema: "Identity",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomerTrainingPlans_CustomerId",
+                table: "CustomerTrainingPlans",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomerTrainingPlans_TrainingPlanId",
+                table: "CustomerTrainingPlans",
+                column: "TrainingPlanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExerciseSetsExercise_ExerciseId",
+                table: "ExerciseSetsExercise",
+                column: "ExerciseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExerciseSetsExercise_ExerciseSetId",
+                table: "ExerciseSetsExercise",
+                column: "ExerciseSetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrainingPlanExerciseSets_ExerciseSetId",
+                table: "TrainingPlanExerciseSets",
+                column: "ExerciseSetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrainingPlanExerciseSets_TrainingPlanId",
+                table: "TrainingPlanExerciseSets",
+                column: "TrainingPlanId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AspNetRoleClaims",
-                schema: "Identity");
+                name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserClaims",
-                schema: "Identity");
+                name: "AspNetUserClaims");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserLogins",
-                schema: "Identity");
+                name: "AspNetUserLogins");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserRoles",
-                schema: "Identity");
+                name: "AspNetUserRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserTokens",
-                schema: "Identity");
+                name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles",
-                schema: "Identity");
+                name: "CustomerTrainingPlans");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers",
-                schema: "Identity");
+                name: "ExerciseSetsExercise");
+
+            migrationBuilder.DropTable(
+                name: "TrainingPlanExerciseSets");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Exercises");
+
+            migrationBuilder.DropTable(
+                name: "ExerciseSets");
+
+            migrationBuilder.DropTable(
+                name: "TrainingPlans");
         }
     }
 }

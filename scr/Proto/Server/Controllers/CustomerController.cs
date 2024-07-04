@@ -4,9 +4,8 @@
     using DataAccessLayer;
     using DataModel;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
-    using Server.Extensions;
     using Server.Filters;
     using Server.Resources;
 
@@ -16,14 +15,20 @@
     public class CustomerController : ControllerBase<Customer>
     {
         private readonly MyConfigKeys _configKeys;
+        private readonly IUserValidator<IdentityUser> _userValidator;
+        private readonly UserManager<IdentityUser> _manager;
 
         public CustomerController(
             IDatabaseContext context,
+            IUserValidator<IdentityUser> userValidator,
+            UserManager<IdentityUser> manager,
             ILogger<CustomerController> logger,
             MyConfigKeys configKeys)
-            : base(context, logger)
+            : base(context, manager, logger)
         {
             _configKeys = configKeys;
+            _userValidator = userValidator;
+            _manager = manager;
         }
 
         [HttpPut]
@@ -48,57 +53,78 @@
             throw new ServerException(nameof(DataModel.Resources.Errors.DeletingById));
         }
 
-        [HttpDelete("DeleteByGuid")]
-        public async Task<bool?> DeleteByGuidAsync(Guid? uid)
+        public override async Task<Customer?> UpdateAsync(Customer item)
         {
-            if (uid == null || uid == Guid.Empty)
+            var x = new IdentityUser();
+            x.Email = item.Email;
+            IdentityResult y = await _userValidator.ValidateAsync(Manager, x);
+            return null;
+        }
+
+        [HttpDelete("DeleteByGuid")]
+        public async Task<bool?> DeleteByGuidAsync(string id)
+        {
+            if (!ModelState.IsValid)
             {
-                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
+                throw new ServerException("Something go wrong");
             }
 
-            try
+            if (string.IsNullOrWhiteSpace(id))
             {
-                var context = Context.CheckContext();
+                throw new ServerException("Wrong or empty Id");
+            }
 
-                Customer? customer = await FindCustomerAsync(uid, context);
-                context.Customers.Remove(customer!);
+            if (User.IsInRole("Admin"))
+            {
+                throw new ServerException("This user cannot be deleted");
+            }
 
-                var changedCount = await context.SaveChangesAsync();
-                if (changedCount != 1)
-                {
-                    throw new InternalServerException(string.Format(nameof(DataModel.Resources.Errors.NotSaved), typeof(Customer).Name));
-                }
+            var user = await _manager.FindByIdAsync(id);
 
-                return true;
-            }
-            catch (ServerException)
-            {
-                throw;
-            }
-            catch (InternalServerException)
-            {
-                throw;
-            }
-            catch (Exception)
-            {
-                throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
-            }
+            return true;
+           //IdentityResult s = await _manager.DeleteAsync(user);
+
+
+            //if (uid == null || uid == Guid.Empty)
+            //{
+            //    throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
+            //}
+
+            //try
+            //{
+            //    var context = Context.CheckContext();
+
+            //    Customer? customer = await FindCustomerAsync(uid, context);
+            //    context.Customers.Remove(customer!);
+
+            //    var changedCount = await context.SaveChangesAsync();
+            //    if (changedCount != 1)
+            //    {
+            //        throw new InternalServerException(string.Format(nameof(DataModel.Resources.Errors.NotSaved), typeof(Customer).Name));
+            //    }
+
+            //    return true;
+            //}
+            //catch (ServerException)
+            //{
+            //    throw;
+            //}
+            //catch (InternalServerException)
+            //{
+            //    throw;
+            //}
+            //catch (Exception)
+            //{
+            //    throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
+            //}
         }
 
         [HttpGet]
-        public async Task<Customer?> GetCustomerAsync(Guid? uid)
+        public async Task<Customer?> GetCustomerAsync()
         {
-            if (uid == null || uid == Guid.Empty)
-            {
-                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
-            }
-
             try
             {
-                var context = Context.CheckContext();
-
-                Customer? customer = await FindCustomerAsync(uid, context);
-                return customer;
+                return new Customer();
             }
             catch (ServerException)
             {
@@ -140,47 +166,5 @@
 
         #endregion
 
-        //[HttpPost("Login")]
-        //[AllowAnonymous]
-        //public async Task<ActionResult> Login([FromBody] LoginModel model)
-        //{
-        //    var configKeys = _configKeys;
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    // var customer = await customerService.AuthenticateAsync(model.UserEmail, model.Password);
-
-        //    // if (customer == null)
-        //    // {
-        //    //    throw new ServerException(nameof(DataModel.Resources.Errors.EmailOrPassword));
-        //    // }
-
-        //    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configKeys.JWTKey));
-        //    var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-        //    var sectoken = new JwtSecurityToken(
-        //        configKeys.JWTIssuer,
-        //        configKeys.JWTIssuer,
-        //        null,
-        //        expires: DateTime.Now.AddMinutes(10),
-        //        signingCredentials: credentials);
-
-        //    var token = new JwtSecurityTokenHandler().WriteToken(sectoken);
-
-        //    return Ok(token);
-        //}
-
-        private static async Task<Customer?> FindCustomerAsync(Guid? uid, IDatabaseContext context)
-        {
-            var customer = await context.Customers.FirstOrDefaultAsync(x => x.UId == uid);
-            if (customer == null)
-            {
-                throw new ServerException(nameof(DataModel.Resources.Errors.Customer_NotFound));
-            }
-
-            return customer;
-        }
     }
 }
