@@ -66,5 +66,6 @@
                 .HasForeignKey(x => x.ExerciseId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
+
     }
 }

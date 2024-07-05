@@ -31,7 +31,7 @@
             services.AddMvc((x) => { x.EnableEndpointRouting = false; });
             services.AddSingleton(_config);
             services.AddSingleton<ExceptionFilter>();
-            services.AddTransient<IUserStore<IdentityUser>, Server.UserStore>();
+            services.AddTransient<IUserStore<IdentityUser>, MyUserStore>();
             services.AddControllers(o =>
             {
                 o.Filters.AddService<ExceptionFilter>();
@@ -72,7 +72,6 @@
             }).AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<DatabaseContext>()
             .AddDefaultTokenProviders();
-
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen((c) =>
             {
@@ -98,7 +97,7 @@
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope())
             {
@@ -146,6 +145,42 @@
                 endpoints.MapSwagger();
             });
             app.UseMvc();
+
+            CreateRolesAsync(serviceProvider).Wait();
+        }
+
+        public async Task CreateRolesAsync(IServiceProvider service)
+        {
+            var roleManager = service.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = service.GetRequiredService<UserManager<IdentityUser>>();
+            string[] roleNames = { "Admin", "User", "Trainer" };
+            IdentityResult roleResult;
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = await roleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+                }
+            }
+
+            var supUser = new IdentityUser
+            {
+                UserName = Configuration["AppSettings:UserName"],
+                Email = Configuration["AppSettings:UserEmail"],
+            };
+
+            string userPwd = Configuration["AppSettings:UserPassword"] ?? string.Empty;
+            var user = await userManager.FindByEmailAsync(Configuration["AppSettings:AdminUserEmail"] ?? string.Empty);
+
+            if (user == null)
+            {
+                var createSupUser = await userManager.CreateAsync(supUser, userPwd);
+                if (createSupUser.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(supUser, "Admin");
+                }
+            }
         }
     }
 }
