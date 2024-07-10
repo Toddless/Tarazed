@@ -11,17 +11,14 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.OpenApi.Models;
     using Server.Filters;
-    using Server.Resources;
 
     public class Startup
     {
-        private readonly MyConfigKeys _config;
 
         public Startup(IConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNull(configuration);
             Configuration = configuration;
-            _config = new MyConfigKeys(configuration);
         }
 
         public IConfiguration Configuration { get; }
@@ -29,9 +26,8 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc((x) => { x.EnableEndpointRouting = false; });
-            services.AddSingleton(_config);
             services.AddSingleton<ExceptionFilter>();
-            services.AddTransient<IUserStore<IdentityUser>, MyUserStore>();
+            services.AddTransient<IUserStore<ApplicationUser>, MyUserStore>();
             services.AddControllers(o =>
             {
                 o.Filters.AddService<ExceptionFilter>();
@@ -41,7 +37,15 @@
 #if !DEBUG
                 options.UseSqlServer(Configuration["DatabaseInfo:ConnectionString"], o => o.EnableRetryOnFailure()));
 #else
-                options.UseSqlServer(Configuration["DatabaseInfo:LocalConnectionString"], o => o.EnableRetryOnFailure()));
+                options.UseSqlServer(
+                    Configuration["DatabaseInfo:LocalConnectionString"],
+                    sqlServerOptionsAction: sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 10,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorNumbersToAdd: null);
+                }));
 #endif
 
             #region 
@@ -58,11 +62,12 @@
             //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.JWTKey)),
             //    };
             //})
+            //services.AddAuthentication().AddJwtBearer();
             #endregion
 
-            services.AddAuthentication().AddJwtBearer();
+            services.AddAuthentication().AddBearerToken();
             services.AddAuthorization();
-            services.AddIdentityApiEndpoints<IdentityUser>(o =>
+            services.AddIdentityApiEndpoints<ApplicationUser>(o =>
             {
                 o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(20);
                 o.Password.RequiredLength = 5;
@@ -72,6 +77,7 @@
             }).AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<DatabaseContext>()
             .AddDefaultTokenProviders();
+            services.AddHttpContextAccessor();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen((c) =>
             {
@@ -103,7 +109,6 @@
             {
                 var context = serviceScope?.ServiceProvider.GetRequiredService<DatabaseContext>();
 
-                // context?.Database.EnsureCreated();
                 if (!context.Database.IsInMemory())
                 {
                     context?.Database.Migrate();
@@ -141,7 +146,7 @@
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapIdentityApi<IdentityUser>();
+                endpoints.MapIdentityApi<ApplicationUser>();
                 endpoints.MapSwagger();
             });
             app.UseMvc();
@@ -149,10 +154,9 @@
             CreateRolesAsync(serviceProvider).Wait();
         }
 
-        public async Task CreateRolesAsync(IServiceProvider service)
+        private async Task CreateRolesAsync(IServiceProvider service)
         {
             var roleManager = service.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = service.GetRequiredService<UserManager<IdentityUser>>();
             string[] roleNames = { "Admin", "User", "Trainer" };
             IdentityResult roleResult;
             foreach (var roleName in roleNames)
@@ -160,25 +164,11 @@
                 var roleExist = await roleManager.RoleExistsAsync(roleName);
                 if (!roleExist)
                 {
-                    roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
-                }
-            }
-
-            var supUser = new IdentityUser
-            {
-                UserName = Configuration["AppSettings:UserName"],
-                Email = Configuration["AppSettings:UserEmail"],
-            };
-
-            string userPwd = Configuration["AppSettings:UserPassword"] ?? string.Empty;
-            var user = await userManager.FindByEmailAsync(Configuration["AppSettings:AdminUserEmail"] ?? string.Empty);
-
-            if (user == null)
-            {
-                var createSupUser = await userManager.CreateAsync(supUser, userPwd);
-                if (createSupUser.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(supUser, "Admin");
+                    var role = new IdentityRole(roleName)
+                    {
+                        ConcurrencyStamp = Guid.NewGuid().ToString(),
+                    };
+                    roleResult = await roleManager.CreateAsync(role);
                 }
             }
         }

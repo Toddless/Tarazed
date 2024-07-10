@@ -1,4 +1,15 @@
 ﻿Add-Migration -Context DatabaseContext -Project DataAccessLayer
+Update-Database <previous-migration-name>
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,15 +1,19 @@
 ﻿namespace DataModel
 {
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
     using DataModel.Resources;
 
-    public class TrainingPlan : IEntity
+    public class TrainingPlan : IEntity// , IForeignKey<TOwner>
+
+        // where TOwner : class, IEntity, new()
     {
         [Required(ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.FieldIsRequired))]
         [MinLength(4, ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.FieldIsToShort))]
         [MaxLength(50, ErrorMessageResourceType = typeof(Errors), ErrorMessage = nameof(Errors.FieldIsToLong))]
         public string Name { get; set; } = string.Empty;
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public long Id { get; set; }
     }

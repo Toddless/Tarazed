@@ -2,6 +2,6 @@
 {
     public interface IMappingEntity
     {
-        void CreateMapping(long souceId, long targetId);
+        void CreateMapping(long userId, long trainingsPlanId);
     }
 }

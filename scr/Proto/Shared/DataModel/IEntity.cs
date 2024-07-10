@@ -7,4 +7,10 @@
         [Key]
         long Id { get; set; }
     }
+
+    // public interface IForeignKey<TOther>{
+
+    // long ForeignKey { get; set; }
+
+    // }
 }

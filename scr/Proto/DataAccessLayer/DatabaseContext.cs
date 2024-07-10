@@ -5,7 +5,8 @@
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
 
-    public class DatabaseContext : IdentityDbContext<IdentityUser, IdentityRole, string>, IDatabaseContext
+    public class DatabaseContext
+        : IdentityDbContext<ApplicationUser, IdentityRole, string>, IDatabaseContext
     {
         public DatabaseContext(DbContextOptions<DatabaseContext> options)
             : base(options)
@@ -29,6 +30,39 @@
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Ignore<Customer>();
+            #region
+            //modelBuilder.Entity<IdentityUserRole<Guid>>()
+            //    .HasKey(p => new
+            //    {
+            //        p.UserId,
+            //        p.RoleId,
+            //    });
+
+            //modelBuilder.Entity<ApplicationUser>(b =>
+            //{
+            //    b.HasMany(e => e.Tokens)
+            //    .WithOne(e => e.User)
+            //    .HasForeignKey(ul => ul.UserId)
+            //    .IsRequired();
+
+            //    b.HasMany(e => e.UserRoles)
+            //    .WithOne(e => e.User)
+            //    .HasForeignKey(ur => ur.UserId)
+            //    .IsRequired();
+            //});
+
+            //modelBuilder.Entity<ApplicationRole>(b =>
+            //{
+            //    b.HasMany(e => e.UserRole)
+            //    .WithOne(e => e.Role)
+            //    .HasForeignKey(ul => ul.RoleId)
+            //    .IsRequired();
+            //});
+            #endregion
+
+            modelBuilder.Entity<ApplicationUser>()
+                .Property(e => e.Id)
+                .ValueGeneratedOnAdd();
 
             modelBuilder.Entity<CustomerTrainingPlan>()
                 .HasOne(x => x.TrainingPlan)
@@ -37,8 +71,9 @@
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<CustomerTrainingPlan>()
-                .HasOne<IdentityUser>()
+                .HasOne<ApplicationUser>()
                 .WithMany()
+                .HasPrincipalKey(x => x.Id)
                 .HasForeignKey(x => x.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -66,6 +101,5 @@
                 .HasForeignKey(x => x.ExerciseId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
-
     }
 }

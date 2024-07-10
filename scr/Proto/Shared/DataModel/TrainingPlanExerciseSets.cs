@@ -3,7 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public class TrainingPlanExerciseSets
+    public class TrainingPlanExerciseSets : IMappingEntity
     {
         [Key]
         public long Id { get; set; }
@@ -17,5 +17,11 @@
         public TrainingPlan? TrainingPlan { get; set; }
 
         public ExerciseSet? ExerciseSet { get; set; }
+
+        public void CreateMapping(long exerciseSetId, long trainingsPlanId)
+        {
+            ExerciseSetId = exerciseSetId;
+            TrainingPlanId = trainingsPlanId;
+        }
     }
 }
