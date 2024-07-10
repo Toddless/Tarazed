@@ -6,42 +6,42 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
+    using Server.Extensions;
+    using Server.Filters;
 
     public class TrainingController
-        : AbstractRelationController<ExerciseSet,
-          TrainingPlan,
-          TrainingPlanExerciseSets>
+        : AbstractRelationController<TrainingPlan,
+          ApplicationUser>
     {
+        private readonly UserManager<ApplicationUser> _manager;
+
         public TrainingController(
-            UserManager<ApplicationUser> manager,
             IDatabaseContext context,
+            UserManager<ApplicationUser> manager,
             ILogger<TrainingController> logger)
-            : base(manager, context, logger)
+            : base(context, logger)
         {
+            _manager = manager;
         }
 
         [HttpPut]
-        public override Task<TrainingPlanExerciseSets?> CreateAsync(TrainingPlanExerciseSetsDto item)
+        public override async Task<TrainingPlan?> CreateAsync(TrainingPlan item)
         {
-
-            var trainingsplan
-            return base.CreateAsync(item.Export(), item.TrainingPlanId);
-        }
-    }
-
-    class TrainingPlanExerciseSetsDto
-    {
-        public string ExcersiseSetName { get; set; }
-        public DateTime CompletionDate { get; set; }
-
-        public long TrainingPlanId { get; set; }
-
-        public ExerciseSet Export()
-        {
-            return new ExerciseSet()
+            try
             {
-                CompletionDate = this.CompletionDate,
-                Name = this.ExcersiseSetName,
+                var currentUser = await _manager.GetUserAsync(User);
+                if (currentUser == null)
+                {
+                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                }
+
+                var customer = new Customer { Ids = currentUser.Ids };
+                item.CustomerId = customer.Ids;
+                return await base.CreateAsync(item);
+            }
+            catch (ServerException)
+            {
+                throw;
             }
         }
     }

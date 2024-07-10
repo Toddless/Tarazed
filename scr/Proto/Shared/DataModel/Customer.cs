@@ -12,6 +12,6 @@
 
         public string UId { get; set; } = Guid.NewGuid().ToString();
 
-        public long Id { get; set; }
+        public long Ids { get; set; }
     }
 }

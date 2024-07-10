@@ -29,6 +29,8 @@ namespace DataAccessLayer.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
+                    Ids = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -48,50 +50,7 @@ namespace DataAccessLayer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Exercises",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Reps = table.Column<int>(type: "int", nullable: false),
-                    Set = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Weight = table.Column<double>(type: "float", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(800)", maxLength: 800, nullable: false),
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Exercises", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExerciseSets",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CompletionDate = table.Column<long>(type: "bigint", nullable: true),
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExerciseSets", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TrainingPlans",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TrainingPlans", x => x.Id);
+                    table.UniqueConstraint("AK_AspNetUsers_Ids", x => x.Ids);
                 });
 
             migrationBuilder.CreateTable(
@@ -201,80 +160,67 @@ namespace DataAccessLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ExerciseSetsExercise",
+                name: "TrainingPlans",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Ids = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ExerciseSetId = table.Column<long>(type: "bigint", nullable: false),
-                    ExerciseId = table.Column<long>(type: "bigint", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CustomerId = table.Column<long>(type: "bigint", nullable: false),
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExerciseSetsExercise", x => x.Id);
+                    table.PrimaryKey("PK_TrainingPlans", x => x.Ids);
                     table.ForeignKey(
-                        name: "FK_ExerciseSetsExercise_ExerciseSets_ExerciseSetId",
-                        column: x => x.ExerciseSetId,
-                        principalTable: "ExerciseSets",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExerciseSetsExercise_Exercises_ExerciseId",
-                        column: x => x.ExerciseId,
-                        principalTable: "Exercises",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CustomerTrainingPlans",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TrainingPlanId = table.Column<long>(type: "bigint", nullable: false),
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CustomerTrainingPlans", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CustomerTrainingPlans_AspNetUsers_CustomerId",
+                        name: "FK_TrainingPlans_AspNetUsers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CustomerTrainingPlans_TrainingPlans_TrainingPlanId",
-                        column: x => x.TrainingPlanId,
-                        principalTable: "TrainingPlans",
-                        principalColumn: "Id",
+                        principalColumn: "Ids",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "TrainingPlanExerciseSets",
+                name: "ExerciseSets",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Ids = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CompletionDate = table.Column<long>(type: "bigint", nullable: true),
                     TrainingPlanId = table.Column<long>(type: "bigint", nullable: false),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExerciseSets", x => x.Ids);
+                    table.ForeignKey(
+                        name: "FK_ExerciseSets_TrainingPlans_TrainingPlanId",
+                        column: x => x.TrainingPlanId,
+                        principalTable: "TrainingPlans",
+                        principalColumn: "Ids",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Exercises",
+                columns: table => new
+                {
+                    Ids = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Reps = table.Column<int>(type: "int", nullable: false),
+                    Set = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Weight = table.Column<double>(type: "float", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(800)", maxLength: 800, nullable: false),
                     ExerciseSetId = table.Column<long>(type: "bigint", nullable: false),
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TrainingPlanExerciseSets", x => x.Id);
+                    table.PrimaryKey("PK_Exercises", x => x.Ids);
                     table.ForeignKey(
-                        name: "FK_TrainingPlanExerciseSets_ExerciseSets_ExerciseSetId",
+                        name: "FK_Exercises_ExerciseSets_ExerciseSetId",
                         column: x => x.ExerciseSetId,
                         principalTable: "ExerciseSets",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TrainingPlanExerciseSets_TrainingPlans_TrainingPlanId",
-                        column: x => x.TrainingPlanId,
-                        principalTable: "TrainingPlans",
-                        principalColumn: "Id",
+                        principalColumn: "Ids",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -318,34 +264,19 @@ namespace DataAccessLayer.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CustomerTrainingPlans_CustomerId",
-                table: "CustomerTrainingPlans",
+                name: "IX_Exercises_ExerciseSetId",
+                table: "Exercises",
+                column: "ExerciseSetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExerciseSets_TrainingPlanId",
+                table: "ExerciseSets",
+                column: "TrainingPlanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrainingPlans_CustomerId",
+                table: "TrainingPlans",
                 column: "CustomerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CustomerTrainingPlans_TrainingPlanId",
-                table: "CustomerTrainingPlans",
-                column: "TrainingPlanId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ExerciseSetsExercise_ExerciseId",
-                table: "ExerciseSetsExercise",
-                column: "ExerciseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ExerciseSetsExercise_ExerciseSetId",
-                table: "ExerciseSetsExercise",
-                column: "ExerciseSetId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TrainingPlanExerciseSets_ExerciseSetId",
-                table: "TrainingPlanExerciseSets",
-                column: "ExerciseSetId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TrainingPlanExerciseSets_TrainingPlanId",
-                table: "TrainingPlanExerciseSets",
-                column: "TrainingPlanId");
         }
 
         /// <inheritdoc />
@@ -367,28 +298,19 @@ namespace DataAccessLayer.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CustomerTrainingPlans");
-
-            migrationBuilder.DropTable(
-                name: "ExerciseSetsExercise");
-
-            migrationBuilder.DropTable(
-                name: "TrainingPlanExerciseSets");
+                name: "Exercises");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "Exercises");
 
             migrationBuilder.DropTable(
                 name: "ExerciseSets");
 
             migrationBuilder.DropTable(
                 name: "TrainingPlans");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

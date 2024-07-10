@@ -94,29 +94,6 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("DataModel.CustomerTrainingPlan", b =>
-                {
-                    b.Property<long>("Ids")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Ids"));
-
-                    b.Property<long>("CustomerId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TrainingPlanId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Ids");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("TrainingPlanId");
-
-                    b.ToTable("CustomerTrainingPlans");
-                });
-
             modelBuilder.Entity("DataModel.Exercise", b =>
                 {
                     b.Property<long>("Ids")
@@ -129,6 +106,9 @@ namespace DataAccessLayer.Migrations
                         .IsRequired()
                         .HasMaxLength(800)
                         .HasColumnType("nvarchar(800)");
+
+                    b.Property<long>("ExerciseSetId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -145,6 +125,8 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("Ids");
+
+                    b.HasIndex("ExerciseSetId");
 
                     b.ToTable("Exercises");
                 });
@@ -165,32 +147,14 @@ namespace DataAccessLayer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<long>("TrainingPlanId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Ids");
+
+                    b.HasIndex("TrainingPlanId");
 
                     b.ToTable("ExerciseSets");
-                });
-
-            modelBuilder.Entity("DataModel.ExerciseSetExercise", b =>
-                {
-                    b.Property<long>("Ids")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Ids"));
-
-                    b.Property<long>("ExerciseId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ExerciseSetId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Ids");
-
-                    b.HasIndex("ExerciseId");
-
-                    b.HasIndex("ExerciseSetId");
-
-                    b.ToTable("ExerciseSetsExercise");
                 });
 
             modelBuilder.Entity("DataModel.TrainingPlan", b =>
@@ -201,6 +165,9 @@ namespace DataAccessLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Ids"));
 
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -208,30 +175,9 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Ids");
 
+                    b.HasIndex("CustomerId");
+
                     b.ToTable("TrainingPlans");
-                });
-
-            modelBuilder.Entity("DataModel.TrainingPlanExerciseSets", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("ExerciseSetId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TrainingPlanId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExerciseSetId");
-
-                    b.HasIndex("TrainingPlanId");
-
-                    b.ToTable("TrainingPlanExerciseSets");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -367,7 +313,29 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DataModel.CustomerTrainingPlan", b =>
+            modelBuilder.Entity("DataModel.Exercise", b =>
+                {
+                    b.HasOne("DataModel.ExerciseSet", "ExerciseSet")
+                        .WithMany()
+                        .HasForeignKey("ExerciseSetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ExerciseSet");
+                });
+
+            modelBuilder.Entity("DataModel.ExerciseSet", b =>
+                {
+                    b.HasOne("DataModel.TrainingPlan", "TrainingPlan")
+                        .WithMany()
+                        .HasForeignKey("TrainingPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TrainingPlan");
+                });
+
+            modelBuilder.Entity("DataModel.TrainingPlan", b =>
                 {
                     b.HasOne("DataAccessLayer.ApplicationUser", null)
                         .WithMany()
@@ -375,52 +343,6 @@ namespace DataAccessLayer.Migrations
                         .HasPrincipalKey("Ids")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("DataModel.TrainingPlan", "TrainingPlan")
-                        .WithMany()
-                        .HasForeignKey("TrainingPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TrainingPlan");
-                });
-
-            modelBuilder.Entity("DataModel.ExerciseSetExercise", b =>
-                {
-                    b.HasOne("DataModel.Exercise", "Exercise")
-                        .WithMany()
-                        .HasForeignKey("ExerciseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataModel.ExerciseSet", "ExerciseSet")
-                        .WithMany()
-                        .HasForeignKey("ExerciseSetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Exercise");
-
-                    b.Navigation("ExerciseSet");
-                });
-
-            modelBuilder.Entity("DataModel.TrainingPlanExerciseSets", b =>
-                {
-                    b.HasOne("DataModel.ExerciseSet", "ExerciseSet")
-                        .WithMany()
-                        .HasForeignKey("ExerciseSetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataModel.TrainingPlan", "TrainingPlan")
-                        .WithMany()
-                        .HasForeignKey("TrainingPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ExerciseSet");
-
-                    b.Navigation("TrainingPlan");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

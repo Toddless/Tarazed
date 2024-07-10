@@ -5,7 +5,7 @@
     public interface IEntity
     {
         [Key]
-        long Id { get; set; }
+        long Ids { get; set; }
     }
 
     // public interface IForeignKey<TOther>{

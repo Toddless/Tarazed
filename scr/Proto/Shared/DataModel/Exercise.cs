@@ -1,6 +1,7 @@
 ﻿namespace DataModel
 {
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
     using DataModel.Resources;
 
     public class Exercise : IEntity
@@ -20,11 +21,16 @@
         public double Weight { get; set; }
 
         [Key]
-        public long Id { get; set; }
+        public long Ids { get; set; }
 
         [Required(ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.DescriptionIsRequired))]
         [MinLength(5, ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.DescriptionIsToShort))]
         [MaxLength(800, ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.DescriptionsIsToLong))]
         public string Description { get; set; } = string.Empty;
+
+        [ForeignKey(nameof(ExerciseSet))]
+        public long ExerciseSetId { get; set; }
+
+        internal ExerciseSet? ExerciseSet { get; set; }
     }
 }

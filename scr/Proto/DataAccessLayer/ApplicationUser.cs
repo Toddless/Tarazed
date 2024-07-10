@@ -8,6 +8,6 @@
     public class ApplicationUser : IdentityUser, IEntity
     {
         [Key, Column(Order = 1)]
-        public long Id { get; set; }
+        public long Ids { get; set; }
     }
 }

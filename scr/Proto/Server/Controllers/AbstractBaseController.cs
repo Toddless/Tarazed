@@ -31,7 +31,7 @@
         [HttpPut]
         public async virtual Task<TU?> CreateAsync(TU item)
         {
-            if (item.Id != 0)
+            if (item.Ids != 0)
             {
                 throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
             }
@@ -68,7 +68,7 @@
         [HttpPost]
         public async virtual Task<TU?> UpdateAsync(TU item)
         {
-            if (item == null || item.Id == 0)
+            if (item == null || item.Ids == 0)
             {
                 throw new ServerException(nameof(DataModel.Resources.Errors.Exercise_NotFound));
             }
@@ -115,7 +115,7 @@
                 var context = _context.CheckContext();
 
                 var set = context.Set<TU>();
-                var existingItem = await set.FirstOrDefaultAsync(x => x.Id == id);
+                var existingItem = await set.FirstOrDefaultAsync(x => x.Ids == id);
                 if (existingItem == null)
                 {
                     throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));

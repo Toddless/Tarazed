@@ -4,9 +4,7 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using DataModel.Resources;
 
-    public class TrainingPlan : IEntity// , IForeignKey<TOwner>
-
-        // where TOwner : class, IEntity, new()
+    public class TrainingPlan : IEntity
     {
         [Required(ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.FieldIsRequired))]
         [MinLength(4, ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.FieldIsToShort))]
@@ -15,6 +13,9 @@
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public long Id { get; set; }
+        public long Ids { get; set; }
+
+        [ForeignKey("AspNetUsers")]
+        public long CustomerId { get; set; }
     }
 }

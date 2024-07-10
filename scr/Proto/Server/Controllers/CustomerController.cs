@@ -49,7 +49,7 @@
                 throw new ServerException(nameof(DataModel.Resources.Errors.ContextNotSet));
             }
 
-            if (x.Id != item.Id)
+            if (x.Ids != item.Ids)
             {
                 throw new ServerException(nameof(DataModel.Resources.Errors.DeletingById));
             }

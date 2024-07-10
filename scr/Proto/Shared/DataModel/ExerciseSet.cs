@@ -1,6 +1,7 @@
 ﻿namespace DataModel
 {
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
     using DataModel.Resources;
 
     public class ExerciseSet : IEntity
@@ -11,11 +12,16 @@
         public string Name { get; set; } = string.Empty;
 
         [Key]
-        public long Id { get; set; }
+        public long Ids { get; set; }
 
         /// <summary>
         /// Gets or sets the Date of completion in UTC ticks.
         /// </summary>
         public long? CompletionDate { get; set; }
+
+        [ForeignKey(nameof(TrainingPlan))]
+        public long TrainingPlanId { get; set; }
+
+        internal TrainingPlan? TrainingPlan { get; set; }
     }
 }

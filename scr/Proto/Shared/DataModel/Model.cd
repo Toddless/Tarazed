@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="DataModel.Exercise">
-    <Position X="1" Y="7.75" Width="1.5" />
+    <Position X="0.75" Y="6.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAgBAAAAAAAAAQAADAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Exercise.cs</FileName>
@@ -9,49 +9,26 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DataModel.TrainingPlan">
-    <Position X="1" Y="3.5" Width="1.5" />
+    <Position X="0.75" Y="2.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAABAAAAAAAAAAAAA=</HashCode>
       <FileName>TrainingPlan.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DataModel.ExerciseSet">
-    <Position X="1" Y="5.5" Width="1.5" />
+    <Position X="0.75" Y="4" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAABAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACAAAAAAAAAABAAAgAAAQAAAAAAAAAQAAAAAAAAAA=</HashCode>
       <FileName>ExerciseSet.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DataModel.Customer">
-    <Position X="1" Y="1" Width="1.5" />
+    <Position X="0.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAACAAAAAAAAAAAAQAAAAAAAAAgAAAAAAAEAA=</HashCode>
+      <HashCode>AAACAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAA=</HashCode>
       <FileName>Customer.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="DataModel.CustomerTrainingPlan">
-    <Position X="3.75" Y="1.75" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAECAAAAAAAAAAAAAAgAAAAAAAAAABAAQAAAAAAAAAA=</HashCode>
-      <FileName>CustomerTrainingPlan.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="DataModel.TrainingPlanExerciseSets">
-    <Position X="3.75" Y="4" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAgCAAAAAAAAAAAAAAgAAAAAAgAAAAAAQAAAAAAAAAA=</HashCode>
-      <FileName>TrainingPlanExerciseSets.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="DataModel.ExerciseSetExercise">
-    <Position X="3.75" Y="6.75" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAgCAAAAAAAABAAAAAEAAAAAEgAAABAAAAAAAAAAAAA=</HashCode>
-      <FileName>ExerciseSetExercise.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>

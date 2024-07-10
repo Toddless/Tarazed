@@ -39,10 +39,6 @@ Update-Database <previous-migration-name>
 
 
 
-
-
-
-
 private string GenerateSQL(string action, string triggerAction)
         {
             if (string.IsNullOrWhiteSpace(action) || triggerAction == null)
