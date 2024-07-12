@@ -13,9 +13,9 @@
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public long Ids { get; set; }
+        public long PrimaryId { get; set; }
 
         [ForeignKey("AspNetUsers")]
-        public long CustomerId { get; set; }
+        public string CustomerId { get; set; } = string.Empty;
     }
 }

@@ -24,45 +24,24 @@
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Ignore<Customer>();
-            #region
-            //modelBuilder.Entity<IdentityUserRole<Guid>>()
-            //    .HasKey(p => new
-            //    {
-            //        p.UserId,
-            //        p.RoleId,
-            //    });
-
-            //modelBuilder.Entity<ApplicationUser>(b =>
-            //{
-            //    b.HasMany(e => e.Tokens)
-            //    .WithOne(e => e.User)
-            //    .HasForeignKey(ul => ul.UserId)
-            //    .IsRequired();
-
-            //    b.HasMany(e => e.UserRoles)
-            //    .WithOne(e => e.User)
-            //    .HasForeignKey(ur => ur.UserId)
-            //    .IsRequired();
-            //});
-
-            //modelBuilder.Entity<ApplicationRole>(b =>
-            //{
-            //    b.HasMany(e => e.UserRole)
-            //    .WithOne(e => e.Role)
-            //    .HasForeignKey(ul => ul.RoleId)
-            //    .IsRequired();
-            //});
-            #endregion
-
-            modelBuilder.Entity<ApplicationUser>()
-                .Property(e => e.Ids)
-                .ValueGeneratedOnAdd();
 
             modelBuilder.Entity<TrainingPlan>()
                 .HasOne<ApplicationUser>()
                 .WithMany()
-                .HasPrincipalKey(x => x.Ids)
+                .HasPrincipalKey(x => x.Id)
                 .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ExerciseSet>()
+                .HasOne(o => o.TrainingPlan)
+                .WithMany()
+                .HasForeignKey(o => o.TrainingPlanId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Exercise>()
+                .HasOne(o => o.ExerciseSet)
+                .WithMany()
+                .HasForeignKey(o => o.ExerciseSetId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

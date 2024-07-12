@@ -12,7 +12,7 @@
         public string Name { get; set; } = string.Empty;
 
         [Key]
-        public long Ids { get; set; }
+        public long PrimaryId { get; set; }
 
         /// <summary>
         /// Gets or sets the Date of completion in UTC ticks.
@@ -22,6 +22,9 @@
         [ForeignKey(nameof(TrainingPlan))]
         public long TrainingPlanId { get; set; }
 
+        public string CustomerId { get; set; } = string.Empty;
+
         internal TrainingPlan? TrainingPlan { get; set; }
+
     }
 }

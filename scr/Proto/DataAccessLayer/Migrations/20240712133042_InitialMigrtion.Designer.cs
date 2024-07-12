@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240710105548_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240712133042_InitialMigrtion")]
+    partial class InitialMigrtion
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,13 +43,6 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<long>("Ids")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnOrder(1);
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Ids"));
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -99,18 +92,22 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataModel.Exercise", b =>
                 {
-                    b.Property<long>("Ids")
+                    b.Property<long>("PrimaryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Ids"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("PrimaryId"));
+
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(800)
                         .HasColumnType("nvarchar(800)");
 
-                    b.Property<long>("ExerciseSetId")
+                    b.Property<long?>("ExerciseSetId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Name")
@@ -127,7 +124,7 @@ namespace DataAccessLayer.Migrations
                     b.Property<double>("Weight")
                         .HasColumnType("float");
 
-                    b.HasKey("Ids");
+                    b.HasKey("PrimaryId");
 
                     b.HasIndex("ExerciseSetId");
 
@@ -136,14 +133,18 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataModel.ExerciseSet", b =>
                 {
-                    b.Property<long>("Ids")
+                    b.Property<long>("PrimaryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Ids"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("PrimaryId"));
 
                     b.Property<long?>("CompletionDate")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -153,7 +154,7 @@ namespace DataAccessLayer.Migrations
                     b.Property<long>("TrainingPlanId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("Ids");
+                    b.HasKey("PrimaryId");
 
                     b.HasIndex("TrainingPlanId");
 
@@ -162,21 +163,22 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataModel.TrainingPlan", b =>
                 {
-                    b.Property<long>("Ids")
+                    b.Property<long>("PrimaryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Ids"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("PrimaryId"));
 
-                    b.Property<long>("CustomerId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("Ids");
+                    b.HasKey("PrimaryId");
 
                     b.HasIndex("CustomerId");
 
@@ -321,8 +323,7 @@ namespace DataAccessLayer.Migrations
                     b.HasOne("DataModel.ExerciseSet", "ExerciseSet")
                         .WithMany()
                         .HasForeignKey("ExerciseSetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("ExerciseSet");
                 });
@@ -343,7 +344,6 @@ namespace DataAccessLayer.Migrations
                     b.HasOne("DataAccessLayer.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("CustomerId")
-                        .HasPrincipalKey("Ids")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

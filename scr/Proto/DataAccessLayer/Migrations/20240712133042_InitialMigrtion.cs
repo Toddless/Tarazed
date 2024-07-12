@@ -6,7 +6,7 @@ namespace DataAccessLayer.Migrations
     using Microsoft.EntityFrameworkCore.Migrations;
 
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigrtion : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,7 +18,7 @@ namespace DataAccessLayer.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -29,8 +29,6 @@ namespace DataAccessLayer.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Ids = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -45,12 +43,11 @@ namespace DataAccessLayer.Migrations
                     TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                    table.UniqueConstraint("AK_AspNetUsers_Ids", x => x.Ids);
                 });
 
             migrationBuilder.CreateTable(
@@ -61,7 +58,7 @@ namespace DataAccessLayer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -82,7 +79,7 @@ namespace DataAccessLayer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -102,7 +99,7 @@ namespace DataAccessLayer.Migrations
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -120,7 +117,7 @@ namespace DataAccessLayer.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -146,7 +143,7 @@ namespace DataAccessLayer.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -163,19 +160,19 @@ namespace DataAccessLayer.Migrations
                 name: "TrainingPlans",
                 columns: table => new
                 {
-                    Ids = table.Column<long>(type: "bigint", nullable: false)
+                    PrimaryId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CustomerId = table.Column<long>(type: "bigint", nullable: false),
+                    CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TrainingPlans", x => x.Ids);
+                    table.PrimaryKey("PK_TrainingPlans", x => x.PrimaryId);
                     table.ForeignKey(
                         name: "FK_TrainingPlans_AspNetUsers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Ids",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -183,20 +180,21 @@ namespace DataAccessLayer.Migrations
                 name: "ExerciseSets",
                 columns: table => new
                 {
-                    Ids = table.Column<long>(type: "bigint", nullable: false)
+                    PrimaryId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CompletionDate = table.Column<long>(type: "bigint", nullable: true),
                     TrainingPlanId = table.Column<long>(type: "bigint", nullable: false),
+                    CustomerId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExerciseSets", x => x.Ids);
+                    table.PrimaryKey("PK_ExerciseSets", x => x.PrimaryId);
                     table.ForeignKey(
                         name: "FK_ExerciseSets_TrainingPlans_TrainingPlanId",
                         column: x => x.TrainingPlanId,
                         principalTable: "TrainingPlans",
-                        principalColumn: "Ids",
+                        principalColumn: "PrimaryId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -204,23 +202,24 @@ namespace DataAccessLayer.Migrations
                 name: "Exercises",
                 columns: table => new
                 {
-                    Ids = table.Column<long>(type: "bigint", nullable: false)
+                    PrimaryId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Reps = table.Column<int>(type: "int", nullable: false),
                     Set = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Weight = table.Column<double>(type: "float", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(800)", maxLength: 800, nullable: false),
-                    ExerciseSetId = table.Column<long>(type: "bigint", nullable: false),
+                    ExerciseSetId = table.Column<long>(type: "bigint", nullable: true),
+                    CustomerId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Exercises", x => x.Ids);
+                    table.PrimaryKey("PK_Exercises", x => x.PrimaryId);
                     table.ForeignKey(
                         name: "FK_Exercises_ExerciseSets_ExerciseSetId",
                         column: x => x.ExerciseSetId,
                         principalTable: "ExerciseSets",
-                        principalColumn: "Ids",
+                        principalColumn: "PrimaryId",
                         onDelete: ReferentialAction.Cascade);
                 });
 

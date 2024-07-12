@@ -61,69 +61,6 @@ namespace DataModel.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Customer already exists..
-        /// </summary>
-        public static string AlreadyExist {
-            get {
-                return ResourceManager.GetString("AlreadyExist", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Context not set..
-        /// </summary>
-        public static string ContextNotSet {
-            get {
-                return ResourceManager.GetString("ContextNotSet", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An email address is required..
-        /// </summary>
-        public static string Customer_EmailIsRequired {
-            get {
-                return ResourceManager.GetString("Customer_EmailIsRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Customer was not deleted..
-        /// </summary>
-        public static string Customer_NotDeleted {
-            get {
-                return ResourceManager.GetString("Customer_NotDeleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The customer is not found or doesn&apos;t exist..
-        /// </summary>
-        public static string Customer_NotFound {
-            get {
-                return ResourceManager.GetString("Customer_NotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The customer needs to be set..
-        /// </summary>
-        public static string Customer_NotSet {
-            get {
-                return ResourceManager.GetString("Customer_NotSet", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The password needs to be set..
-        /// </summary>
-        public static string Customer_Password {
-            get {
-                return ResourceManager.GetString("Customer_Password", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Deleting by id is not supported..
         /// </summary>
         public static string DeletingById {
@@ -169,24 +106,6 @@ namespace DataModel.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exercise was not deleted..
-        /// </summary>
-        public static string Exercise_NotDeleted {
-            get {
-                return ResourceManager.GetString("Exercise_NotDeleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An exercise is not found or doesn&apos;t exist..
-        /// </summary>
-        public static string Exercise_NotFound {
-            get {
-                return ResourceManager.GetString("Exercise_NotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The Field needs to be set..
         /// </summary>
         public static string FieldIsRequired {
@@ -228,6 +147,15 @@ namespace DataModel.Resources {
         public static string InvalidRequest {
             get {
                 return ResourceManager.GetString("InvalidRequest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not found..
+        /// </summary>
+        public static string NotFound {
+            get {
+                return ResourceManager.GetString("NotFound", resourceCulture);
             }
         }
         

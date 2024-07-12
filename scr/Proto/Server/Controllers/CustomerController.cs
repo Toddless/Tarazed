@@ -1,92 +1,134 @@
 ﻿namespace Server.Controllers
 {
     using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using DataAccessLayer;
     using DataModel;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Server.Extensions;
     using Server.Filters;
-    using Server.Resources;
 
-    [ApiController]
-    [Route("[controller]")]
     public class CustomerController
-        : AbstractBaseController<ApplicationUser>
+        : Controller
     {
-        private readonly MyConfigKeys _configKeys;
         private readonly IUserValidator<ApplicationUser> _userValidator;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> _manager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILogger<CustomerController> _logger;
         private readonly DatabaseContext _context;
 
         public CustomerController(
             DatabaseContext context,
             IUserValidator<ApplicationUser> userValidator,
-            UserManager<ApplicationUser> userManager,
+            UserManager<ApplicationUser> manager,
             ILogger<CustomerController> logger,
-            RoleManager<IdentityRole> roleManager,
-            MyConfigKeys configKeys)
-            : base(context, logger)
+            RoleManager<IdentityRole> roleManager)
         {
+            _logger = logger;
             _context = context;
-            _configKeys = configKeys;
             _userValidator = userValidator;
-            _userManager = userManager;
+            _manager = manager;
             _roleManager = roleManager;
         }
 
-        [HttpDelete("Delete by Id")]
-        public override Task<bool?> DeleteAsync(long? id)
+        [HttpPut("UpdateCustomer")]
+        public async Task<Customer?> UpdateCustomerAsync(Customer customer)
         {
-            throw new ServerException(nameof(DataModel.Resources.Errors.DeletingById));
-        }
-
-        public override async Task<ApplicationUser?> UpdateAsync(ApplicationUser item)
-        {
-            var x = await _userManager.GetUserAsync(User);
-            if (x == null)
+            var currentUser = await _manager.GetUserAsync(User)!;
+            if (currentUser == null)
             {
-                throw new ServerException(nameof(DataModel.Resources.Errors.ContextNotSet));
+                throw new ServerException(nameof(DataModel.Resources.Errors.NotFound));
             }
 
-            if (x.Ids != item.Ids)
+            if (currentUser.Id != customer.UId)
             {
                 throw new ServerException(nameof(DataModel.Resources.Errors.DeletingById));
             }
 
-            x.Email = item.Email;
-            IdentityResult y = await _userValidator.ValidateAsync(_userManager, x);
-            var result = base.UpdateAsync(x);
-            return item;
+            currentUser.Email = customer.Email;
+            try
+            {
+                bool isValid = currentUser.ValidateObject(out List<ValidationResult> results);
+                if (!isValid)
+                {
+                    results.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
+                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                }
+
+                var result = await _manager.UpdateAsync(currentUser);
+                if (!result.Succeeded)
+                {
+                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                }
+            }
+            catch (InternalServerException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
+            }
+
+            customer.Email = currentUser?.Email ?? string.Empty;
+            return customer;
         }
 
-        [HttpDelete("DeleteByGuid")]
-        public async Task<bool?> DeleteByGuidAsync(string id)
+        [HttpDelete("DeleteCustomer")]
+        public async Task<bool?> DeleteCustomerAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                throw new ServerException("Something go wrong");
-            }
-
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ServerException("Wrong or empty Id");
-            }
-
             if (User.IsInRole("Admin"))
             {
                 throw new ServerException("This user cannot be deleted");
             }
 
-            return true;
+            var user = await _manager.GetUserAsync(User);
+            if (user == null)
+            {
+                throw new ServerException("This user cannot be deleted");
+            }
+
+            try
+            {
+                var context = _context.CheckContext();
+
+                var set = context.Set<ApplicationUser>();
+                set.Remove(user);
+                var changedCount = await context.SaveChangesAsync();
+                if (changedCount != 1)
+                {
+                    throw new InternalServerException(string.Format(nameof(DataModel.Resources.Errors.NotSaved), typeof(ApplicationUser).Name));
+                }
+
+                return true;
+            }
+            catch (ServerException)
+            {
+                throw;
+            }
+            catch (InternalServerException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
+            }
         }
 
-        [HttpGet]
+        [HttpGet("GetCustomer")]
         public async Task<Customer?> GetCustomerAsync()
         {
             try
             {
-                return new Customer();
+                var user = await _manager.GetUserAsync(User);
+                return new Customer()
+                {
+                    Email = user?.Email ?? string.Empty,
+                    UId = user?.Id ?? string.Empty,
+                };
             }
             catch (ServerException)
             {

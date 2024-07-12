@@ -4,6 +4,7 @@
     using DataAccessLayer;
     using DataModel;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Server.Extensions;
@@ -15,43 +16,76 @@
         where TU : class, IEntity
     {
         private readonly IDatabaseContext _context;
-
         private readonly ILogger _logger;
+        private readonly UserManager<ApplicationUser> _manager;
 
         public AbstractBaseController(
+            UserManager<ApplicationUser> manager,
             IDatabaseContext context,
             ILogger logger)
         {
             ArgumentNullException.ThrowIfNull(context);
             ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(manager);
+            _manager = manager;
             _context = context;
             _logger = logger;
+        }
+
+        [HttpGet]
+        public async virtual Task<IEnumerable<TU>?> GetAsync(IEnumerable<long>? primaryIds)
+        {
+            try
+            {
+                var context = _context.CheckContext();
+                var currentUser = await _manager.GetUserAsync(User);
+                var userID = currentUser?.Id;
+
+                if (primaryIds?.Any() ?? false)
+                {
+                    return await context.Set<TU>()
+                         .Where(o => primaryIds.Contains(o.PrimaryId) && o.CustomerId == userID)
+                         .ToListAsync();
+                }
+
+                return await context.Set<TU>()
+                    .Where(o => o.CustomerId == userID)
+                    .ToListAsync();
+            }
+            catch (InternalServerException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
+            }
         }
 
         [HttpPut]
         public async virtual Task<TU?> CreateAsync(TU item)
         {
-            if (item.Ids != 0)
-            {
-                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
-            }
-
-            bool isValid = item.ValidateObject(out List<ValidationResult> result);
-            if (!isValid)
-            {
-                result.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
-                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
-            }
-
             try
             {
-                var context = _context.CheckContext();
-                context.Set<TU>().Add(item);
-                var changedCount = await context.SaveChangesAsync();
-                if (changedCount != 1)
+                var currentUser = await _manager.GetUserAsync(User);
+                if (item.PrimaryId != 0)
                 {
-                    throw new InternalServerException(string.Format(nameof(DataModel.Resources.Errors.NotSaved), typeof(TU).Name));
+                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
                 }
+
+                bool isValid = item.ValidateObject(out List<ValidationResult> result);
+                if (!isValid)
+                {
+                    result.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
+                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                }
+
+                var context = _context.CheckContext();
+
+                item.CustomerId = currentUser!.Id;
+
+                context.Set<TU>().Add(item);
+                await TrackChanges(context);
 
                 return item;
             }
@@ -68,28 +102,35 @@
         [HttpPost]
         public async virtual Task<TU?> UpdateAsync(TU item)
         {
-            if (item == null || item.Ids == 0)
-            {
-                throw new ServerException(nameof(DataModel.Resources.Errors.Exercise_NotFound));
-            }
-
-            bool isValid = item.ValidateObject(out List<ValidationResult> results);
-            if (!isValid)
-            {
-                results.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
-                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
-            }
-
             try
             {
-                var context = _context.CheckContext();
-                context.Set<TU>().Update(item);
-                var changedCount = await context.SaveChangesAsync();
-                if (changedCount != 1)
+                if (item == null || item.PrimaryId == 0)
                 {
-                    throw new InternalServerException(string.Format(nameof(DataModel.Resources.Errors.NotSaved), typeof(TU).Name));
+                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
                 }
 
+                bool isValid = item.ValidateObject(out List<ValidationResult> results);
+                if (!isValid)
+                {
+                    results.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
+                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                }
+
+                var context = _context.CheckContext();
+                var currentUser = await _manager.GetUserAsync(User);
+                var set = context.Set<TU>();
+                var itemExists = await set.AsNoTracking()
+                    .Where(o => o.PrimaryId == item.PrimaryId && o.CustomerId == currentUser!.Id)
+                    .FirstOrDefaultAsync();
+
+                if (itemExists == null)
+                {
+                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                }
+
+                item.CustomerId = currentUser.Id;
+                set.Update(item);
+                await TrackChanges(context);
                 return item;
             }
             catch (InternalServerException)
@@ -103,30 +144,28 @@
         }
 
         [HttpDelete]
-        public virtual async Task<bool?> DeleteAsync(long? id)
+        public virtual async Task<bool> DeleteAsync(long? id)
         {
-            if (id == null || id == 0)
-            {
-                throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
-            }
-
             try
             {
-                var context = _context.CheckContext();
-
-                var set = context.Set<TU>();
-                var existingItem = await set.FirstOrDefaultAsync(x => x.Ids == id);
-                if (existingItem == null)
+                if (id == null || id == 0)
                 {
                     throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
                 }
 
-                set.Remove(existingItem);
-                var changedCount = await context.SaveChangesAsync();
-                if (changedCount != 1)
+                var context = _context.CheckContext();
+                var currentUser = await _manager.GetUserAsync(User);
+                var user = currentUser.Id;
+
+                var set = context.Set<TU>();
+                var itemExists = await set.FirstOrDefaultAsync(x => x.PrimaryId == id && x.CustomerId == user);
+                if (itemExists == null)
                 {
-                    throw new InternalServerException(string.Format(nameof(DataModel.Resources.Errors.NotSaved), typeof(TU).Name));
+                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
                 }
+
+                set.Remove(itemExists);
+                await TrackChanges(context);
 
                 return true;
             }
@@ -141,6 +180,15 @@
             catch (Exception)
             {
                 throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
+            }
+        }
+
+        private static async Task TrackChanges(IDatabaseContext context)
+        {
+            var changedCount = await context.SaveChangesAsync();
+            if (changedCount != 1)
+            {
+                throw new InternalServerException(string.Format(nameof(DataModel.Resources.Errors.NotSaved), typeof(TU).Name));
             }
         }
     }

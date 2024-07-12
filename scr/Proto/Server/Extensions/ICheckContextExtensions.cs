@@ -9,7 +9,7 @@
         {
             if (context == null)
             {
-                throw new InternalServerException(nameof(DataModel.Resources.Errors.ContextNotSet));
+                throw new InternalServerException(nameof(DataModel.Resources.Errors.NotFound));
             }
 
             return context;

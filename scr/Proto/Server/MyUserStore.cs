@@ -20,26 +20,26 @@
             _roleManager = roleManager;
         }
 
-        //public override async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken = default)
-        //{
-        //    var result = await base.CreateAsync(user, cancellationToken);
-        //    if (!result.Succeeded)
-        //    {
-        //        return result;
-        //    }
+        public override async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken = default)
+        {
+            var result = await base.CreateAsync(user, cancellationToken);
+            if (!result.Succeeded)
+            {
+                return result;
+            }
 
-        //    var roleName = "User";
-        //    var userRole = await _roleManager.FindByNameAsync(roleName);
-        //    if (userRole == null)
-        //    {
-        //        return IdentityResult.Failed(new IdentityError { Description = $"{roleName} role not found." });
-        //    }
+            var roleName = "User";
+            var userRole = await _roleManager.FindByNameAsync(roleName);
+            if (userRole == null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = $"{roleName} role not found." });
+            }
 
-        //    var userEntity = new IdentityUserRole<string> { UserId = user., RoleId = userRole.Id };
-        //    _context.UserRoles.Add(userEntity);
-        //    await _context.SaveChangesAsync(cancellationToken);
+            var userEntity = new IdentityUserRole<string> { UserId = user.Id, RoleId = userRole.Id };
+            _context.UserRoles.Add(userEntity);
+            await _context.SaveChangesAsync(cancellationToken);
 
-        //    return IdentityResult.Success;
-        //}
+            return IdentityResult.Success;
+        }
     }
 }

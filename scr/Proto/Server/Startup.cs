@@ -14,7 +14,6 @@
 
     public class Startup
     {
-
         public Startup(IConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -38,19 +37,12 @@
                 options.UseSqlServer(Configuration["DatabaseInfo:ConnectionString"], o => o.EnableRetryOnFailure()));
 #else
                 options.UseSqlServer(
-                    Configuration["DatabaseInfo:LocalConnectionString"],
-                    sqlServerOptionsAction: sqlOptions =>
-                {
-                    sqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 10,
-                        maxRetryDelay: TimeSpan.FromSeconds(30),
-                        errorNumbersToAdd: null);
-                }));
+                    Configuration["DatabaseInfo:LocalConnectionString"], o => o.EnableRetryOnFailure()));
 #endif
 
             #region 
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            //{
+            // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            // {
             //    options.TokenValidationParameters = new TokenValidationParameters
             //    {
             //        ValidateIssuer = true,
@@ -61,8 +53,8 @@
             //        ValidAudience = _config.JWTIssuer,
             //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.JWTKey)),
             //    };
-            //})
-            //services.AddAuthentication().AddJwtBearer();
+            // })
+            // services.AddAuthentication().AddJwtBearer();
             #endregion
 
             services.AddAuthentication().AddBearerToken();
@@ -150,27 +142,6 @@
                 endpoints.MapSwagger();
             });
             app.UseMvc();
-
-            CreateRolesAsync(serviceProvider).Wait();
-        }
-
-        private async Task CreateRolesAsync(IServiceProvider service)
-        {
-            var roleManager = service.GetRequiredService<RoleManager<IdentityRole>>();
-            string[] roleNames = { "Admin", "User", "Trainer" };
-            IdentityResult roleResult;
-            foreach (var roleName in roleNames)
-            {
-                var roleExist = await roleManager.RoleExistsAsync(roleName);
-                if (!roleExist)
-                {
-                    var role = new IdentityRole(roleName)
-                    {
-                        ConcurrencyStamp = Guid.NewGuid().ToString(),
-                    };
-                    roleResult = await roleManager.CreateAsync(role);
-                }
-            }
         }
     }
 }
