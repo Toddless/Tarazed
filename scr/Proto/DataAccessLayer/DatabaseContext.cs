@@ -8,6 +8,7 @@
     public class DatabaseContext
         : IdentityDbContext<ApplicationUser, IdentityRole, string>, IDatabaseContext
     {
+        /// <exception cref="ArgumentNullException">Throws if null.</exception>
         public DatabaseContext(DbContextOptions<DatabaseContext> options)
             : base(options)
         {

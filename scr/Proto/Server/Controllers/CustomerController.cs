@@ -39,12 +39,12 @@
             var currentUser = await _manager.GetUserAsync(User)!;
             if (currentUser == null)
             {
-                throw new ServerException(nameof(DataModel.Resources.Errors.NotFound));
+                throw new ServerException(DataModel.Resources.Errors.NotFound);
             }
 
             if (currentUser.Id != customer.UId)
             {
-                throw new ServerException(nameof(DataModel.Resources.Errors.DeletingById));
+                throw new ServerException(DataModel.Resources.Errors.DeletingById);
             }
 
             currentUser.Email = customer.Email;
@@ -54,13 +54,13 @@
                 if (!isValid)
                 {
                     results.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
-                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
 
                 var result = await _manager.UpdateAsync(currentUser);
                 if (!result.Succeeded)
                 {
-                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
             }
             catch (InternalServerException)
@@ -69,7 +69,7 @@
             }
             catch (Exception)
             {
-                throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
+                throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
 
             customer.Email = currentUser?.Email ?? string.Empty;
@@ -99,7 +99,7 @@
                 var changedCount = await context.SaveChangesAsync();
                 if (changedCount != 1)
                 {
-                    throw new InternalServerException(string.Format(nameof(DataModel.Resources.Errors.NotSaved), typeof(ApplicationUser).Name));
+                    throw new InternalServerException(string.Format(DataModel.Resources.Errors.NotSaved, typeof(ApplicationUser).Name));
                 }
 
                 return true;
@@ -114,7 +114,7 @@
             }
             catch (Exception)
             {
-                throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
+                throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
         }
 
@@ -136,7 +136,7 @@
             }
             catch (Exception)
             {
-                throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
+                throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
         }
     }

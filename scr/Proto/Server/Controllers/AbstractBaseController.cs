@@ -24,9 +24,9 @@
             IDatabaseContext context,
             ILogger logger)
         {
+            ArgumentNullException.ThrowIfNull(manager);
             ArgumentNullException.ThrowIfNull(context);
             ArgumentNullException.ThrowIfNull(logger);
-            ArgumentNullException.ThrowIfNull(manager);
             _manager = manager;
             _context = context;
             _logger = logger;
@@ -56,9 +56,10 @@
             {
                 throw;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
+                _logger.LogException(this, ex);
+                throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
         }
 
@@ -67,17 +68,22 @@
         {
             try
             {
+                if (item == null)
+                {
+                    throw new ArgumentNullException(DataModel.Resources.Errors.NotFound);
+                }
+
                 var currentUser = await _manager.GetUserAsync(User);
                 if (item.PrimaryId != 0)
                 {
-                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
 
                 bool isValid = item.ValidateObject(out List<ValidationResult> result);
                 if (!isValid)
                 {
                     result.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
-                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
 
                 var context = _context.CheckContext();
@@ -95,7 +101,7 @@
             }
             catch (Exception)
             {
-                throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
+                throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
         }
 
@@ -106,14 +112,14 @@
             {
                 if (item == null || item.PrimaryId == 0)
                 {
-                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
 
                 bool isValid = item.ValidateObject(out List<ValidationResult> results);
                 if (!isValid)
                 {
                     results.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
-                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
 
                 var context = _context.CheckContext();
@@ -125,7 +131,7 @@
 
                 if (itemExists == null)
                 {
-                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
 
                 item.CustomerId = currentUser.Id;
@@ -139,7 +145,7 @@
             }
             catch (Exception)
             {
-                throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
+                throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
         }
 
@@ -150,7 +156,7 @@
             {
                 if (id == null || id == 0)
                 {
-                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
 
                 var context = _context.CheckContext();
@@ -161,7 +167,7 @@
                 var itemExists = await set.FirstOrDefaultAsync(x => x.PrimaryId == id && x.CustomerId == user);
                 if (itemExists == null)
                 {
-                    throw new ServerException(nameof(DataModel.Resources.Errors.InvalidRequest));
+                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
 
                 set.Remove(itemExists);
@@ -179,7 +185,7 @@
             }
             catch (Exception)
             {
-                throw new InternalServerException(nameof(DataModel.Resources.Errors.InternalException));
+                throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
         }
 
@@ -188,7 +194,7 @@
             var changedCount = await context.SaveChangesAsync();
             if (changedCount != 1)
             {
-                throw new InternalServerException(string.Format(nameof(DataModel.Resources.Errors.NotSaved), typeof(TU).Name));
+                throw new InternalServerException(string.Format(DataModel.Resources.Errors.NotSaved, typeof(TU).Name));
             }
         }
     }
