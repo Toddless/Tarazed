@@ -97,6 +97,15 @@ namespace DataModel.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Given Element did not exists..
+        /// </summary>
+        public static string ElementNotExists {
+            get {
+                return ResourceManager.GetString("ElementNotExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Email or password is incorrect..
         /// </summary>
         public static string EmailOrPassword {
@@ -133,7 +142,7 @@ namespace DataModel.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Something has gone wrong. Please try again later..
+        ///   Looks up a localized string similar to Something went wrong. Please try again later..
         /// </summary>
         public static string InternalException {
             get {
@@ -147,6 +156,24 @@ namespace DataModel.Resources {
         public static string InvalidRequest {
             get {
                 return ResourceManager.GetString("InvalidRequest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid request. Primary key ist not set..
+        /// </summary>
+        public static string InvalidRequest_PrimaryKeyNotSet {
+            get {
+                return ResourceManager.GetString("InvalidRequest_PrimaryKeyNotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid request. Entity to create contained Pk..
+        /// </summary>
+        public static string InvalidRequest_PrimaryKeySet {
+            get {
+                return ResourceManager.GetString("InvalidRequest_PrimaryKeySet", resourceCulture);
             }
         }
         
@@ -165,6 +192,15 @@ namespace DataModel.Resources {
         public static string NotSaved {
             get {
                 return ResourceManager.GetString("NotSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Object is null..
+        /// </summary>
+        public static string NullObject {
+            get {
+                return ResourceManager.GetString("NullObject", resourceCulture);
             }
         }
     }

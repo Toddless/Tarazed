@@ -8,8 +8,8 @@
         : AbstractBaseController<Exercise>
     {
         public ExerciseController(
-            IDatabaseContext context,
             UserManager<ApplicationUser> manager,
+            IDatabaseContext context,
             ILogger<ExerciseController> logger)
             : base(manager, context, logger)
         {

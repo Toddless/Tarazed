@@ -39,17 +39,23 @@
             {
                 var context = _context.CheckContext();
                 var currentUser = await _manager.GetUserAsync(User);
-                var userID = currentUser?.Id;
 
+                if (currentUser == null)
+                {
+                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
+                }
+
+                // sucht nach gegebene Ids, die currentUser gehören,
+                // falls null eingegeben wurde, gibt alle items currentsUsers zurück
                 if (primaryIds?.Any() ?? false)
                 {
                     return await context.Set<TU>()
-                         .Where(o => primaryIds.Contains(o.PrimaryId) && o.CustomerId == userID)
+                         .Where(o => primaryIds.Contains(o.PrimaryId) && o.CustomerId == currentUser.Id)
                          .ToListAsync();
                 }
 
                 return await context.Set<TU>()
-                    .Where(o => o.CustomerId == userID)
+                    .Where(o => o.CustomerId == currentUser.Id)
                     .ToListAsync();
             }
             catch (InternalServerException)
@@ -73,10 +79,9 @@
                     throw new ArgumentNullException(DataModel.Resources.Errors.NotFound);
                 }
 
-                var currentUser = await _manager.GetUserAsync(User);
                 if (item.PrimaryId != 0)
                 {
-                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
+                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest_PrimaryKeySet);
                 }
 
                 bool isValid = item.ValidateObject(out List<ValidationResult> result);
@@ -86,6 +91,7 @@
                     throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
 
+                var currentUser = await _manager.GetUserAsync(User);
                 var context = _context.CheckContext();
 
                 item.CustomerId = currentUser!.Id;
@@ -95,12 +101,13 @@
 
                 return item;
             }
-            catch (InternalServerException)
+            catch (ServerException)
             {
                 throw;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"Unknown Error in {nameof(CreateAsync)}.");
                 throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
         }
@@ -110,9 +117,14 @@
         {
             try
             {
-                if (item == null || item.PrimaryId == 0)
+                if (item == null)
                 {
-                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
+                    throw new ServerException(DataModel.Resources.Errors.NullObject);
+                }
+
+                if (item.PrimaryId == 0)
+                {
+                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest_PrimaryKeyNotSet);
                 }
 
                 bool isValid = item.ValidateObject(out List<ValidationResult> results);
@@ -122,24 +134,23 @@
                     throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
 
-                var context = _context.CheckContext();
                 var currentUser = await _manager.GetUserAsync(User);
+                var context = _context.CheckContext();
                 var set = context.Set<TU>();
                 var itemExists = await set.AsNoTracking()
-                    .Where(o => o.PrimaryId == item.PrimaryId && o.CustomerId == currentUser!.Id)
+                    .Where(o => o.CustomerId == currentUser!.Id)
                     .FirstOrDefaultAsync();
 
                 if (itemExists == null)
                 {
-                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
+                    throw new ServerException(DataModel.Resources.Errors.ElementNotExists);
                 }
 
-                item.CustomerId = currentUser.Id;
                 set.Update(item);
                 await TrackChanges(context);
                 return item;
             }
-            catch (InternalServerException)
+            catch (ServerException)
             {
                 throw;
             }

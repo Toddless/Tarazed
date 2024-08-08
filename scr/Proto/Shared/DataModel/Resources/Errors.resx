@@ -129,6 +129,9 @@
   <data name="DescriptionsIsToLong" xml:space="preserve">
     <value>The description need to be no more than 800 chars.</value>
   </data>
+  <data name="ElementNotExists" xml:space="preserve">
+    <value>Given Element did not exists.</value>
+  </data>
   <data name="EmailOrPassword" xml:space="preserve">
     <value>Email or password is incorrect.</value>
   </data>
@@ -142,15 +145,24 @@
     <value>The Field need to be at least 4 chars.</value>
   </data>
   <data name="InternalException" xml:space="preserve">
-    <value>Something has gone wrong. Please try again later.</value>
+    <value>Something went wrong. Please try again later.</value>
   </data>
   <data name="InvalidRequest" xml:space="preserve">
     <value>Invalid request.</value>
+  </data>
+  <data name="InvalidRequest_PrimaryKeyNotSet" xml:space="preserve">
+    <value>Invalid request. Primary key ist not set.</value>
+  </data>
+  <data name="InvalidRequest_PrimaryKeySet" xml:space="preserve">
+    <value>Invalid request. Entity to create contained Pk.</value>
   </data>
   <data name="NotFound" xml:space="preserve">
     <value>Not found.</value>
   </data>
   <data name="NotSaved" xml:space="preserve">
     <value>Value was not saved.</value>
+  </data>
+  <data name="NullObject" xml:space="preserve">
+    <value>Object is null.</value>
   </data>
 </root>

@@ -31,7 +31,7 @@
         [ForeignKey(nameof(ExerciseSet))]
         public long? ExerciseSetId { get; set; }
 
-        public string CustomerId { get; set; }
+        public string CustomerId { get; set; } = string.Empty;
 
         internal ExerciseSet? ExerciseSet { get; set; }
     }
