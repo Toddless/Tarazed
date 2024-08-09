@@ -50,12 +50,12 @@
                 if (primaryIds?.Any() ?? false)
                 {
                     return await context.Set<TU>()
-                         .Where(o => primaryIds.Contains(o.PrimaryId) && o.CustomerId == currentUser.Id)
+                         .Where(o => primaryIds.Contains(o.PrimaryId) && o.CustomerId == currentUser.Id).AsNoTracking()
                          .ToListAsync();
                 }
 
                 return await context.Set<TU>()
-                    .Where(o => o.CustomerId == currentUser.Id)
+                    .Where(o => o.CustomerId == currentUser.Id).AsNoTracking()
                     .ToListAsync();
             }
             catch (InternalServerException)
@@ -97,7 +97,7 @@
                 item.CustomerId = currentUser!.Id;
 
                 context.Set<TU>().Add(item);
-                await TrackChanges(context);
+                await SaveChangesAsync(context);
 
                 return item;
             }
@@ -147,7 +147,7 @@
                 }
 
                 set.Update(item);
-                await TrackChanges(context);
+                await SaveChangesAsync(context);
                 return item;
             }
             catch (ServerException)
@@ -165,24 +165,28 @@
         {
             try
             {
-                if (id == null || id == 0)
+                if (id == null)
                 {
-                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
+                    throw new ServerException(DataModel.Resources.Errors.NullObject);
+                }
+
+                if (id == 0)
+                {
+                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest_PrimaryKeyNotSet);
                 }
 
                 var context = _context.CheckContext();
                 var currentUser = await _manager.GetUserAsync(User);
-                var user = currentUser.Id;
 
                 var set = context.Set<TU>();
-                var itemExists = await set.FirstOrDefaultAsync(x => x.PrimaryId == id && x.CustomerId == user);
+                var itemExists = await set.FirstOrDefaultAsync(x => x.PrimaryId == id && x.CustomerId == currentUser!.Id);
                 if (itemExists == null)
                 {
-                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
+                    throw new ServerException(DataModel.Resources.Errors.ElementNotExists);
                 }
 
                 set.Remove(itemExists);
-                await TrackChanges(context);
+                await SaveChangesAsync(context);
 
                 return true;
             }
@@ -190,17 +194,14 @@
             {
                 throw;
             }
-            catch (InternalServerException)
+            catch (Exception ex)
             {
-                throw;
-            }
-            catch (Exception)
-            {
+                _logger.LogError(ex, $"Unknown Error in {nameof(CreateAsync)}.");
                 throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
         }
 
-        private static async Task TrackChanges(IDatabaseContext context)
+        private static async Task SaveChangesAsync(IDatabaseContext context)
         {
             var changedCount = await context.SaveChangesAsync();
             if (changedCount != 1)
