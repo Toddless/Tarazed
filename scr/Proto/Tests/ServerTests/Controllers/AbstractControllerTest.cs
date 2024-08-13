@@ -82,6 +82,7 @@
                     Assert.Fail("Did not throw specified Exception");
                 }
 
+                VerifyMethods(Context!, UserManager!);
                 Assert.IsNotNull(result);
             }
             catch (ServerException ex)
@@ -104,6 +105,8 @@
             var resultWithNull = await Controller!.GetAsync(null);
             var resultWithIds = await Controller.GetAsync(longs);
 
+            Context!.Verify(o => o.Set<TU>(), Times.AtLeastOnce);
+            UserManager!.Verify(o => o.GetUserAsync(It.IsAny<ClaimsPrincipal>()), Times.Exactly(2));
             Assert.IsNotNull(resultWithNull);
             Assert.IsNotNull(resultWithIds);
             Assert.IsTrue(resultWithNull.Count() >= 3);
@@ -175,6 +178,7 @@
                     Assert.Fail("Did not throw specified Exception");
                 }
 
+                VerifyMethods(Context!, UserManager!);
                 Assert.IsNotNull(result);
             }
             catch (ServerException ex)
@@ -218,5 +222,12 @@
         protected void SetupSetMethod(List<TU> data) => Context!.Setup(o => o.Set<TU>()).ReturnsDbSet(data);
 
         protected void SetupApplicationUser() => UserManager!.Setup(o => o.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser() { Id = "1" });
+
+        private static void VerifyMethods(Mock<IDatabaseContext> context, Mock<UserManager<ApplicationUser>> manager)
+        {
+            manager!.Verify(o => o.GetUserAsync(It.IsAny<ClaimsPrincipal>()), Times.Once);
+            context!.Verify(o => o.Set<TU>(), Times.Once);
+            context!.Verify(o => o.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
     }
 }

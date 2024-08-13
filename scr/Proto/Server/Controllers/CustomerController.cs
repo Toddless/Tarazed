@@ -67,12 +67,14 @@
                     throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
             }
-            catch (InternalServerException)
+            catch (ServerException)
             {
                 throw;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogException(this, ex);
+                _logger.LogError(ex, $"Unknown Error in {nameof(UpdateCustomerAsync)}.");
                 throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
 
@@ -117,12 +119,10 @@
             {
                 throw;
             }
-            catch (InternalServerException)
+            catch (Exception ex)
             {
-                throw;
-            }
-            catch (Exception)
-            {
+                _logger.LogException(this, ex);
+                _logger.LogError(ex, $"Unknown Error in {nameof(DeleteCustomerAsync)}.");
                 throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
         }
@@ -153,8 +153,10 @@
             {
                 throw;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogException(this, ex);
+                _logger.LogError(ex, $"Unknown Error in {nameof(GetCustomerAsync)}.");
                 throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
         }

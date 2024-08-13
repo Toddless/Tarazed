@@ -58,13 +58,14 @@
                     .Where(o => o.CustomerId == currentUser.Id).AsNoTracking()
                     .ToListAsync();
             }
-            catch (InternalServerException)
+            catch (ServerException)
             {
                 throw;
             }
             catch (Exception ex)
             {
                 _logger.LogException(this, ex);
+                _logger.LogError(ex, $"Unknown Error in {nameof(GetAsync)}.");
                 throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
         }
@@ -107,6 +108,7 @@
             }
             catch (Exception ex)
             {
+                _logger.LogException(this, ex);
                 _logger.LogError(ex, $"Unknown Error in {nameof(CreateAsync)}.");
                 throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
@@ -154,8 +156,10 @@
             {
                 throw;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogException(this, ex);
+                _logger.LogError(ex, $"Unknown Error in {nameof(UpdateAsync)}.");
                 throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
         }
@@ -196,7 +200,8 @@
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Unknown Error in {nameof(CreateAsync)}.");
+                _logger.LogException(this, ex);
+                _logger.LogError(ex, $"Unknown Error in {nameof(DeleteAsync)}.");
                 throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
         }
