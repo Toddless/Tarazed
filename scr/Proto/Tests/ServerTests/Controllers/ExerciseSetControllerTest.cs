@@ -24,6 +24,13 @@
         }
 
         [TestMethod]
+        [DynamicData(nameof(DeleteExerciseSetData), DynamicDataSourceType.Method)]
+        public async Task DeleteAsyncTest(ExerciseSet exerciseSets, long id, bool exceptionThrown, string expectedExceptions)
+        {
+            await OnDeleteAsyncTest(exerciseSets, id, exceptionThrown, expectedExceptions);
+        }
+
+        [TestMethod]
         [DynamicData(nameof(GetExerciseSetData), DynamicDataSourceType.Method)]
         public async Task GetAsyncTest(List<long> longs, List<ExerciseSet> exerciseSets)
         {
@@ -32,23 +39,16 @@
 
         [DataTestMethod]
         [DynamicData(nameof(CreateExerciseSetData), DynamicDataSourceType.Method)]
-        public async Task CreateAsyncTest(ExerciseSet exerciseSets, bool raisesException, string expectedMessage)
+        public async Task CreateAsyncTest(ExerciseSet exerciseSets, bool exceptionThrown, string expectedExceptions)
         {
-            await OnCreateAsyncTest(exerciseSets, raisesException, expectedMessage);
+            await OnCreateAsyncTest(exerciseSets, exceptionThrown, expectedExceptions);
         }
 
         [TestMethod]
         [DynamicData(nameof(UpdateExerciseSetData), DynamicDataSourceType.Method)]
-        public async Task UpdateAsyncTest(ExerciseSet exerciseSets, bool exceptionsThrown, string expectedResult)
+        public async Task UpdateAsyncTest(ExerciseSet exerciseSets, bool exceptionsThrown, string expectedExceptions)
         {
-            await OnUpdateAsyncTest(exerciseSets, exceptionsThrown, expectedResult);
-        }
-
-        [TestMethod]
-        [DynamicData(nameof(DeleteExerciseSetData), DynamicDataSourceType.Method)]
-        public async Task DeleteAsyncTest(ExerciseSet exerciseSets, long id, string expectedExceptions, bool exceptionThrown)
-        {
-            await OnDeleteAsyncTest(exerciseSets, id, expectedExceptions, exceptionThrown);
+            await OnUpdateAsyncTest(exerciseSets, exceptionsThrown, expectedExceptions);
         }
 
         protected override AbstractBaseController<ExerciseSet> SetupController(Mock<IDatabaseContext> context, ILogger<ExerciseSetController> logger, Mock<UserManager<ApplicationUser>> userManager)
@@ -68,6 +68,55 @@
             yield return new object[] { null, null, Mock.Of<ILogger<ExerciseSetController>>() };
             yield return new object[] { mock, null, null };
             yield return new object[] { null, null, null };
+        }
+
+        private static IEnumerable<object[]> DeleteExerciseSetData()
+        {
+            yield return new object[] { null, null, true, Errors.NullObject };
+            yield return new object[]
+            {
+                new ExerciseSet
+                {
+                    CustomerId = "1",
+                    PrimaryId = 1,
+                },
+                0L,
+                true,
+                Errors.InvalidRequest_PrimaryKeyNotSet,
+            };
+            yield return new object[]
+            {
+                new ExerciseSet
+                {
+                    CustomerId = "2",
+                    PrimaryId = 1,
+                },
+                1L,
+                true,
+                Errors.ElementNotExists,
+            };
+            yield return new object[]
+            {
+                new ExerciseSet
+                {
+                    CustomerId = "1",
+                    PrimaryId = 1,
+                },
+                2L,
+                true,
+                Errors.ElementNotExists,
+            };
+            yield return new object[]
+            {
+                new ExerciseSet
+                {
+                    CustomerId = "1",
+                    PrimaryId = 1,
+                },
+                1L,
+                false,
+                null,
+            };
         }
 
         private static IEnumerable<object[]> GetExerciseSetData()
@@ -109,55 +158,6 @@
                         PrimaryId = 3,
                     },
                 },
-            };
-        }
-
-        private static IEnumerable<object[]> DeleteExerciseSetData()
-        {
-            yield return new object[] { null, null, Errors.NullObject, true };
-            yield return new object[]
-            {
-                new ExerciseSet
-                {
-                    CustomerId = "1",
-                    PrimaryId = 1,
-                },
-                0L,
-                Errors.InvalidRequest_PrimaryKeyNotSet,
-                true,
-            };
-            yield return new object[]
-            {
-                new ExerciseSet
-                {
-                    CustomerId = "2",
-                    PrimaryId = 1,
-                },
-                1L,
-                Errors.ElementNotExists,
-                true,
-            };
-            yield return new object[]
-            {
-                new ExerciseSet
-                {
-                    CustomerId = "1",
-                    PrimaryId = 1,
-                },
-                2L,
-                Errors.ElementNotExists,
-                true,
-            };
-            yield return new object[]
-            {
-                new ExerciseSet
-                {
-                    CustomerId = "1",
-                    PrimaryId = 1,
-                },
-                1L,
-                null,
-                false,
             };
         }
 

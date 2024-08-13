@@ -1,4 +1,4 @@
-﻿namespace ServerTests
+﻿namespace ServerTests.Extensions
 {
     using System.Diagnostics;
     using Microsoft.Extensions.Logging;
@@ -6,10 +6,10 @@
 
     internal static class MockExtensions
     {
-        internal static ILogger<TU> SetupLogger<TU>(this object test)
+        internal static Mock<ILogger<TU>> SetupLogger<TU>(this object test)
         {
             var mock = new Mock<ILogger<TU>>();
-            mock.Setup(m => m.Log<It.IsAnyType>(
+            mock.Setup(m => m.Log(
                 It.IsAny<LogLevel>(),
                 It.IsAny<EventId>(),
                 It.IsAny<It.IsAnyType>(),
@@ -30,14 +30,14 @@
                     }
                 });
             mock.Setup(m => m.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
-            return mock.Object;
+            return mock;
         }
 
         internal static ILoggerProvider SetupLoggerProvider<TU>(this object test)
         {
             var mock = new Mock<ILoggerProvider>();
             var mockLogger = test.SetupLogger<TU>();
-            mock.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(mockLogger);
+            mock.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(mockLogger.Object);
             return mock.Object;
         }
     }

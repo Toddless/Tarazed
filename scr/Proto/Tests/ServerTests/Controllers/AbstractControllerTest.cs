@@ -14,7 +14,7 @@
     using Moq;
     using Moq.EntityFrameworkCore;
     using Server.Filters;
-    using ServerTests;
+    using ServerTests.Extensions;
 
     [TestClass]
     public abstract class AbstractControllerTest<TU, TV>
@@ -33,7 +33,7 @@
         public void Setup()
         {
             Context = new Mock<IDatabaseContext>(MockBehavior.Strict);
-            Logger = this.SetupLogger<TV>();
+            Logger = this.SetupLogger<TV>().Object;
             var userStoreMock = new Mock<IUserStore<ApplicationUser>>(MockBehavior.Strict);
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type. Nur IUserStore ist wichtig, rest darf null sein.
             UserManager = new Mock<UserManager<ApplicationUser>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
@@ -48,7 +48,7 @@
             Controller = null;
         }
 
-        public async Task OnDeleteAsyncTest(TU data, long id, string expectedExceptions, bool exceptionThrown)
+        public async Task OnDeleteAsyncTest(TU data, long id, bool exceptionThrown, string expectedExceptions)
         {
             if (exceptionThrown)
             {
@@ -149,11 +149,11 @@
             }
         }
 
-        public async Task OnUpdateAsyncTest(TU data, bool exceptionsThrown, string expectedResult)
+        public async Task OnUpdateAsyncTest(TU data, bool exceptionsThrown, string expectedExceptions)
         {
             if (exceptionsThrown)
             {
-                Assert.IsNotNull(expectedResult);
+                Assert.IsNotNull(expectedExceptions);
             }
 
             var mockDbSet = MockDbSet();
@@ -179,11 +179,11 @@
             }
             catch (ServerException ex)
             {
-                Assert.AreEqual(expectedResult, ex.Message);
+                Assert.AreEqual(expectedExceptions, ex.Message);
             }
             catch (InternalServerException ex)
             {
-                Assert.AreEqual(expectedResult, ex.Message);
+                Assert.AreEqual(expectedExceptions, ex.Message);
             }
         }
 
@@ -210,7 +210,10 @@
 
         protected abstract AbstractBaseController<TU> SetupController(Mock<IDatabaseContext> context, ILogger<TV> logger, Mock<UserManager<ApplicationUser>> userManager);
 
-        protected void SetupSaveChangesMethod() => Context!.Setup(o => o.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+        protected void SetupSaveChangesMethod()
+        {
+            Context!.Setup(o => o.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+        }
 
         protected void SetupSetMethod(List<TU> data) => Context!.Setup(o => o.Set<TU>()).ReturnsDbSet(data);
 

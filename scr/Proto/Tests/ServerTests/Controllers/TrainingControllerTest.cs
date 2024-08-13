@@ -24,6 +24,13 @@
         }
 
         [TestMethod]
+        [DynamicData(nameof(DeleteTrainingPlanData), DynamicDataSourceType.Method)]
+        public async Task DeleteAsyncTest(TrainingPlan plan, long id, bool exceptionThrown, string expectedExceptions)
+        {
+            await OnDeleteAsyncTest(plan, id, exceptionThrown, expectedExceptions);
+        }
+
+        [TestMethod]
         [DynamicData(nameof(GetTrainingPlanData), DynamicDataSourceType.Method)]
         public async Task GetAsyncTest(List<long> longs, List<TrainingPlan> plan)
         {
@@ -32,23 +39,16 @@
 
         [DataTestMethod]
         [DynamicData(nameof(CreateTrainingPlanData), DynamicDataSourceType.Method)]
-        public async Task CreateAsyncTest(TrainingPlan plan, bool raisesException, string expectedMessage)
+        public async Task CreateAsyncTest(TrainingPlan plan, bool raisesException, string expectedExceptions)
         {
-            await OnCreateAsyncTest(plan, raisesException, expectedMessage);
+            await OnCreateAsyncTest(plan, raisesException, expectedExceptions);
         }
 
         [TestMethod]
         [DynamicData(nameof(UpdateTrainingPlanData), DynamicDataSourceType.Method)]
-        public async Task UpdateAsyncTest(TrainingPlan plan, bool exceptionsThrown, string expectedResult)
+        public async Task UpdateAsyncTest(TrainingPlan plan, bool exceptionsThrown, string expectedExceptions)
         {
-            await OnUpdateAsyncTest(plan, exceptionsThrown, expectedResult);
-        }
-
-        [TestMethod]
-        [DynamicData(nameof(DeleteTrainingPlanData), DynamicDataSourceType.Method)]
-        public async Task DeleteAsyncTest(TrainingPlan plan, long id, string expectedExceptions, bool exceptionThrown)
-        {
-            await OnDeleteAsyncTest(plan, id, expectedExceptions, exceptionThrown);
+            await OnUpdateAsyncTest(plan, exceptionsThrown, expectedExceptions);
         }
 
         protected override AbstractBaseController<TrainingPlan> SetupController(Mock<IDatabaseContext> context, ILogger<TrainingController> logger, Mock<UserManager<ApplicationUser>> userManager)
@@ -114,7 +114,7 @@
 
         private static IEnumerable<object[]> DeleteTrainingPlanData()
         {
-            yield return new object[] { null, null, Errors.NullObject, true };
+            yield return new object[] { null, null,  true, Errors.NullObject };
             yield return new object[]
             {
                 new TrainingPlan
@@ -123,8 +123,8 @@
                     PrimaryId = 1,
                 },
                 0L,
-                Errors.InvalidRequest_PrimaryKeyNotSet,
                 true,
+                Errors.InvalidRequest_PrimaryKeyNotSet,
             };
             yield return new object[]
             {
@@ -134,8 +134,8 @@
                     PrimaryId = 1,
                 },
                 1L,
-                Errors.ElementNotExists,
                 true,
+                Errors.ElementNotExists,
             };
             yield return new object[]
             {
@@ -145,8 +145,8 @@
                     PrimaryId = 1,
                 },
                 2L,
-                Errors.ElementNotExists,
                 true,
+                Errors.ElementNotExists,
             };
             yield return new object[]
             {
@@ -156,8 +156,8 @@
                     PrimaryId = 1,
                 },
                 1L,
-                null,
                 false,
+                null,
             };
         }
 

@@ -13,30 +13,34 @@
     public class CustomerController
         : Controller
     {
-        private readonly IUserValidator<ApplicationUser> _userValidator;
         private readonly UserManager<ApplicationUser> _manager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<CustomerController> _logger;
-        private readonly DatabaseContext _context;
+        private readonly IDatabaseContext _context;
 
         public CustomerController(
-            DatabaseContext context,
-            IUserValidator<ApplicationUser> userValidator,
+            IDatabaseContext context,
             UserManager<ApplicationUser> manager,
-            ILogger<CustomerController> logger,
-            RoleManager<IdentityRole> roleManager)
+            ILogger<CustomerController> logger)
         {
             _logger = logger;
             _context = context;
-            _userValidator = userValidator;
             _manager = manager;
-            _roleManager = roleManager;
         }
 
         [HttpPut("UpdateCustomer")]
         public async Task<Customer?> UpdateCustomerAsync(Customer customer)
         {
-            var currentUser = await _manager.GetUserAsync(User)!;
+            if (User == null)
+            {
+                throw new ServerException(DataModel.Resources.Errors.NullObject);
+            }
+
+            if (customer == null)
+            {
+                throw new ServerException(DataModel.Resources.Errors.NullObject);
+            }
+
+            var currentUser = await _manager.GetUserAsync(User) !;
             if (currentUser == null)
             {
                 throw new ServerException(DataModel.Resources.Errors.NotFound);
@@ -79,6 +83,11 @@
         [HttpDelete("DeleteCustomer")]
         public async Task<bool?> DeleteCustomerAsync()
         {
+            if (User == null)
+            {
+                throw new ServerException(DataModel.Resources.Errors.NullObject);
+            }
+
             if (User.IsInRole("Admin"))
             {
                 throw new ServerException("This user cannot be deleted");
@@ -87,7 +96,7 @@
             var user = await _manager.GetUserAsync(User);
             if (user == null)
             {
-                throw new ServerException("This user cannot be deleted");
+                throw new ServerException(DataModel.Resources.Errors.NullObject);
             }
 
             try
@@ -123,7 +132,17 @@
         {
             try
             {
+                if (User == null)
+                {
+                    throw new ServerException(DataModel.Resources.Errors.NullObject);
+                }
+
                 var user = await _manager.GetUserAsync(User);
+                if (user == null)
+                {
+                    throw new ServerException(DataModel.Resources.Errors.NullObject);
+                }
+
                 return new Customer()
                 {
                     Email = user?.Email ?? string.Empty,

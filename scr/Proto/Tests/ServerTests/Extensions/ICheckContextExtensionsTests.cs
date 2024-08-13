@@ -5,10 +5,10 @@
     using Moq;
     using Server.Filters;
 
-    [TestClass()]
+    [TestClass]
     public class ICheckContextExtensionsTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void CheckContextFromNullTest()
         {
             var context = (IDatabaseContext?)null;
@@ -23,7 +23,7 @@
             }
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void CheckContextTest()
         {
             var context = new Mock<IDatabaseContext>();

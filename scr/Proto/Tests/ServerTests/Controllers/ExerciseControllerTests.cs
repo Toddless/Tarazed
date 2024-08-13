@@ -23,6 +23,13 @@
         }
 
         [TestMethod]
+        [DynamicData(nameof(DeleteExerciseData), DynamicDataSourceType.Method)]
+        public async Task DeleteAsyncTest(Exercise data, long id, bool exceptionThrown, string expectedExceptions)
+        {
+            await OnDeleteAsyncTest(data, id, exceptionThrown, expectedExceptions);
+        }
+
+        [TestMethod]
         [DynamicData(nameof(GetExerciseData), DynamicDataSourceType.Method)]
         public async Task GetAsyncTest(List<long> longs, List<Exercise> exercises)
         {
@@ -31,23 +38,16 @@
 
         [DataTestMethod]
         [DynamicData(nameof(CreateExerciseData), DynamicDataSourceType.Method)]
-        public async Task CreateAsyncTest(Exercise exercise, bool raisesException, string expectedMessage)
+        public async Task CreateAsyncTest(Exercise exercise, bool exceptionThrown, string expectedExceptions)
         {
-            await OnCreateAsyncTest(exercise, raisesException, expectedMessage);
+            await OnCreateAsyncTest(exercise, exceptionThrown, expectedExceptions);
         }
 
         [TestMethod]
         [DynamicData(nameof(UpdateExerciseData), DynamicDataSourceType.Method)]
-        public async Task UpdateAsyncTest(Exercise exercise, bool exceptionsThrown, string expectedResult)
+        public async Task UpdateAsyncTest(Exercise exercise, bool exceptionsThrown, string expectedExceptions)
         {
-            await OnUpdateAsyncTest(exercise, exceptionsThrown, expectedResult);
-        }
-
-        [TestMethod]
-        [DynamicData(nameof(DeleteExerciseData), DynamicDataSourceType.Method)]
-        public async Task DeleteAsyncTest(Exercise data, long id, string expectedExceptions, bool exceptionThrown)
-        {
-            await OnDeleteAsyncTest(data, id, expectedExceptions, exceptionThrown);
+            await OnUpdateAsyncTest(exercise, exceptionsThrown, expectedExceptions);
         }
 
         protected override AbstractBaseController<Exercise> SetupController(Mock<IDatabaseContext> context, ILogger<ExerciseController> logger, Mock<UserManager<ApplicationUser>> userManager)
@@ -67,6 +67,55 @@
             yield return new object[] { null, null, Mock.Of<ILogger<ExerciseController>>() };
             yield return new object[] { mock, null, null };
             yield return new object[] { null, null, null };
+        }
+
+        private static IEnumerable<object[]> DeleteExerciseData()
+        {
+            yield return new object[] { null, null, true, Errors.NullObject };
+            yield return new object[]
+            {
+                new Exercise
+                {
+                    CustomerId = "1",
+                    PrimaryId = 1,
+                },
+                0L,
+                true,
+                Errors.InvalidRequest_PrimaryKeyNotSet,
+            };
+            yield return new object[]
+            {
+                new Exercise
+                {
+                    CustomerId = "2",
+                    PrimaryId = 1,
+                },
+                1L,
+                true,
+                Errors.ElementNotExists,
+            };
+            yield return new object[]
+            {
+                new Exercise
+                {
+                    CustomerId = "1",
+                    PrimaryId = 1,
+                },
+                2L,
+                true,
+                Errors.ElementNotExists,
+            };
+            yield return new object[]
+            {
+                new Exercise
+                {
+                    CustomerId = "1",
+                    PrimaryId = 1,
+                },
+                1L,
+                false,
+                null,
+            };
         }
 
         private static IEnumerable<object[]> GetExerciseData()
@@ -108,55 +157,6 @@
                         PrimaryId = 3,
                     },
                 },
-            };
-        }
-
-        private static IEnumerable<object[]> DeleteExerciseData()
-        {
-            yield return new object[] { null, null, Errors.NullObject, true };
-            yield return new object[]
-            {
-                new Exercise
-                {
-                    CustomerId = "1",
-                    PrimaryId = 1,
-                },
-                0L,
-                Errors.InvalidRequest_PrimaryKeyNotSet,
-                true,
-            };
-            yield return new object[]
-            {
-                new Exercise
-                {
-                    CustomerId = "2",
-                    PrimaryId = 1,
-                },
-                1L,
-                Errors.ElementNotExists,
-                true,
-            };
-            yield return new object[]
-            {
-                new Exercise
-                {
-                    CustomerId = "1",
-                    PrimaryId = 1,
-                },
-                2L,
-                Errors.ElementNotExists,
-                true,
-            };
-            yield return new object[]
-            {
-                new Exercise
-                {
-                    CustomerId = "1",
-                    PrimaryId = 1,
-                },
-                1L,
-                null,
-                false,
             };
         }
 

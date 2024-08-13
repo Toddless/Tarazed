@@ -11,6 +11,7 @@
         public void LogErrorTest()
         {
             var loggerMock = new Mock<ILogger>(MockBehavior.Loose);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             ILoggerExtensions.LogError(loggerMock.Object, null, null);
         }
 
@@ -30,7 +31,6 @@
             loggerMock.Setup(o => o.IsEnabled(LogLevel.Error)).Returns(isEnabled);
             var caller = new object();
             var message = "message";
-            //var expectedString = $"Class:{caller.GetType().Name} Method:{nameof(IsEnabledTest)} Message:{message} ";
 
             if (isEnabled)
             {
