@@ -2,6 +2,7 @@
 {
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using DataModel.Attributes;
     using DataModel.Resources;
 
     public class Exercise : IEntity
@@ -21,18 +22,19 @@
         public double Weight { get; set; }
 
         [Key]
-        public long PrimaryId { get; set; }
+        public long Id { get; set; }
 
         [Required(ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.DescriptionIsRequired))]
         [MinLength(5, ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.DescriptionIsToShort))]
         [MaxLength(800, ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.DescriptionsIsToLong))]
         public string? Description { get; set; } = string.Empty;
 
-        [ForeignKey(nameof(ExerciseSet))]
-        public long? ExerciseSetId { get; set; }
+        [ForeignKey(nameof(Unit))]
+        public long UnitId { get; set; }
 
         public string CustomerId { get; set; } = string.Empty;
 
-        internal ExerciseSet? ExerciseSet { get; set; }
+        //[SwaggerParameterItnore]
+        //public Unit? Unit { get; set; }
     }
 }

@@ -6,7 +6,7 @@
     public interface IEntity
     {
         [Key]
-        long PrimaryId { get; set; }
+        long Id { get; set; }
 
         [ForeignKey("AspNetUsers")]
         string CustomerId { get; set; }

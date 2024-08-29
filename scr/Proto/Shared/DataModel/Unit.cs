@@ -1,10 +1,12 @@
 ﻿namespace DataModel
 {
+    using System.Collections.ObjectModel;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using DataModel.Attributes;
     using DataModel.Resources;
 
-    public class ExerciseSet : IEntity
+    public class Unit : IEntity
     {
         [Required(ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.FieldIsRequired))]
         [MinLength(4, ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.FieldIsToShort))]
@@ -12,19 +14,23 @@
         public string Name { get; set; } = string.Empty;
 
         [Key]
-        public long PrimaryId { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Gets or sets the Date of completion in UTC ticks.
         /// </summary>
         public long? CompletionDate { get; set; }
 
-        [ForeignKey(nameof(TrainingPlan))]
-        public long TrainingPlanId { get; set; }
+        [ForeignKey("TrainingPlans")]
+        public long TrainingPlanId { get; set; } = 0;
 
         public string CustomerId { get; set; } = string.Empty;
 
-        internal TrainingPlan? TrainingPlan { get; set; }
+        //[SwaggerParameterItnore]
+        //public TrainingPlan TrainingPlan { get; set; }
+
+        [SwaggerParameterItnore]
+        public Collection<Exercise>? Exercises { get; set; }
 
     }
 }

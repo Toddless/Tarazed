@@ -15,9 +15,9 @@
     public abstract class AbstractBaseController<TU> : Controller
         where TU : class, IEntity
     {
-        private readonly IDatabaseContext _context;
-        private readonly ILogger _logger;
-        private readonly UserManager<ApplicationUser> _manager;
+        protected readonly IDatabaseContext _context;
+        protected readonly ILogger _logger;
+        protected readonly UserManager<ApplicationUser> _manager;
 
         public AbstractBaseController(
             UserManager<ApplicationUser> manager,
@@ -33,12 +33,12 @@
         }
 
         [HttpGet]
-        public async virtual Task<IEnumerable<TU>?> GetAsync(IEnumerable<long>? primaryIds)
+        public async virtual Task<IEnumerable<TU>?> GetAsync(IEnumerable<long>? ids, bool useNavigationProperties = false)
         {
             try
             {
                 var context = _context.CheckContext();
-                var currentUser = await _manager.GetUserAsync(User);
+                var currentUser = await _manager.GetUserAsync(User).ConfigureAwait(false);
 
                 if (currentUser == null)
                 {
@@ -47,16 +47,20 @@
 
                 // sucht nach gegebene Ids, die currentUser gehören,
                 // falls null eingegeben wurde, gibt alle items currentsUsers zurück
-                if (primaryIds?.Any() ?? false)
+                IQueryable<TU> query = context.Set<TU>().Where(o => o.CustomerId == currentUser.Id);
+
+                if (ids?.Any() ?? false)
                 {
-                    return await context.Set<TU>()
-                         .Where(o => primaryIds.Contains(o.PrimaryId) && o.CustomerId == currentUser.Id).AsNoTracking()
-                         .ToListAsync();
+                    query = query.Where(o => ids.Contains(o.Id));
                 }
 
-                return await context.Set<TU>()
-                    .Where(o => o.CustomerId == currentUser.Id).AsNoTracking()
-                    .ToListAsync();
+                if (useNavigationProperties)
+                {
+                    query = AddIncludes(query);
+                }
+
+                var result = await query.AsNoTracking().ToListAsync().ConfigureAwait(false);
+                return result;
             }
             catch (ServerException)
             {
@@ -80,7 +84,7 @@
                     throw new ArgumentNullException(DataModel.Resources.Errors.NotFound);
                 }
 
-                if (item.PrimaryId != 0)
+                if (item.Id != 0)
                 {
                     throw new ServerException(DataModel.Resources.Errors.InvalidRequest_PrimaryKeySet);
                 }
@@ -92,13 +96,13 @@
                     throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
 
-                var currentUser = await _manager.GetUserAsync(User);
+                var currentUser = await _manager.GetUserAsync(User).ConfigureAwait(false);
                 var context = _context.CheckContext();
 
                 item.CustomerId = currentUser!.Id;
 
                 context.Set<TU>().Add(item);
-                await SaveChangesAsync(context);
+                await SaveChangesAsync(context).ConfigureAwait(false);
 
                 return item;
             }
@@ -124,7 +128,7 @@
                     throw new ServerException(DataModel.Resources.Errors.NullObject);
                 }
 
-                if (item.PrimaryId == 0)
+                if (item.Id == 0)
                 {
                     throw new ServerException(DataModel.Resources.Errors.InvalidRequest_PrimaryKeyNotSet);
                 }
@@ -136,12 +140,12 @@
                     throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
                 }
 
-                var currentUser = await _manager.GetUserAsync(User);
+                var currentUser = await _manager.GetUserAsync(User).ConfigureAwait(false);
                 var context = _context.CheckContext();
                 var set = context.Set<TU>();
                 var itemExists = await set.AsNoTracking()
                     .Where(o => o.CustomerId == currentUser!.Id)
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync().ConfigureAwait(false);
 
                 if (itemExists == null)
                 {
@@ -149,7 +153,7 @@
                 }
 
                 set.Update(item);
-                await SaveChangesAsync(context);
+                await SaveChangesAsync(context).ConfigureAwait(false);
                 return item;
             }
             catch (ServerException)
@@ -180,17 +184,17 @@
                 }
 
                 var context = _context.CheckContext();
-                var currentUser = await _manager.GetUserAsync(User);
+                var currentUser = await _manager.GetUserAsync(User).ConfigureAwait(false);
 
                 var set = context.Set<TU>();
-                var itemExists = await set.FirstOrDefaultAsync(x => x.PrimaryId == id && x.CustomerId == currentUser!.Id);
+                var itemExists = await set.FirstOrDefaultAsync(x => x.Id == id && x.CustomerId == currentUser!.Id).ConfigureAwait(false);
                 if (itemExists == null)
                 {
                     throw new ServerException(DataModel.Resources.Errors.ElementNotExists);
                 }
 
                 set.Remove(itemExists);
-                await SaveChangesAsync(context);
+                await SaveChangesAsync(context).ConfigureAwait(false);
 
                 return true;
             }
@@ -206,9 +210,11 @@
             }
         }
 
+        protected abstract IQueryable<TU> AddIncludes(IQueryable<TU> query);
+
         private static async Task SaveChangesAsync(IDatabaseContext context)
         {
-            var changedCount = await context.SaveChangesAsync();
+            var changedCount = await context.SaveChangesAsync().ConfigureAwait(false);
             if (changedCount != 1)
             {
                 throw new InternalServerException(string.Format(DataModel.Resources.Errors.NotSaved, typeof(TU).Name));

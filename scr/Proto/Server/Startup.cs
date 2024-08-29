@@ -2,6 +2,7 @@
 {
     using System.Globalization;
     using DataAccessLayer;
+    using Microsoft.AspNetCore.Authentication.BearerToken;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
@@ -39,25 +40,11 @@
                 options.UseSqlServer(
                     Configuration["DatabaseInfo:LocalConnectionString"], o => o.EnableRetryOnFailure()));
 #endif
-
-            #region 
-            // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            // {
-            //    options.TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        ValidateIssuer = true,
-            //        ValidateAudience = true,
-            //        ValidateLifetime = true,
-            //        ValidateIssuerSigningKey = true,
-            //        ValidIssuer = _config.JWTIssuer,
-            //        ValidAudience = _config.JWTIssuer,
-            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.JWTKey)),
-            //    };
-            // })
-            // services.AddAuthentication().AddJwtBearer();
-            #endregion
-
             services.AddAuthentication().AddBearerToken();
+            services.AddOptions<BearerTokenOptions>(IdentityConstants.BearerScheme).Configure(o =>
+            {
+                o.BearerTokenExpiration = TimeSpan.FromDays(10);
+            });
             services.AddAuthorization();
             services.AddIdentityApiEndpoints<ApplicationUser>(o =>
             {
@@ -92,6 +79,8 @@
                         new string[] { }
                     },
                 });
+                c.OperationFilter<SwaggerParameterItnoreFilter>();
+                c.EnableAnnotations();
             });
         }
 

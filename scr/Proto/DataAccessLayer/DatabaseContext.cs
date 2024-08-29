@@ -16,7 +16,7 @@
 
         public DbSet<Exercise> Exercises { get; set; }
 
-        public DbSet<ExerciseSet> ExerciseSets { get; set; }
+        public DbSet<Unit> Units { get; set; }
 
         public DbSet<TrainingPlan> TrainingPlans { get; set; }
 
@@ -33,17 +33,19 @@
                 .HasForeignKey(x => x.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<ExerciseSet>()
-                .HasOne(o => o.TrainingPlan)
-                .WithMany()
-                .HasForeignKey(o => o.TrainingPlanId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<TrainingPlan>()
+                .HasMany(o => o.Units)
+                .WithOne()
+                .HasForeignKey(e => e.TrainingPlanId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
 
-            modelBuilder.Entity<Exercise>()
-                .HasOne(o => o.ExerciseSet)
-                .WithMany()
-                .HasForeignKey(o => o.ExerciseSetId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Unit>()
+                .HasMany(x => x.Exercises)
+                .WithOne()
+                .HasForeignKey(o => o.UnitId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
         }
     }
 }

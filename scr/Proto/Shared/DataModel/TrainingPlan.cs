@@ -1,7 +1,9 @@
 ﻿namespace DataModel
 {
+    using System.Collections.ObjectModel;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using DataModel.Attributes;
     using DataModel.Resources;
 
     public class TrainingPlan : IEntity
@@ -13,9 +15,12 @@
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public long PrimaryId { get; set; }
+        public long Id { get; set; }
 
         [ForeignKey("AspNetUsers")]
         public string CustomerId { get; set; } = string.Empty;
+
+        [SwaggerParameterItnore]
+        public Collection<Unit>? Units { get; internal set; }
     }
 }
