@@ -11,8 +11,8 @@
     {
         private ILoginService _loginService;
 
-        private string? _email = "s@s.s";
-        private string? _password = "String1";
+        private string? _email;
+        private string? _password;
         private bool _isBusy;
 
         public LoginPageViewModel(
