@@ -2,7 +2,6 @@
 {
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using DataModel.Attributes;
     using DataModel.Resources;
 
     public class Exercise : IEntity
@@ -33,8 +32,5 @@
         public long UnitId { get; set; }
 
         public string CustomerId { get; set; } = string.Empty;
-
-        //[SwaggerParameterItnore]
-        //public Unit? Unit { get; set; }
     }
 }

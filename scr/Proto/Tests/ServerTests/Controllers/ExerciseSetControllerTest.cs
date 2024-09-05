@@ -10,14 +10,14 @@
     using Server.Controllers.Tests;
 
     [TestClass]
-    public class ExerciseSetControllerTest : AbstractControllerTest<ExerciseSet, ExerciseSetController>
+    public class ExerciseSetControllerTest : AbstractControllerTest<Unit, UnitController>
     {
         [DataTestMethod]
         [DynamicData(nameof(ConstructorTestData), DynamicDataSourceType.Method)]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void CreateInstanceTest(UserManager<ApplicationUser> manager, IDatabaseContext context, ILogger<ExerciseSetController> logger)
+        public void CreateInstanceTest(UserManager<ApplicationUser> manager, IDatabaseContext context, ILogger<UnitController> logger)
         {
-            var controller = new ExerciseSetController(
+            var controller = new UnitController(
                 context,
                 manager,
                 logger);
@@ -25,35 +25,35 @@
 
         [TestMethod]
         [DynamicData(nameof(DeleteExerciseSetData), DynamicDataSourceType.Method)]
-        public async Task DeleteAsyncTest(ExerciseSet exerciseSets, long id, bool exceptionThrown, string expectedExceptions)
+        public async Task DeleteAsyncTest(Unit exerciseSets, long id, bool exceptionThrown, string expectedExceptions)
         {
             await OnDeleteAsyncTest(exerciseSets, id, exceptionThrown, expectedExceptions);
         }
 
         [TestMethod]
         [DynamicData(nameof(GetExerciseSetData), DynamicDataSourceType.Method)]
-        public async Task GetAsyncTest(List<long> longs, List<ExerciseSet> exerciseSets)
+        public async Task GetAsyncTest(List<long> longs, List<Unit> exerciseSets)
         {
             await OnGetAsyncTest(longs, exerciseSets);
         }
 
         [DataTestMethod]
         [DynamicData(nameof(CreateExerciseSetData), DynamicDataSourceType.Method)]
-        public async Task CreateAsyncTest(ExerciseSet exerciseSets, bool exceptionThrown, string expectedExceptions)
+        public async Task CreateAsyncTest(Unit exerciseSets, bool exceptionThrown, string expectedExceptions)
         {
             await OnCreateAsyncTest(exerciseSets, exceptionThrown, expectedExceptions);
         }
 
         [TestMethod]
         [DynamicData(nameof(UpdateExerciseSetData), DynamicDataSourceType.Method)]
-        public async Task UpdateAsyncTest(ExerciseSet exerciseSets, bool exceptionsThrown, string expectedExceptions)
+        public async Task UpdateAsyncTest(Unit exerciseSets, bool exceptionsThrown, string expectedExceptions)
         {
             await OnUpdateAsyncTest(exerciseSets, exceptionsThrown, expectedExceptions);
         }
 
-        protected override AbstractBaseController<ExerciseSet> SetupController(Mock<IDatabaseContext> context, ILogger<ExerciseSetController> logger, Mock<UserManager<ApplicationUser>> userManager)
+        protected override AbstractBaseController<Unit> SetupController(Mock<IDatabaseContext> context, ILogger<UnitController> logger, Mock<UserManager<ApplicationUser>> userManager)
         {
-            return new ExerciseSetController(context.Object, userManager.Object, logger);
+            return new UnitController(context.Object, userManager.Object, logger);
         }
 
         private static IEnumerable<object[]> ConstructorTestData()
@@ -61,11 +61,11 @@
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type. Testing null exceptions, or some data must be null.
             var mock = new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null).Object;
 
-            yield return new object[] { null, Mock.Of<IDatabaseContext>(), Mock.Of<ILogger<ExerciseSetController>>() };
-            yield return new object[] { mock, null, Mock.Of<ILogger<ExerciseSetController>>() };
+            yield return new object[] { null, Mock.Of<IDatabaseContext>(), Mock.Of<ILogger<UnitController>>() };
+            yield return new object[] { mock, null, Mock.Of<ILogger<UnitController>>() };
             yield return new object[] { mock, Mock.Of<IDatabaseContext>(), null };
             yield return new object[] { null, Mock.Of<IDatabaseContext>(), null };
-            yield return new object[] { null, null, Mock.Of<ILogger<ExerciseSetController>>() };
+            yield return new object[] { null, null, Mock.Of<ILogger<UnitController>>() };
             yield return new object[] { mock, null, null };
             yield return new object[] { null, null, null };
         }
@@ -75,10 +75,10 @@
             yield return new object[] { null, null, true, Errors.NullObject };
             yield return new object[]
             {
-                new ExerciseSet
+                new Unit
                 {
                     CustomerId = "1",
-                    PrimaryId = 1,
+                    Id = 1,
                 },
                 0L,
                 true,
@@ -86,10 +86,10 @@
             };
             yield return new object[]
             {
-                new ExerciseSet
+                new Unit
                 {
                     CustomerId = "2",
-                    PrimaryId = 1,
+                    Id = 1,
                 },
                 1L,
                 true,
@@ -97,10 +97,10 @@
             };
             yield return new object[]
             {
-                new ExerciseSet
+                new Unit
                 {
                     CustomerId = "1",
-                    PrimaryId = 1,
+                    Id = 1,
                 },
                 2L,
                 true,
@@ -108,10 +108,10 @@
             };
             yield return new object[]
             {
-                new ExerciseSet
+                new Unit
                 {
                     CustomerId = "1",
-                    PrimaryId = 1,
+                    Id = 1,
                 },
                 1L,
                 false,
@@ -130,32 +130,32 @@
                    6,
                    3,
                 },
-                new List<ExerciseSet>
+                new List<Unit>
                 {
-                    new ExerciseSet
+                    new Unit
                     {
                          CustomerId = "1",
-                         PrimaryId = 1,
+                         Id = 1,
                     },
-                    new ExerciseSet
+                    new Unit
                     {
                         CustomerId = "1",
-                        PrimaryId = 2,
+                        Id = 2,
                     },
-                    new ExerciseSet
+                    new Unit
                     {
                         CustomerId = "2",
-                        PrimaryId = 2,
+                        Id = 2,
                     },
-                    new ExerciseSet
+                    new Unit
                     {
                         CustomerId = "2",
-                        PrimaryId = 3,
+                        Id = 3,
                     },
-                    new ExerciseSet
+                    new Unit
                     {
                         CustomerId = "1",
-                        PrimaryId = 3,
+                        Id = 3,
                     },
                 },
             };
@@ -167,44 +167,44 @@
 
             yield return new object[]
             {
-                new ExerciseSet
+                new Unit
             {
                 CustomerId = "2",
                 Name = "Names",
-                PrimaryId = 2,
+                Id = 2,
             },
                 true,
                 Errors.ElementNotExists,
             };
             yield return new object[]
             {
-                new ExerciseSet
+                new Unit
             {
                 CustomerId = "1",
                 Name = "Names",
-                PrimaryId = 1,
+                Id = 1,
             },
                 false,
                 null,
             };
             yield return new object[]
             {
-                new ExerciseSet
+                new Unit
             {
                 CustomerId = "1",
                 Name = "Names",
-                PrimaryId = 0,
+                Id = 0,
             },
                 true,
                 Errors.InvalidRequest_PrimaryKeyNotSet,
             };
             yield return new object[]
             {
-                new ExerciseSet
+                new Unit
             {
                 CustomerId = "3",
                 Name = "Names",
-                PrimaryId = 5,
+                Id = 5,
             },
                 true,
                 Errors.ElementNotExists,
@@ -221,10 +221,10 @@
             };
             yield return new object[]
             {
-                new ExerciseSet
+                new Unit
                 {
                     CustomerId = string.Empty,
-                    PrimaryId = 1,
+                    Id = 1,
                     Name = "name",
                     CompletionDate = 3L,
                     TrainingPlanId = 1,
@@ -234,10 +234,10 @@
             };
             yield return new object[]
             {
-                new ExerciseSet
+                new Unit
                 {
                     CustomerId = string.Empty,
-                    PrimaryId = 0,
+                    Id = 0,
                     Name = string.Empty,
                     CompletionDate = 3L,
                     TrainingPlanId = 1,
@@ -247,10 +247,10 @@
             };
             yield return new object[]
             {
-                new ExerciseSet
+                new Unit
                 {
                     CustomerId = string.Empty,
-                    PrimaryId = 0,
+                    Id = 0,
                     Name = "name",
                 },
                 false,
@@ -258,10 +258,10 @@
             };
             yield return new object[]
             {
-                new ExerciseSet
+                new Unit
                 {
                     CustomerId = " ",
-                    PrimaryId = 1,
+                    Id = 1,
                     Name = "name",
                 },
                 true,
@@ -269,10 +269,10 @@
             };
             yield return new object[]
             {
-                new ExerciseSet
+                new Unit
                 {
                     CustomerId = "3",
-                    PrimaryId = 1,
+                    Id = 1,
                     Name = "name",
                 },
                 true,

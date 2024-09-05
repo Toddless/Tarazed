@@ -26,11 +26,7 @@
 
         public string CustomerId { get; set; } = string.Empty;
 
-        //[SwaggerParameterItnore]
-        //public TrainingPlan TrainingPlan { get; set; }
-
-        [SwaggerParameterItnore]
+        [SwaggerParameterIgnore]
         public Collection<Exercise>? Exercises { get; set; }
-
     }
 }

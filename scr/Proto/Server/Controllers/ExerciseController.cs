@@ -4,7 +4,6 @@
     using DataAccessLayer;
     using DataModel;
     using Microsoft.AspNetCore.Identity;
-    using Microsoft.EntityFrameworkCore;
 
     public class ExerciseController
         : AbstractBaseController<Exercise>

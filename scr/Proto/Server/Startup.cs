@@ -43,7 +43,8 @@
             services.AddAuthentication().AddBearerToken();
             services.AddOptions<BearerTokenOptions>(IdentityConstants.BearerScheme).Configure(o =>
             {
-                o.BearerTokenExpiration = TimeSpan.FromDays(10);
+                o.BearerTokenExpiration = TimeSpan.FromMinutes(10);
+                o.RefreshTokenExpiration = TimeSpan.FromMinutes(30);
             });
             services.AddAuthorization();
             services.AddIdentityApiEndpoints<ApplicationUser>(o =>
@@ -79,7 +80,7 @@
                         new string[] { }
                     },
                 });
-                c.OperationFilter<SwaggerParameterItnoreFilter>();
+                c.OperationFilter<SwaggerParameterIgnoreFilter>();
                 c.EnableAnnotations();
             });
         }

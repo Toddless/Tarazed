@@ -140,7 +140,7 @@
 
                 Assert.IsNotNull(result);
                 Assert.AreEqual(result, data);
-                Assert.IsFalse(result.PrimaryId > 0);
+                Assert.IsFalse(result.Id > 0);
             }
             catch (ServerException ex)
             {

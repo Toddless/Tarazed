@@ -77,7 +77,7 @@
                 new Exercise
                 {
                     CustomerId = "1",
-                    PrimaryId = 1,
+                    Id = 1,
                 },
                 0L,
                 true,
@@ -88,7 +88,7 @@
                 new Exercise
                 {
                     CustomerId = "2",
-                    PrimaryId = 1,
+                    Id = 1,
                 },
                 1L,
                 true,
@@ -99,7 +99,7 @@
                 new Exercise
                 {
                     CustomerId = "1",
-                    PrimaryId = 1,
+                    Id = 1,
                 },
                 2L,
                 true,
@@ -110,7 +110,7 @@
                 new Exercise
                 {
                     CustomerId = "1",
-                    PrimaryId = 1,
+                    Id = 1,
                 },
                 1L,
                 false,
@@ -134,27 +134,27 @@
                     new Exercise
                     {
                          CustomerId = "1",
-                         PrimaryId = 1,
+                         Id = 1,
                     },
                     new Exercise
                     {
                         CustomerId = "1",
-                        PrimaryId = 2,
+                        Id = 2,
                     },
                     new Exercise
                     {
                         CustomerId = "2",
-                        PrimaryId = 2,
+                        Id = 2,
                     },
                     new Exercise
                     {
                         CustomerId = "2",
-                        PrimaryId = 3,
+                        Id = 3,
                     },
                     new Exercise
                     {
                         CustomerId = "1",
-                        PrimaryId = 3,
+                        Id = 3,
                     },
                 },
             };
@@ -170,9 +170,9 @@
             {
                 CustomerId = "2",
                 Description = "Wrong",
-                ExerciseSetId = 2,
+                UnitId = 2,
                 Name = "Names",
-                PrimaryId = 2,
+                Id = 2,
                 Reps = 1,
                 Set = 2,
                 Weight = 10,
@@ -186,9 +186,9 @@
             {
                 CustomerId = "1",
                 Description = "Wrong",
-                ExerciseSetId = 2,
+                UnitId = 2,
                 Name = "Names",
-                PrimaryId = 1,
+                Id = 1,
                 Reps = 1,
                 Set = 2,
                 Weight = 10,
@@ -202,9 +202,9 @@
             {
                 CustomerId = "1",
                 Description = "Wrong",
-                ExerciseSetId = 2,
+                UnitId = 2,
                 Name = "Names",
-                PrimaryId = 0,
+                Id = 0,
                 Reps = 1,
                 Set = 2,
                 Weight = 10,
@@ -218,9 +218,9 @@
             {
                 CustomerId = "3",
                 Description = "Wrong",
-                ExerciseSetId = 2,
+                UnitId = 2,
                 Name = "Names",
-                PrimaryId = 5,
+                Id = 5,
                 Reps = 1,
                 Set = 2,
                 Weight = 10,
@@ -245,9 +245,9 @@
                     Reps = 1,
                     CustomerId = string.Empty,
                     Description = "asdadas",
-                    PrimaryId = 1,
+                    Id = 1,
                     Name = "name",
-                    ExerciseSetId = 2,
+                    UnitId = 2,
                     Set = 1,
                     Weight = 10,
                 },
@@ -261,9 +261,9 @@
                     Reps = 1,
                     CustomerId = string.Empty,
                     Description = "asdadas",
-                    PrimaryId = 0,
+                    Id = 0,
                     Name = "name",
-                    ExerciseSetId = 2,
+                    UnitId = 2,
                     Set = 1,
                     Weight = 3000,
                 },
@@ -277,9 +277,9 @@
                     Reps = 1,
                     CustomerId = string.Empty,
                     Description = "asdadas",
-                    PrimaryId = 0,
+                    Id = 0,
                     Name = "name",
-                    ExerciseSetId = 2,
+                    UnitId = 2,
                     Set = 1,
                     Weight = 1,
                 },
@@ -293,9 +293,9 @@
                     Reps = 1,
                     CustomerId = " ",
                     Description = "asdadas",
-                    PrimaryId = 1,
+                    Id = 1,
                     Name = "name",
-                    ExerciseSetId = 2,
+                    UnitId = 2,
                     Set = 1,
                     Weight = 10,
                 },
@@ -309,9 +309,9 @@
                     Reps = 1,
                     CustomerId = "3 ",
                     Description = "asdadas",
-                    PrimaryId = 1,
+                    Id = 1,
                     Name = "name",
-                    ExerciseSetId = 2,
+                    UnitId = 2,
                     Set = 1,
                     Weight = 10,
                 },

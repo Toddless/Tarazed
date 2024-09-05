@@ -399,3 +399,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/scr/Proto/SpielPlatzt/SpielPlatzt.csproj
+/scr/Proto/SpielPlatzt/SpielPlatzt.csproj
+/scr/Proto/SpielPlatzt
+/scr/Proto/Proto.sln

@@ -27,9 +27,9 @@
                 Reps = 1,
                 CustomerId = string.Empty,
                 Description = "asdadas",
-                PrimaryId = 0,
+                Id = 0,
                 Name = "name",
-                ExerciseSetId = 2,
+                UnitId = 2,
                 Set = 1,
                 Weight = 10,
             };
@@ -51,9 +51,9 @@
                 Reps = 1,
                 CustomerId = string.Empty,
                 Description = string.Empty,
-                PrimaryId = 0,
+                Id = 0,
                 Name = "name",
-                ExerciseSetId = 2,
+                UnitId = 2,
                 Set = 1,
                 Weight = 10,
             };

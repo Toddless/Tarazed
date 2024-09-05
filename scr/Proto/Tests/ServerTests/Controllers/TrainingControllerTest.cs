@@ -86,27 +86,27 @@
                     new TrainingPlan
                     {
                          CustomerId = "1",
-                         PrimaryId = 1,
+                         Id = 1,
                     },
                     new TrainingPlan
                     {
                         CustomerId = "1",
-                        PrimaryId = 2,
+                        Id = 2,
                     },
                     new TrainingPlan
                     {
                         CustomerId = "2",
-                        PrimaryId = 2,
+                        Id = 2,
                     },
                     new TrainingPlan
                     {
                         CustomerId = "2",
-                        PrimaryId = 3,
+                        Id = 3,
                     },
                     new TrainingPlan
                     {
                         CustomerId = "1",
-                        PrimaryId = 3,
+                        Id = 3,
                     },
                 },
             };
@@ -120,7 +120,7 @@
                 new TrainingPlan
                 {
                     CustomerId = "1",
-                    PrimaryId = 1,
+                    Id = 1,
                 },
                 0L,
                 true,
@@ -131,7 +131,7 @@
                 new TrainingPlan
                 {
                     CustomerId = "2",
-                    PrimaryId = 1,
+                    Id = 1,
                 },
                 1L,
                 true,
@@ -142,7 +142,7 @@
                 new TrainingPlan
                 {
                     CustomerId = "1",
-                    PrimaryId = 1,
+                    Id = 1,
                 },
                 2L,
                 true,
@@ -153,7 +153,7 @@
                 new TrainingPlan
                 {
                     CustomerId = "1",
-                    PrimaryId = 1,
+                    Id = 1,
                 },
                 1L,
                 false,
@@ -171,7 +171,7 @@
             {
                 CustomerId = "2",
                 Name = "Names",
-                PrimaryId = 2,
+                Id = 2,
             },
                 true,
                 Errors.ElementNotExists,
@@ -182,7 +182,7 @@
             {
                 CustomerId = "1",
                 Name = "Names",
-                PrimaryId = 1,
+                Id = 1,
             },
                 false,
                 null,
@@ -193,7 +193,7 @@
             {
                 CustomerId = "1",
                 Name = "Names",
-                PrimaryId = 0,
+                Id = 0,
             },
                 true,
                 Errors.InvalidRequest_PrimaryKeyNotSet,
@@ -204,7 +204,7 @@
             {
                 CustomerId = "3",
                 Name = "Names",
-                PrimaryId = 5,
+                Id = 5,
             },
                 true,
                 Errors.ElementNotExists,
@@ -224,7 +224,7 @@
                 new TrainingPlan
                 {
                     CustomerId = string.Empty,
-                    PrimaryId = 1,
+                    Id = 1,
                     Name = "name",
                 },
                 true,
@@ -235,7 +235,7 @@
                 new TrainingPlan
                 {
                     CustomerId = string.Empty,
-                    PrimaryId = 0,
+                    Id = 0,
                     Name = string.Empty,
                 },
                 true,
@@ -246,7 +246,7 @@
                 new TrainingPlan
                 {
                     CustomerId = string.Empty,
-                    PrimaryId = 0,
+                    Id = 0,
                     Name = "name",
                 },
                 false,
@@ -257,7 +257,7 @@
                 new TrainingPlan
                 {
                     CustomerId = " ",
-                    PrimaryId = 1,
+                    Id = 1,
                     Name = "name",
                 },
                 true,
@@ -268,7 +268,7 @@
                 new TrainingPlan
                 {
                     CustomerId = "3",
-                    PrimaryId = 1,
+                    Id = 1,
                     Name = "name",
                 },
                 true,

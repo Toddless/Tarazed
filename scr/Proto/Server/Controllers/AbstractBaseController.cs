@@ -12,12 +12,13 @@
 
     [Authorize]
     [Route("[controller]")]
+    [Produces("application/json")]
     public abstract class AbstractBaseController<TU> : Controller
         where TU : class, IEntity
     {
-        protected readonly IDatabaseContext _context;
-        protected readonly ILogger _logger;
-        protected readonly UserManager<ApplicationUser> _manager;
+        private readonly IDatabaseContext _context;
+        private readonly ILogger _logger;
+        private readonly UserManager<ApplicationUser> _manager;
 
         public AbstractBaseController(
             UserManager<ApplicationUser> manager,
@@ -32,8 +33,23 @@
             _logger = logger;
         }
 
+        protected IDatabaseContext Context
+        {
+            get { return _context; }
+        }
+
+        protected ILogger Logger
+        {
+            get { return _logger; }
+        }
+
+        protected UserManager<ApplicationUser> Manager
+        {
+            get { return _manager; }
+        }
+
         [HttpGet]
-        public async virtual Task<IEnumerable<TU>?> GetAsync(IEnumerable<long>? ids, bool useNavigationProperties = false)
+        public async virtual Task<IEnumerable<TU>?> GetAsync(IEnumerable<long>? ids, bool loadAdditionalData = false)
         {
             try
             {
@@ -54,7 +70,7 @@
                     query = query.Where(o => ids.Contains(o.Id));
                 }
 
-                if (useNavigationProperties)
+                if (loadAdditionalData)
                 {
                     query = AddIncludes(query);
                 }

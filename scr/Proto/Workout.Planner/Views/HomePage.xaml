@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BaseView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Workout.Planner.ViewModels"
+             xmlns:views="clr-namespace:Workout.Planner.Views"
+             x:Class="Workout.Planner.Views.HomePage"
+             x:DataType="viewModels:HomePageViewModel"
+             Title="HomePage"
+             Shell.PresentationMode="Animated">
+    <StackLayout  Spacing="10" Margin="10">
+        <Label 
+            Text="Welcome to .NET MAUI!"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+        <ListView ItemsSource="{x:Binding Plans, Mode=OneWay}"
+                  SelectedItem="{x:Binding SelectedPlan, Mode=TwoWay}"/>
+    </StackLayout>
+</views:BaseView>

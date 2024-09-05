@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class SwaggerParameterItnoreAttribute : Attribute
+    public class SwaggerParameterIgnoreAttribute : Attribute
     {
     }
 

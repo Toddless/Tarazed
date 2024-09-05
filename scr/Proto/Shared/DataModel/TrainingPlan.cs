@@ -20,7 +20,7 @@
         [ForeignKey("AspNetUsers")]
         public string CustomerId { get; set; } = string.Empty;
 
-        [SwaggerParameterItnore]
-        public Collection<Unit>? Units { get; internal set; }
+        [SwaggerParameterIgnore]
+        public Collection<Unit>? Units { get;  set; }
     }
 }

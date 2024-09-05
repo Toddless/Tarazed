@@ -1,10 +1,9 @@
 ﻿namespace Server.Filters
 {
-    using System;
     using System.Reflection;
     using DataModel.Attributes;
 
-    public class SwaggerParameterItnoreFilter : Swashbuckle.AspNetCore.SwaggerGen.IOperationFilter
+    public class SwaggerParameterIgnoreFilter : Swashbuckle.AspNetCore.SwaggerGen.IOperationFilter
     {
         public void Apply(Microsoft.OpenApi.Models.OpenApiOperation operation, Swashbuckle.AspNetCore.SwaggerGen.OperationFilterContext context)
         {
@@ -28,7 +27,7 @@
 
             foreach (var property in properties)
             {
-                if (property.GetCustomAttribute<SwaggerParameterItnoreAttribute>() != null)
+                if (property.GetCustomAttribute<SwaggerParameterIgnoreAttribute>() != null)
                 {
                     propertiesToRemove.Add(property.Name);
                 }
@@ -70,7 +69,7 @@
 
             if (parameterDescription.ModelMetadata is Microsoft.AspNetCore.Mvc.ModelBinding.Metadata.DefaultModelMetadata metadata)
             {
-                return metadata.Attributes.Attributes.Any(attribute => attribute.GetType() == typeof(SwaggerParameterItnoreAttribute));
+                return metadata.Attributes.Attributes.Any(attribute => attribute.GetType() == typeof(SwaggerParameterIgnoreAttribute));
             }
 
             return false;
