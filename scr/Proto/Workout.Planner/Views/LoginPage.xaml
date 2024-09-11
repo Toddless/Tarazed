@@ -2,26 +2,26 @@
 <views:BaseView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:Workout.Planner.ViewModels"
+             xmlns:strings="clr-namespace:Workout.Planner.Strings"
              xmlns:views="clr-namespace:Workout.Planner.Views"
              x:Class="Workout.Planner.Views.LoginPage"
-             x:DataType="viewModels:LoginPageViewModel"
-             Title="LoginPage">
+             x:DataType="viewModels:LoginPageViewModel">
     <Border Margin="50,100" Background="Transparent">
         <StackLayout Spacing="10" Margin="10" VerticalOptions="CenterAndExpand" Background="Transparent">
             <Entry 
-           Placeholder="Email eingeben"
+           Placeholder="{x:Static strings:AppStrings.XmlEmailPlaceholder}"
            Text="{x:Binding Email}"
            ClearButtonVisibility="WhileEditing"/>
             <Entry 
-           Placeholder="Password eingeben"
+           Placeholder="{x:Static strings:AppStrings.XmlPasswordPlaceholder}"
            ClearButtonVisibility="WhileEditing"
            Text="{x:Binding Password}"
            IsPassword="True"/>
             <Button 
-           Text="Register New"
+           Text="{x:Static strings:AppStrings.XmlRegisterButton}"
            Command="{x:Binding RegisterCommand}"/>
             <Button 
-           Text="Login"
+           Text="{x:Static strings:AppStrings.XmlLoginButton}"
            Command="{x:Binding LoginCommand}"/>
         </StackLayout>
     </Border>

@@ -130,6 +130,30 @@
             }
         }
 
+        public async Task DeleteAsync(string route, CancellationToken token)
+        {
+            HttpResponseMessage? request = null;
+
+            if (_httpClient == null)
+            {
+                throw new NotSupportedException(nameof(this.PutAsync) + ExceptionMessages.NotSupportedException);
+            }
+
+            request = await _httpClient.DeleteAsync(route, token).ConfigureAwait(false);
+            if (_refreshTokenAsync != null && request.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                if (await _refreshTokenAsync.Invoke())
+                {
+                    request = await _httpClient.DeleteAsync(route, token).ConfigureAwait(false);
+                }
+            }
+
+            if (request == null || request.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                throw new HttpRequestException(ExceptionMessages.LoginExpired + $"StatusCode={new { request?.StatusCode, route }}");
+            }
+        }
+
         public void SetBearerToken(string token)
         {
             if (_httpClient == null)

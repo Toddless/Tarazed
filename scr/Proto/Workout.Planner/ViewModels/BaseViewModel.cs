@@ -1,11 +1,10 @@
 ﻿namespace Workout.Planner.ViewModels
 {
-    using System.ComponentModel;
-    using System.Runtime.CompilerServices;
     using Microsoft.Extensions.Logging;
+    using Workout.Planner.Models;
     using Workout.Planner.Services;
 
-    public abstract class BaseViewModel : INotifyPropertyChanged, IActiveAware
+    public abstract class BaseViewModel : ObservableObject, IActiveAware
     {
         private readonly INavigationService _navigationService;
         private readonly ILogger<BaseViewModel> _logger;
@@ -20,8 +19,6 @@
             _logger = logger;
             _dispatcher = dispatcher;
         }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected INavigationService NavigationService
         {
@@ -46,6 +43,7 @@
             if (_dispatcher.IsDispatchRequired)
             {
                 await _dispatcher.DispatchAsync(action);
+                return;
             }
 
             action?.Invoke();
@@ -60,18 +58,6 @@
             }
 
             await action.Invoke();
-        }
-
-        protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-        {
-            if (Equals(field, value))
-            {
-                return false;
-            }
-
-            field = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            return true;
         }
 
         protected virtual void RefreshCommands()

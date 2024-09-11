@@ -2,6 +2,8 @@
 {
     public interface IRestApiService : IDisposable
     {
+        Task DeleteAsync(string route, CancellationToken token);
+
         Task<IEnumerable<TV>> GetAsync<TV>(string route, CancellationToken token);
 
         void Initialize(string baseUrl, Func<Task<bool>>? refreshTokenAsync);

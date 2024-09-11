@@ -8,6 +8,6 @@
 
         Task SetTokenAsync(AccessTokenResponse token);
 
-        Task EnsureTokenAsync();
+        Task EnsureAccessTokenNotExpiredAsync();
     }
 }

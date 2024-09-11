@@ -10,6 +10,7 @@
             InitializeComponent();
             Routing.RegisterRoute(RouteNames.HomePage, typeof(HomePage));
             Routing.RegisterRoute(RouteNames.LoginPage, typeof(LoginPage));
+            Routing.RegisterRoute(RouteNames.EditTrainingPage, typeof(EditTrainingPage));
         }
     }
 }

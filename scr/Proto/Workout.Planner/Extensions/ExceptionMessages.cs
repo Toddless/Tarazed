@@ -3,8 +3,8 @@
     public static class ExceptionMessages
     {
         public const string NotSupportedException = " not supported on uninitialized Proxy.";
-        public const string TokenExpired = "Access token ist während der Ausführung des Codes abgelaufen.";
-        public const string LoginExpired = "Anmeldung ist abgelaufen.";
+        public const string TokenExpired = "Access token is expired during the execution of the code.";
+        public const string LoginExpired = "Login is expired.";
         public const string IncorrectEmailOrPassword = "Email or password is incorrect.";
         public const string EmailAlreadyExists = "Email already exists.";
         public const string RefreshTokenNotFound = "Refresh token was not found.";

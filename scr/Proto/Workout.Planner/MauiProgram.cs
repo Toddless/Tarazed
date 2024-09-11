@@ -27,8 +27,10 @@
             builder.Services.AddSingleton<ITrainingService, TrainingService>();
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<HomePage>();
+            builder.Services.AddTransient<EditTrainingPage>();
             builder.Services.AddTransient<LoginPageViewModel>();
             builder.Services.AddTransient<HomePageViewModel>();
+            builder.Services.AddTransient<EditTrainingPageViewModel>();
 
 #if DEBUG
             builder.Logging.AddSerilog(Log.Logger);

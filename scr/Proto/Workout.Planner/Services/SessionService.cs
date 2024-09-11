@@ -35,7 +35,7 @@
             _restAPIService.SetBearerToken(responseToken.AccessToken);
         }
 
-        public async Task EnsureTokenAsync()
+        public async Task EnsureAccessTokenNotExpiredAsync()
         {
             var accessToken = await SecureStorage.Default.GetAsync("accessToken");
             if (string.IsNullOrWhiteSpace(accessToken))

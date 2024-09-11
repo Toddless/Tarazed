@@ -5,14 +5,15 @@
     using Microsoft.Extensions.Logging;
     using Workout.Planner.Extensions;
     using Workout.Planner.Services;
+    using Workout.Planner.Strings;
     using Workout.Planner.Views;
 
     public class LoginPageViewModel : BaseViewModel
     {
         private ILoginService _loginService;
 
-        private string? _email;
-        private string? _password;
+        private string? _email = "s@s.s";
+        private string? _password = "String1";
         private bool _isBusy;
 
         public LoginPageViewModel(
@@ -115,7 +116,7 @@
             catch (Exception ex)
             {
                 Logger.LoggingException(this, ex);
-                await DispatchToUI(() => Shell.Current.DisplayAlert("Authentication", ExceptionMessages.IncorrectEmailOrPassword, "Ok")).ConfigureAwait(false);
+                await DispatchToUI(() => Shell.Current.DisplayAlert(AppStrings.AllertAuthentication, ExceptionMessages.IncorrectEmailOrPassword, AppStrings.OkButton)).ConfigureAwait(false);
             }
             finally
             {
