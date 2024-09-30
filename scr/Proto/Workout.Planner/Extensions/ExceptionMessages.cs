@@ -11,5 +11,7 @@
         public const string RefreshTokenIsExpired = "Refresh token expired.";
         public const string TokenIsExpired = "Token is expired.";
         public const string TokenIsNotFound = "Token is not found.";
+        public const string EmailNotExists = "Email not exists.";
+        public const string ResetCodeOrEmail = "Reset code or email is incorrect.";
     }
 }

@@ -6,7 +6,7 @@
 
     public class Customer
     {
-        [Required(ErrorMessageResourceType = typeof(Errors), ErrorMessage = nameof(Errors.FieldIsRequired))]
+        [Required(ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.FieldIsRequired))]
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
 

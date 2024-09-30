@@ -7,11 +7,14 @@
              x:Class="Workout.Planner.Views.HomePage"
              x:DataType="viewModels:HomePageViewModel">
     <StackLayout  Spacing="10" Margin="10">
-        <CollectionView ItemsSource="{Binding Plans}"
-                        ItemTemplate="{StaticResource TrainingPlanDataTemplate}"
-                        SelectedItem="{Binding SelectedPlan, Mode=TwoWay}"
-                        SelectionMode="Single"/>
-        <Button Text="{x:Static strings:AppStrings.XmlAddNewPlan}"
-                Command="{Binding AddCommand}"/>
+        <Frame MaximumWidthRequest="350" HorizontalOptions="StartAndExpand">
+
+            <CollectionView ItemsSource="{x:Binding Plans}"
+                    ItemTemplate="{StaticResource TrainingPlanDataTemplate}"
+                    SelectedItem="{x:Binding SelectedPlan, Mode=TwoWay}"
+                    SelectionMode="Single"/>
+        </Frame>
+        <Button Text="{x:Static strings:AppStrings.AddNewPlan}"
+            Command="{x:Binding AddCommand}"/>
     </StackLayout>
 </views:BaseView>

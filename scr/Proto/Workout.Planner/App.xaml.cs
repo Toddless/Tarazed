@@ -1,28 +1,13 @@
 ﻿namespace Workout.Planner
 {
-    using System.Globalization;
+    using Workout.Planner.ViewModels;
 
     public partial class App : Application
     {
-        public App()
+        public App(AppShellViewModel appShellViewModel)
         {
-            SetCulture();
             InitializeComponent();
-            MainPage = new AppShell();
-        }
-
-        private void SetCulture()
-        {
-            //var culture = new CultureInfo("de-DE");
-            //CultureInfo.CurrentUICulture = culture;
-            //CultureInfo.DefaultThreadCurrentCulture = culture;
-            //CultureInfo.DefaultThreadCurrentUICulture = culture;
-        }
-
-        protected override void OnStart()
-        {
-            SetCulture();
-            base.OnStart();
+            MainPage = new AppShell(appShellViewModel);
         }
     }
 }

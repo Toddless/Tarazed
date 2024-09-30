@@ -1,4 +1,4 @@
-﻿namespace Workout.Planner.Services
+﻿namespace Workout.Planner.Services.Contracts
 {
     using DataModel;
 
@@ -9,5 +9,7 @@
         Task SetTokenAsync(AccessTokenResponse token);
 
         Task EnsureAccessTokenNotExpiredAsync();
+
+        Task UserLogoutAsync();
     }
 }

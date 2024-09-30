@@ -2,7 +2,7 @@
 {
     using Microsoft.Extensions.Logging;
     using Workout.Planner.Extensions;
-    using Workout.Planner.Services;
+    using Workout.Planner.Services.Contracts;
 
     public abstract class LoadDataBaseViewModel : BaseViewModel
     {
@@ -74,7 +74,7 @@
             catch (UnauthorizedAccessException ex)
             {
                 Logger.LoggingException(this, ex);
-                await DispatchToUI(() => NavigationService.PushPopupPageAsync(RouteNames.LoginPage)).ConfigureAwait(false);
+                await DispatchToUI(() => NavigationService.ShowModalAsync(RouteNames.LoginPage)).ConfigureAwait(false);
             }
         }
 

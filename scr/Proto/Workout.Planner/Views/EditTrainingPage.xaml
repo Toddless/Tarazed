@@ -9,8 +9,8 @@
              Title="{Binding Titel}">
 
     <StackLayout>
-        <Editor Placeholder="{x:Static strings:AppStrings.XmlName}"
-                Text="{Binding PlanName}"/>
+        <Editor Placeholder="{x:Static strings:AppStrings.Name}"
+                Text="{Binding Name}"/>
         <Button Text="{x:Static strings:AppStrings.SaveButton}"
                 Command="{Binding SaveCommand}"/>
     </StackLayout>

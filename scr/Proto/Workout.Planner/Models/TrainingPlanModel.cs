@@ -4,13 +4,13 @@
 
     public class TrainingPlanModel : ObservableObject
     {
-        private TrainingPlan _plan;
-        private string _name;
-        private long _id;
         private Func<TrainingPlanModel, Task> _editPlanFunc;
         private Func<TrainingPlanModel, Task> _deletePlanFunc;
         private Func<TrainingPlanModel, bool> _canEditPlan;
         private Func<TrainingPlanModel, bool> _canDeletePlan;
+        private TrainingPlan _plan;
+        private string _name;
+        private long _id;
 
         private TrainingPlanModel()
         {

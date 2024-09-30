@@ -15,6 +15,42 @@
         {
         }
 
+        public async Task<TU> GetUserAsync<TU>(string route, CancellationToken token)
+        {
+            HttpResponseMessage? request = null;
+
+            if (_httpClient == null)
+            {
+                throw new NotSupportedException(nameof(this.GetAsync) + ExceptionMessages.NotSupportedException);
+            }
+
+            request = await _httpClient.GetAsync(route, token).ConfigureAwait(false);
+            if (_refreshTokenAsync != null && request.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                if (await _refreshTokenAsync.Invoke())
+                {
+                    request = await _httpClient.GetAsync(route, token).ConfigureAwait(false);
+                }
+            }
+
+            if (request == null || request.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                throw new HttpRequestException(ExceptionMessages.LoginExpired + $"StatusCode={new { request?.StatusCode, route }}");
+            }
+
+            using (var responce = await request.Content.ReadAsStreamAsync(token).ConfigureAwait(false))
+            {
+                var result = await JsonSerializer.DeserializeAsync<TU>(responce, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }, token).ConfigureAwait(false);
+
+                if (result == null)
+                {
+                    throw new JsonException(ExceptionMessages.TokenExpired);
+                }
+
+                return result;
+            }
+        }
+
         public async Task<IEnumerable<TV>> GetAsync<TV>(string route, CancellationToken token)
         {
             HttpResponseMessage? request = null;
@@ -130,7 +166,7 @@
             }
         }
 
-        public async Task DeleteAsync(string route, CancellationToken token)
+        public async Task<bool> DeleteAsync(string route, CancellationToken token)
         {
             HttpResponseMessage? request = null;
 
@@ -152,6 +188,8 @@
             {
                 throw new HttpRequestException(ExceptionMessages.LoginExpired + $"StatusCode={new { request?.StatusCode, route }}");
             }
+
+            return true;
         }
 
         public void SetBearerToken(string token)
@@ -164,6 +202,23 @@
             if (_httpClient.DefaultRequestHeaders.Authorization == null || !Equals($"Bearer {token}"))
             {
                 _httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {token}");
+            }
+        }
+
+        public void RemoveBearerToken(string token)
+        {
+            if (_httpClient == null)
+            {
+                throw new NotSupportedException(nameof(this.SetBearerToken) + ExceptionMessages.NotSupportedException);
+            }
+
+            if (_httpClient.DefaultRequestHeaders.Authorization == null)
+            {
+                return;
+            }
+            else
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = null;
             }
         }
 

@@ -1,21 +1,25 @@
 ﻿namespace Workout.Planner.ViewModels
 {
     using System.Threading.Tasks;
+    using System.Windows.Input;
     using DataModel;
+    using DataModel.Attributes;
     using Microsoft.Extensions.Logging;
     using Workout.Planner.Extensions;
-    using Workout.Planner.Services;
+    using Workout.Planner.Services.Contracts;
     using Workout.Planner.Strings;
-    using Workout.Planner.Views;
 
     public class LoginPageViewModel : BaseViewModel
     {
         private ILoginService _loginService;
+#if DEBUG
+        private string _password = "String1";
+        private string _email = "mail@mail.com";
 
-        private string? _email = "s@s.s";
-        private string? _password = "String1";
-        private bool _isBusy;
-
+#else
+        private string _password;
+        private string _email;
+#endif
         public LoginPageViewModel(
             INavigationService navigationService,
             ILoginService loginService,
@@ -24,87 +28,41 @@
             : base(navigationService, logger, dispatcher)
         {
             ArgumentNullException.ThrowIfNull(loginService);
-            RegisterCommand = new Command(async () => await RegisterUser(), CanLogin);
+            RecoveryPasswordCommand = new Command(async () => await PasswordRecoveryAsync(), CanRecovery);
+            RegisterCommand = new Command(async () => await RegisterUser(), CanRegister);
             LoginCommand = new Command(async () => await LoginUserAsync(), CanLogin);
+            EntryUnfocusedCommand = new Command(OnEntryUnfocused);
             _loginService = loginService;
+            RegisterProperties();
         }
+
+        public ICommand EntryUnfocusedCommand { get; private set; }
+
+        public Command RecoveryPasswordCommand { get; }
 
         public Command RegisterCommand { get; }
 
         public Command LoginCommand { get; }
 
-        public bool IsBusy
-        {
-            get => _isBusy;
-            set => SetProperty(ref _isBusy, value);
-        }
-
-        public string? Email
-        {
-            get => _email;
-            set
-            {
-                if (SetProperty(ref _email, value))
-                {
-                    RefreshCommands();
-                }
-            }
-        }
-
-        public string? Password
+        [PropertyToValidate]
+        public string Password
         {
             get => _password;
-            set
-            {
-                if (SetProperty(ref _password, value))
-                {
-                    RefreshCommands();
-                }
-            }
+            set { SetProperty(ref _password, value); }
         }
 
-        protected override void RefreshCommands()
+        [PropertyToValidate]
+        public string Email
         {
-            base.RefreshCommands();
-            LoginCommand?.ChangeCanExecute();
-            RegisterCommand?.ChangeCanExecute();
+            get => _email;
+            set { SetProperty(ref _email, value); }
         }
 
-        private bool CanLogin()
-        {
-            return !IsBusy && !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password);
-        }
-
-        private async Task RegisterUser()
+        protected async Task LoginUserAsync()
         {
             try
             {
-                IsBusy = true;
-                UserRequest user = new ()
-                {
-                    Email = Email!,
-                    Password = Password!,
-                };
-                await _loginService.RegisterAsync(user).ConfigureAwait(false);
-
-                await DispatchToUI(() => NavigationService.NavigateToAsync(nameof(HomePage)).ConfigureAwait(false));
-            }
-            catch (Exception ex)
-            {
-                Logger.LoggingException(this, ex);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        private async Task LoginUserAsync()
-        {
-            try
-            {
-                IsBusy = true;
-                UserRequest user = new ()
+                UserRequest user = new()
                 {
                     Email = Email!,
                     Password = Password!,
@@ -113,20 +71,80 @@
 
                 await UserLoggedAsync();
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException)
             {
                 Logger.LoggingException(this, ex);
-                await DispatchToUI(() => Shell.Current.DisplayAlert(AppStrings.AllertAuthentication, ExceptionMessages.IncorrectEmailOrPassword, AppStrings.OkButton)).ConfigureAwait(false);
-            }
-            finally
-            {
-                IsBusy = false;
+                await NavigationService.DisplayAlertOnUiAsync(
+                    AppStrings.Authentication,
+                    ExceptionMessages.IncorrectEmailOrPassword,
+                    AppStrings.OkButton).ConfigureAwait(false);
             }
         }
 
-        private async Task UserLoggedAsync()
+        protected async Task PasswordRecoveryAsync()
         {
-            await DispatchToUI(() => NavigationService.PopPopupPageAsync()).ConfigureAwait(false);
+            await NavigationService.NavigateToOnUIAsync(RouteNames.PasswordRecoveryPage).ConfigureAwait(false);
+        }
+
+        protected async Task UserLoggedAsync()
+        {
+            await NavigationService.CloseModalAsync().ConfigureAwait(false);
+        }
+
+        protected async Task RegisterUser()
+        {
+            await NavigationService.NavigateToOnUIAsync(RouteNames.RegisterUserPage).ConfigureAwait(false);
+        }
+
+        protected override void RefreshCommands()
+        {
+            base.RefreshCommands();
+            LoginCommand?.ChangeCanExecute();
+            RegisterCommand?.ChangeCanExecute();
+            RecoveryPasswordCommand?.ChangeCanExecute();
+        }
+
+        protected override string? Validate(string collumName)
+        {
+            var result = string.Empty;
+            switch (collumName)
+            {
+                case nameof(Email):
+                    result = ValidationExtensions.ValidateEmail(Email);
+                    if (!string.IsNullOrWhiteSpace(result))
+                    {
+                        return result;
+                    }
+
+                    break;
+                case nameof(Password):
+                    result = ValidationExtensions.ValidatePassword(Password);
+                    if (!string.IsNullOrWhiteSpace(result))
+                    {
+                        return result;
+                    }
+
+                    break;
+                default:
+                    return AppStrings.SomethingWrong;
+            }
+
+            return null;
+        }
+
+        private bool CanRecovery()
+        {
+            return !IsBusy && !HasError;
+        }
+
+        private bool CanLogin()
+        {
+            return !IsBusy && !HasError;
+        }
+
+        private bool CanRegister()
+        {
+            return !IsBusy;
         }
     }
 }

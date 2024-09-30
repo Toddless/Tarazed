@@ -1,44 +1,25 @@
 ﻿namespace Workout.Planner.Services
 {
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using DataModel;
-    using Workout.Planner.Extensions;
+    using Microsoft.Extensions.DependencyInjection;
+    using Workout.Planner.Services.Contracts;
 
-    public class TrainingService : ITrainingService
+    public class TrainingService : UserDataBaseService<TrainingPlan>, ITrainingService
     {
-        private IRestApiService _restAPIService;
-
-        public TrainingService([FromKeyedServices("AuthRestAPI")] IRestApiService restAPIService)
+        public TrainingService([FromKeyedServices("AuthRestAPI")] IRestApiService restApiService)
+            : base(restApiService)
         {
-            _restAPIService = restAPIService;
         }
 
-        public async Task<IEnumerable<TrainingPlan>> GetTrainingAsync(bool additionalData, CancellationToken token, IEnumerable<long>? ids = null)
-        {
-            string route = RouteNames.Training;
-            route = CreateRouteExtensions.CreateGetStringRoute(ids, route, additionalData);
-            return await _restAPIService.GetAsync<TrainingPlan>(route, token).ConfigureAwait(false);
-        }
+        public override Task<IEnumerable<TrainingPlan>> GetDataAsync(bool additionalData, CancellationToken token, IEnumerable<long>? ids = null) => base.GetDataAsync(additionalData, token, ids);
 
-        public async Task<TrainingPlan> UpdateTrainingAsync(TrainingPlan plan, CancellationToken token)
-        {
-            string route = RouteNames.Training;
-            route = CreateRouteExtensions.ObjToQuery(plan, route);
-            return await _restAPIService.PostAsync<TrainingPlan, TrainingPlan>(route, plan, token).ConfigureAwait(false);
-        }
+        public override Task<TrainingPlan> CreateDataAsync(TrainingPlan item, CancellationToken token) => base.CreateDataAsync(item, token);
 
-        public async Task<TrainingPlan> CreateTrainingAsync(TrainingPlan plan, CancellationToken token)
-        {
-            string route = RouteNames.Training;
-            route = CreateRouteExtensions.ObjToQuery(plan, route);
-            return await _restAPIService.PutAsync<TrainingPlan, TrainingPlan>(route, plan, token).ConfigureAwait(false);
-        }
+        public override Task<bool> DeleteDataAsync(IEnumerable<long>? ids, CancellationToken token) => base.DeleteDataAsync(ids, token);
 
-        public async Task<bool> DeleteTrainingAsync(IEnumerable<long>? ids, CancellationToken token)
-        {
-            string route = RouteNames.Training;
-            route = CreateRouteExtensions.CreateDeleteStringRoute(ids, route);
-            await _restAPIService.DeleteAsync(route, token).ConfigureAwait(false);
-            return true;
-        }
+        public override Task<TrainingPlan> UpdataDataAsync(TrainingPlan item, CancellationToken token) => base.UpdataDataAsync(item, token);
     }
 }

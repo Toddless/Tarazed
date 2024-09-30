@@ -3,6 +3,7 @@
     using Microsoft.Extensions.Logging;
     using Serilog;
     using Workout.Planner.Services;
+    using Workout.Planner.Services.Contracts;
     using Workout.Planner.ViewModels;
     using Workout.Planner.Views;
 
@@ -24,13 +25,28 @@
             builder.Services.AddSingleton<ISessionService, SessionService>();
             builder.Services.AddSingleton<ILoginService, LoginService>();
             builder.Services.AddSingleton<INavigationService, NavigationService>();
+            builder.Services.AddSingleton<IUserService, UserService>();
             builder.Services.AddSingleton<ITrainingService, TrainingService>();
-            builder.Services.AddTransient<LoginPage>();
+            builder.Services.AddSingleton<IUnitService, UnitService>();
+            builder.Services.AddTransient<UserPage>();
+            builder.Services.AddTransient<UnitPage>();
             builder.Services.AddTransient<HomePage>();
+            builder.Services.AddTransient<AboutPage>();
+            builder.Services.AddTransient<LoginPage>();
+            builder.Services.AddTransient<SettingsPage>();
+            builder.Services.AddTransient<RegisterUserPage>();
+            builder.Services.AddTransient<PasswordRecoveryPage>();
             builder.Services.AddTransient<EditTrainingPage>();
-            builder.Services.AddTransient<LoginPageViewModel>();
             builder.Services.AddTransient<HomePageViewModel>();
+            builder.Services.AddTransient<UserPageViewModel>();
+            builder.Services.AddTransient<AppShellViewModel>();
+            builder.Services.AddTransient<UnitPageViewModel>();
+            builder.Services.AddTransient<LoginPageViewModel>();
+            builder.Services.AddTransient<AboutPageViewModel>();
+            builder.Services.AddTransient<SettingsPageViewModel>();
+            builder.Services.AddTransient<RegisterUserPageViewModel>();
             builder.Services.AddTransient<EditTrainingPageViewModel>();
+            builder.Services.AddTransient<PasswordRecoveryPageViewModel>();
 
 #if DEBUG
             builder.Logging.AddSerilog(Log.Logger);

@@ -2,43 +2,55 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Windows.Input;
     using DataModel;
+    using DataModel.Attributes;
     using Microsoft.Extensions.Logging;
     using Workout.Planner.Extensions;
-    using Workout.Planner.Services;
+    using Workout.Planner.Services.Contracts;
     using Workout.Planner.Strings;
 
     public class EditTrainingPageViewModel : LoadDataBaseViewModel, IQueryAttributable
     {
-        private ISessionService _sessionService;
-        private ITrainingService _trainingService;
-        private TrainingPlan _planModel;
-        private string _planName;
+        private readonly ISessionService _sessionService;
+        private readonly ITrainingService _trainingService;
+        private TrainingPlan? _plan;
+        private string? _name;
         private long? _id;
 
-        public EditTrainingPageViewModel(INavigationService navigationService, ILogger<LoadDataBaseViewModel> logger, IDispatcher dispatcher, ISessionService sessionService, ITrainingService trainingService)
+        public EditTrainingPageViewModel(
+            INavigationService navigationService,
+            ILogger<EditTrainingPageViewModel> logger,
+            IDispatcher dispatcher,
+            ISessionService sessionService,
+            ITrainingService trainingService)
             : base(navigationService, logger, dispatcher)
         {
             ArgumentNullException.ThrowIfNull(trainingService);
             ArgumentNullException.ThrowIfNull(sessionService);
             SaveCommand = new Command(SaveChangesAsync, CanSaveChanges);
+            EntryUnfocusedCommand = new Command(OnEntryUnfocused);
             _trainingService = trainingService;
             _sessionService = sessionService;
+            RegisterProperties();
         }
 
-        public string PlanName
+        public ICommand EntryUnfocusedCommand { get; private set; }
+
+        public Command SaveCommand { get; }
+
+        [PropertyToValidate]
+        public string? Name
         {
-            get => _planName;
+            get => _name;
             set
             {
-                if (SetProperty(ref _planName, value))
+                if (SetProperty(ref _name, value))
                 {
                     RefreshCommands();
                 }
             }
         }
-
-        public Command SaveCommand { get; }
 
         public string Titel
         {
@@ -60,34 +72,28 @@
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            if (query.ContainsKey(nameof(Id)))
+            if (query.TryGetValue(nameof(Id), out object? value))
             {
-                Id = (long?)query[nameof(Id)];
+                Id = (long?)value;
             }
-        }
-
-        protected override void RefreshCommands()
-        {
-            base.RefreshCommands();
-            SaveCommand?.ChangeCanExecute();
         }
 
         protected override async Task LoadDataAsync(CancellationToken token)
         {
             try
             {
-                await EnsureAccesTokenAsync(_sessionService).ConfigureAwait(false);
                 token.ThrowIfCancellationRequested();
+                await EnsureAccesTokenAsync(_sessionService).ConfigureAwait(false);
 
                 // aber im fall wenn es nichts ausgewählt wurde, wird hier null übergeben, was führt dazu, dass
                 // wir alle pläne laden. Diese seite kann sich mit mehrere plane nicht umgehen => wird exception geworfen.
                 if (Id.HasValue)
                 {
-                    var plans = await _trainingService.GetTrainingAsync(false, token, [Id.Value]).ConfigureAwait(false);
-                    _planModel = plans.Single();
+                    var plans = await _trainingService.GetDataAsync(false, token, [Id.Value]).ConfigureAwait(false);
+                    _plan = plans.Single();
                     await DispatchToUI(() =>
                     {
-                        PlanName = _planModel.Name;
+                        Name = _plan.Name;
                     }).ConfigureAwait(false);
                 }
             }
@@ -97,39 +103,38 @@
             }
         }
 
-        private async void SaveChangesAsync()
+        protected async void SaveChangesAsync()
         {
             CancellationToken token = default;
             try
             {
                 await EnsureAccesTokenAsync(_sessionService).ConfigureAwait(false);
                 token = GetCancelationToken();
-                if (_planModel != null)
+                if (_plan != null)
                 {
-                    if (PlanName == _planModel.Name)
+                    if (Name == _plan.Name)
                     {
-                        var x = Thread.CurrentThread.CurrentUICulture;
-
-                        await DispatchToUI(() => Shell.Current.CurrentPage.DisplayAlert(AppStrings.AllertInformation, AppStrings.NewNameMatch, AppStrings.OkButton)).ConfigureAwait(false);
+                        await NavigationService.DisplayAlertOnUiAsync(AppStrings.Information, AppStrings.NameMatch, AppStrings.OkButton).ConfigureAwait(false);
                         return;
                     }
 
-                    _planModel.Name = PlanName;
+                    _plan.Name = Name!;
 
-                    await _trainingService.UpdateTrainingAsync(_planModel, token).ConfigureAwait(false);
+                    await _trainingService.UpdataDataAsync(_plan, token).ConfigureAwait(false);
                 }
                 else
                 {
                     var plan = new TrainingPlan
                     {
-                        Name = PlanName,
+                        Name = Name!,
                     };
-                    await _trainingService.CreateTrainingAsync(plan, token).ConfigureAwait(false);
+
+                    var result = await _trainingService.CreateDataAsync(plan, token).ConfigureAwait(false);
                 }
 
-                await DispatchToUI(() => Shell.Current.CurrentPage.DisplayAlert(AppStrings.AllertInformation, AppStrings.ChangesWasSaved, AppStrings.OkButton)).ConfigureAwait(false);
+                await NavigationService.DisplayAlertOnUiAsync(AppStrings.Information, AppStrings.Successfull, AppStrings.OkButton).ConfigureAwait(false);
 
-                await DispatchToUI(() => NavigationService.NavigateToAsync(RouteNames.Back)).ConfigureAwait(false);
+                await NavigationService.NavigateToOnUIAsync(RouteNames.Back).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -137,13 +142,44 @@
             }
             finally
             {
-                ReleaseCancelationToken(token);
+                await DispatchToUI(() => ReleaseCancelationToken(token)).ConfigureAwait(false);
             }
+        }
+
+        protected override void RefreshCommands()
+        {
+            base.RefreshCommands();
+            SaveCommand?.ChangeCanExecute();
+        }
+
+        protected override string? Validate(string collumName)
+        {
+            string result = string.Empty;
+            switch (collumName)
+            {
+                case nameof(Name):
+                    if (string.IsNullOrWhiteSpace(Name))
+                    {
+                        return AppStrings.IsRequerd;
+                    }
+
+                    result = ValidationExtensions.ValidateName(Name);
+                    if (!string.IsNullOrWhiteSpace(result))
+                    {
+                        return result;
+                    }
+
+                    break;
+                default:
+                    return AppStrings.SomethingWrong;
+            }
+
+            return null;
         }
 
         private bool CanSaveChanges()
         {
-            return !IsBusy && !string.IsNullOrEmpty(PlanName);
+            return !IsBusy && !HasError;
         }
     }
 }

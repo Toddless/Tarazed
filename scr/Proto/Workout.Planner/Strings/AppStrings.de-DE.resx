@@ -117,22 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AllertAuthentication" xml:space="preserve">
+  <data name="Authentication" xml:space="preserve">
     <value>Authentifizierung</value>
   </data>
-  <data name="AllertDeleted" xml:space="preserve">
+  <data name="Deleted" xml:space="preserve">
     <value>Erfolgreich gelöscht</value>
   </data>
-  <data name="AllertInformation" xml:space="preserve">
+  <data name="Information" xml:space="preserve">
     <value>Information</value>
   </data>
-  <data name="AllertSomethingWrong" xml:space="preserve">
+  <data name="SomethingWrong" xml:space="preserve">
     <value>Etwas ist schiefgegangen. Versuch es noch mal</value>
   </data>
-  <data name="ChangesWasSaved" xml:space="preserve">
+  <data name="Successfull" xml:space="preserve">
     <value>Erfolgreich gespeichert</value>
   </data>
-  <data name="NewNameMatch" xml:space="preserve">
+  <data name="NameMatch" xml:space="preserve">
     <value>Alter Name entspricht den alten Namen</value>
   </data>
   <data name="OkButton" xml:space="preserve">
@@ -147,22 +147,94 @@
   <data name="TitelEdit" xml:space="preserve">
     <value>Plan bearbeiten</value>
   </data>
-  <data name="XmlName" xml:space="preserve">
+  <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
-  <data name="XmlAddNewPlan" xml:space="preserve">
+  <data name="AddNewPlan" xml:space="preserve">
     <value>Neues Plan hinzufügen</value>
   </data>
-  <data name="XmlEmailPlaceholder" xml:space="preserve">
+  <data name="EmailPlaceholder" xml:space="preserve">
     <value>Email eingeben</value>
   </data>
-  <data name="XmlPasswordPlaceholder" xml:space="preserve">
+  <data name="PasswordPlaceholder" xml:space="preserve">
     <value>Password eingeben</value>
   </data>
-  <data name="XmlRegisterButton" xml:space="preserve">
+  <data name="RegisterButton" xml:space="preserve">
     <value>Neue Profile anlegen</value>
   </data>
-  <data name="XmlLoginButton" xml:space="preserve">
+  <data name="LoginButton" xml:space="preserve">
     <value>Anmelden</value>
+  </data>
+  <data name="RecoveryPasswordButton" xml:space="preserve">
+    <value>Password wiederherstellen</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warnung</value>
+  </data>
+  <data name="DeletingProfile" xml:space="preserve">
+    <value>Geben Sie Ihres Passwort ein, um das Profile permanent zu löschen</value>
+  </data>
+  <data name="CancelButton" xml:space="preserve">
+    <value>Stornieren</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Senden</value>
+  </data>
+  <data name="EmailAlreadyExists" xml:space="preserve">
+    <value>Das Email existiert schon</value>
+  </data>
+  <data name="AuthorizationExpired" xml:space="preserve">
+    <value>Die Autorisierung ist abgelaufen. Melden Sie sich wieder an</value>
+  </data>
+  <data name="LogoutButton" xml:space="preserve">
+    <value>Abmelden</value>
+  </data>
+  <data name="SettingsButton" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="DeleteElement" xml:space="preserve">
+    <value>Sind Sie sicher? Das Action kann nicht zurückgekehrt werden</value>
+  </data>
+  <data name="EmailFormatWrong" xml:space="preserve">
+    <value>Format des Emails ist falsch. Versuchen Sie noch mal</value>
+  </data>
+  <data name="EmailOrResetCode" xml:space="preserve">
+    <value>Emailformat oder die Wiederherstellungscode sind falsch. Versuchen Sie noch mal</value>
+  </data>
+  <data name="ResetCodeIsSend" xml:space="preserve">
+    <value>Resetcode war gesendet. Bitte, überprüfen Sie Ihre Email</value>
+  </data>
+  <data name="PasswordFormatWrong" xml:space="preserve">
+    <value>Das Passwort soll mindestens 4 Zeichen lang sein, eine Buchstabe, ein Ziffer und kein Leerzeichen enthalten</value>
+  </data>
+  <data name="NameFormatWrong" xml:space="preserve">
+    <value>Der Name soll mindestens 4 und maximal 50 Zeichen sein</value>
+  </data>
+  <data name="AboutButton" xml:space="preserve">
+    <value>Über</value>
+  </data>
+  <data name="Developer" xml:space="preserve">
+    <value>Praktikant</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Prototype 0.0.1</value>
+  </data>
+  <data name="PropertyToValidateNotFound" xml:space="preserve">
+    <value>Property zur Validierung wurde nicht gefunden</value>
+  </data>
+  <data name="EnterEmailToPasswordRecovery" xml:space="preserve">
+    <value>Email eingeben</value>
+  </data>
+  <data name="PasswordNotMatch" xml:space="preserve">
+    <value>Passwörter sind ungleich</value>
+  </data>
+  <data name="IsRequerd" xml:space="preserve">
+    <value>Erforderlich</value>
   </data>
 </root>

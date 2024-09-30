@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BaseView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Workout.Planner.ViewModels"
+             xmlns:behaviors="clr-namespace:Workout.Planner.Behaviors"
+             xmlns:strings="clr-namespace:Workout.Planner.Strings"
+             xmlns:views="clr-namespace:Workout.Planner.Views"
+             xmlns:converter="clr-namespace:Workout.Planner.Converter"
+             x:Class="Workout.Planner.Views.RegisterUserPage"
+             x:DataType="viewModels:RegisterUserPageViewModel"
+             Shell.FlyoutBehavior="Disabled"
+             Title="Register">
+    <views:BaseView.Resources>
+        <converter:StringToBooleanConverter x:Key="StringToBooleanConverter"/>
+    </views:BaseView.Resources>
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{x:Binding RegisterUserPageBackButtonCommand}"/>
+    </Shell.BackButtonBehavior>
+    <Border Margin="50,100" Background="Transparent">
+        <StackLayout Spacing="10" Margin="10" VerticalOptions="CenterAndExpand" Background="Transparent">
+            <Entry Placeholder="Email"
+                   Text="{x:Binding Email}">
+                <Entry.Behaviors>
+                    <behaviors:EventToCommandBehavior Command="{x:Binding EntryUnfocusedCommand}" EventName="Unfocused" UserArgsInsteatSender="False" CommandParameter="Email"/>
+                </Entry.Behaviors>
+            </Entry>
+            <Label Text="{x:Binding Path=[Email]}"
+                   IsVisible="{x:Binding Path=[Email], Converter={StaticResource StringToBooleanConverter}}"/>
+            <Entry Placeholder="Password"
+                   Text="{x:Binding Password, Mode=OneWayToSource}"
+                   IsPassword="True">
+                <Entry.Behaviors>
+                    <behaviors:EventToCommandBehavior Command="{x:Binding EntryUnfocusedCommand}" EventName="Unfocused" UserArgsInsteatSender="False" CommandParameter="Password"/>
+                </Entry.Behaviors>
+            </Entry>
+            <Label Text="{x:Binding Path=[Password]}"
+                   IsVisible="{x:Binding Path=[Password], Converter={StaticResource StringToBooleanConverter}}"/>
+            <Entry Placeholder="Confirm password"
+                   Text="{x:Binding ConfirmPassword, Mode=OneWayToSource}"
+                   IsPassword="True">
+                <Entry.Behaviors>
+                    <behaviors:EventToCommandBehavior Command="{x:Binding EntryUnfocusedCommand}" EventName="Unfocused" UserArgsInsteatSender="False" CommandParameter="ConfirmPassword"/>
+                </Entry.Behaviors>
+            </Entry>
+            <Label Text="{x:Binding Path=[ConfirmPassword]}"
+                   IsVisible="{x:Binding Path=[ConfirmPassword], Converter={StaticResource StringToBooleanConverter}}"/>
+           <Button Text="Register"
+                   Command="{x:Binding CreateProfileCommand}"/>
+        </StackLayout>
+    </Border>
+</views:BaseView>

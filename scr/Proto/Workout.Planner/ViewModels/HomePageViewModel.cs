@@ -6,7 +6,7 @@
     using Microsoft.Extensions.Logging;
     using Workout.Planner.Extensions;
     using Workout.Planner.Models;
-    using Workout.Planner.Services;
+    using Workout.Planner.Services.Contracts;
     using Workout.Planner.Strings;
 
     public class HomePageViewModel : LoadDataBaseViewModel
@@ -60,19 +60,11 @@
         {
             try
             {
-                await _sessionService.EnsureAccessTokenNotExpiredAsync().ConfigureAwait(false);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                Logger.LoggingInformation("Acces token and refresh token are expired", this);
-                await DispatchToUI(() => NavigationService.PushPopupPageAsync(RouteNames.LoginPage)).ConfigureAwait(false);
-            }
+                await EnsureAccesTokenAsync(_sessionService).ConfigureAwait(false);
 
-            try
-            {
                 token.ThrowIfCancellationRequested();
 
-                var plans = await _trainingService.GetTrainingAsync(false, token).ConfigureAwait(false);
+                var plans = await _trainingService.GetDataAsync(false, token).ConfigureAwait(false);
                 await DispatchToUI(() =>
                 {
                     Plans = new ObservableCollection<TrainingPlanModel>(plans.Select(x => TrainingPlanModel.Import(x, EditPlanAsync, CanEditPlan, DeletePlanAsync, CanDeletePlan)));
@@ -102,7 +94,7 @@
         private async Task EditPlanAsync(TrainingPlanModel model)
         {
             await DispatchToUI(() =>
-            NavigationService.NavigateToAsync(
+            NavigationService.NavigateToOnUIAsync(
                 RouteNames.EditTrainingPage,
                 new Dictionary<string, object> { { nameof(TrainingPlan.Id), model!.Id } }))
                 .ConfigureAwait(false);
@@ -115,15 +107,15 @@
             {
                 await EnsureAccesTokenAsync(_sessionService).ConfigureAwait(false);
                 token = GetCancelationToken();
-                var result = await _trainingService.DeleteTrainingAsync([model.Plan.Id], token).ConfigureAwait(false);
+                var result = await _trainingService.DeleteDataAsync([model.Plan.Id], token).ConfigureAwait(false);
 
                 if (result == true)
                 {
-                    await DispatchToUI(() => Shell.Current.CurrentPage.DisplayAlert(AppStrings.AllertInformation, AppStrings.AllertDeleted, AppStrings.OkButton)).ConfigureAwait(false);
+                    await DispatchToUI(() => Shell.Current.CurrentPage.DisplayAlert(AppStrings.Information, AppStrings.Deleted, AppStrings.OkButton)).ConfigureAwait(false);
                 }
                 else
                 {
-                    await DispatchToUI(() => Shell.Current.CurrentPage.DisplayAlert(AppStrings.AllertInformation, AppStrings.AllertSomethingWrong, AppStrings.OkButton)).ConfigureAwait(false);
+                    await DispatchToUI(() => Shell.Current.CurrentPage.DisplayAlert(AppStrings.Information, AppStrings.SomethingWrong, AppStrings.OkButton)).ConfigureAwait(false);
                 }
 
                 await LoadDataAsync(token);
@@ -141,7 +133,7 @@
         private async Task SelectPlanAsync()
         {
             await DispatchToUI(() =>
-            NavigationService.NavigateToAsync(
+            NavigationService.NavigateToOnUIAsync(
                 RouteNames.UnitPage,
                 new Dictionary<string, object> { { nameof(TrainingPlan.Id), _selectedPlan!.Id } }))
                 .ConfigureAwait(false);
@@ -150,7 +142,7 @@
         private async void AddPlan()
         {
             await DispatchToUI(() =>
-           NavigationService.NavigateToAsync(RouteNames.EditTrainingPage)).ConfigureAwait(false);
+           NavigationService.NavigateToOnUIAsync(RouteNames.EditTrainingPage)).ConfigureAwait(false);
         }
 
         private bool CanAddPlan() => !IsBusy;
@@ -169,5 +161,7 @@
         {
             return model != null && !IsBusy;
         }
+
+        protected override string? Validate(string collumName) => throw new NotImplementedException();
     }
 }

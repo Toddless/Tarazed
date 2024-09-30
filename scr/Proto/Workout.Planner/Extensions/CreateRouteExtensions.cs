@@ -49,10 +49,11 @@
         public static string ObjToQuery(object obj, string route)
         {
             // die methode kriegt alle property des objectes und generiert daraus route für den server.
-            var prop = obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            var properties = obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+
             var queryString = HttpUtility.ParseQueryString(string.Empty);
             var builder = new StringBuilder(route);
-            foreach (var property in prop)
+            foreach (var property in properties)
             {
                 var value = property.GetValue(obj);
                 if (value == null)

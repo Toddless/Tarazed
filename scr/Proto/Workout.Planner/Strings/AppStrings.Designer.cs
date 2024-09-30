@@ -61,56 +61,209 @@ namespace Workout.Planner.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to About.
+        /// </summary>
+        internal static string AboutButton {
+            get {
+                return ResourceManager.GetString("AboutButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add new plan.
+        /// </summary>
+        internal static string AddNewPlan {
+            get {
+                return ResourceManager.GetString("AddNewPlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Authentication.
         /// </summary>
-        internal static string AllertAuthentication {
+        internal static string Authentication {
             get {
-                return ResourceManager.GetString("AllertAuthentication", resourceCulture);
+                return ResourceManager.GetString("Authentication", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authorization is expired. Please login .
+        /// </summary>
+        internal static string AuthorizationExpired {
+            get {
+                return ResourceManager.GetString("AuthorizationExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string CancelButton {
+            get {
+                return ResourceManager.GetString("CancelButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        internal static string Delete {
+            get {
+                return ResourceManager.GetString("Delete", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Successfully deleted.
         /// </summary>
-        internal static string AllertDeleted {
+        internal static string Deleted {
             get {
-                return ResourceManager.GetString("AllertDeleted", resourceCulture);
+                return ResourceManager.GetString("Deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure? This action cannot be reversed.
+        /// </summary>
+        internal static string DeleteElement {
+            get {
+                return ResourceManager.GetString("DeleteElement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter your password to permanently delete your account.
+        /// </summary>
+        internal static string DeletingProfile {
+            get {
+                return ResourceManager.GetString("DeletingProfile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Intern.
+        /// </summary>
+        internal static string Developer {
+            get {
+                return ResourceManager.GetString("Developer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email.
+        /// </summary>
+        internal static string Email {
+            get {
+                return ResourceManager.GetString("Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email already exists.
+        /// </summary>
+        internal static string EmailAlreadyExists {
+            get {
+                return ResourceManager.GetString("EmailAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email format is wrong. Try again.
+        /// </summary>
+        internal static string EmailFormatWrong {
+            get {
+                return ResourceManager.GetString("EmailFormatWrong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email or reset code is wrond. Try again.
+        /// </summary>
+        internal static string EmailOrResetCode {
+            get {
+                return ResourceManager.GetString("EmailOrResetCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter email.
+        /// </summary>
+        internal static string EmailPlaceholder {
+            get {
+                return ResourceManager.GetString("EmailPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please enter email to recover your password.
+        /// </summary>
+        internal static string EnterEmailToPasswordRecovery {
+            get {
+                return ResourceManager.GetString("EnterEmailToPasswordRecovery", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Information.
         /// </summary>
-        internal static string AllertInformation {
+        internal static string Information {
             get {
-                return ResourceManager.GetString("AllertInformation", resourceCulture);
+                return ResourceManager.GetString("Information", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Something went wrong. Try again.
+        ///   Looks up a localized string similar to Is requered.
         /// </summary>
-        internal static string AllertSomethingWrong {
+        internal static string IsRequerd {
             get {
-                return ResourceManager.GetString("AllertSomethingWrong", resourceCulture);
+                return ResourceManager.GetString("IsRequerd", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully saved.
+        ///   Looks up a localized string similar to Login.
         /// </summary>
-        internal static string ChangesWasSaved {
+        internal static string LoginButton {
             get {
-                return ResourceManager.GetString("ChangesWasSaved", resourceCulture);
+                return ResourceManager.GetString("LoginButton", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New name match with old name.
+        ///   Looks up a localized string similar to Logout.
         /// </summary>
-        internal static string NewNameMatch {
+        internal static string LogoutButton {
             get {
-                return ResourceManager.GetString("NewNameMatch", resourceCulture);
+                return ResourceManager.GetString("LogoutButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        internal static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name should be a minimum of 4 characters and a maximum of 50 characters.
+        /// </summary>
+        internal static string NameFormatWrong {
+            get {
+                return ResourceManager.GetString("NameFormatWrong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New name match old name.
+        /// </summary>
+        internal static string NameMatch {
+            get {
+                return ResourceManager.GetString("NameMatch", resourceCulture);
             }
         }
         
@@ -124,6 +277,69 @@ namespace Workout.Planner.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Password should be at least 4 characters long and contain at least 1 uppercase letter, 1 number and no spaces.
+        /// </summary>
+        internal static string PasswordFormatWrong {
+            get {
+                return ResourceManager.GetString("PasswordFormatWrong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Passwords did not match.
+        /// </summary>
+        internal static string PasswordNotMatch {
+            get {
+                return ResourceManager.GetString("PasswordNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter password.
+        /// </summary>
+        internal static string PasswordPlaceholder {
+            get {
+                return ResourceManager.GetString("PasswordPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Property to validate was not found.
+        /// </summary>
+        internal static string PropertyToValidateNotFound {
+            get {
+                return ResourceManager.GetString("PropertyToValidateNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password recovery.
+        /// </summary>
+        internal static string RecoveryPasswordButton {
+            get {
+                return ResourceManager.GetString("RecoveryPasswordButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register new profile.
+        /// </summary>
+        internal static string RegisterButton {
+            get {
+                return ResourceManager.GetString("RegisterButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset code was send. Check your Email.
+        /// </summary>
+        internal static string ResetCodeIsSend {
+            get {
+                return ResourceManager.GetString("ResetCodeIsSend", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         internal static string SaveButton {
@@ -133,7 +349,43 @@ namespace Workout.Planner.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create Plan.
+        ///   Looks up a localized string similar to Send.
+        /// </summary>
+        internal static string Send {
+            get {
+                return ResourceManager.GetString("Send", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        internal static string SettingsButton {
+            get {
+                return ResourceManager.GetString("SettingsButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong. Try again.
+        /// </summary>
+        internal static string SomethingWrong {
+            get {
+                return ResourceManager.GetString("SomethingWrong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully saved.
+        /// </summary>
+        internal static string Successfull {
+            get {
+                return ResourceManager.GetString("Successfull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create plan.
         /// </summary>
         internal static string TitelCreate {
             get {
@@ -142,7 +394,7 @@ namespace Workout.Planner.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit Plan.
+        ///   Looks up a localized string similar to Edit plan.
         /// </summary>
         internal static string TitelEdit {
             get {
@@ -151,56 +403,20 @@ namespace Workout.Planner.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add new plan.
+        ///   Looks up a localized string similar to Prototype 0.0.1.
         /// </summary>
-        internal static string XmlAddNewPlan {
+        internal static string Version {
             get {
-                return ResourceManager.GetString("XmlAddNewPlan", resourceCulture);
+                return ResourceManager.GetString("Version", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter email.
+        ///   Looks up a localized string similar to Warning.
         /// </summary>
-        internal static string XmlEmailPlaceholder {
+        internal static string Warning {
             get {
-                return ResourceManager.GetString("XmlEmailPlaceholder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Login.
-        /// </summary>
-        internal static string XmlLoginButton {
-            get {
-                return ResourceManager.GetString("XmlLoginButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Name.
-        /// </summary>
-        internal static string XmlName {
-            get {
-                return ResourceManager.GetString("XmlName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enter Password.
-        /// </summary>
-        internal static string XmlPasswordPlaceholder {
-            get {
-                return ResourceManager.GetString("XmlPasswordPlaceholder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Register new profile.
-        /// </summary>
-        internal static string XmlRegisterButton {
-            get {
-                return ResourceManager.GetString("XmlRegisterButton", resourceCulture);
+                return ResourceManager.GetString("Warning", resourceCulture);
             }
         }
     }

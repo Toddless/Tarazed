@@ -1,4 +1,4 @@
-﻿namespace Workout.Planner.Services
+﻿namespace Workout.Planner.Services.Contracts
 {
     public interface IActiveAware
     {
