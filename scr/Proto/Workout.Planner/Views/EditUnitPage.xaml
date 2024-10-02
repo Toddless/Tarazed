@@ -4,8 +4,8 @@
              xmlns:viewModels="clr-namespace:Workout.Planner.ViewModels"
              xmlns:strings="clr-namespace:Workout.Planner.Strings"
              xmlns:views="clr-namespace:Workout.Planner.Views"
-             x:Class="Workout.Planner.Views.EditTrainingPage"
-             x:DataType="viewModels:EditTrainingPageViewModel"
+             x:Class="Workout.Planner.Views.EditUnitPage"
+             x:DataType="viewModels:EditUnitPageViewModel"
              Shell.FlyoutBehavior="Disabled"
              Title="{x:Binding Titel}">
 

@@ -16,38 +16,48 @@
         <BackButtonBehavior IsEnabled="False"
                         IsVisible="False"/>
     </Shell.BackButtonBehavior>
-    <Border Margin="50,100" Background="Transparent">
-        <StackLayout Spacing="10" Margin="10" VerticalOptions="CenterAndExpand" Background="Transparent">
-            <Entry 
-       Placeholder="{x:Static strings:AppStrings.EmailPlaceholder}"
-       Text="{x:Binding Email}"
-       ClearButtonVisibility="WhileEditing">
+    <Border VerticalOptions="Center" HorizontalOptions="Center">
+        <StackLayout Margin="15" Orientation="Vertical" VerticalOptions="Center">
+            <!--texte in ressource verschieben-->
+            <Label Margin="0,0,0,5" Text="Email"/>
+            <Entry Margin="0,0,0,10" WidthRequest="300"
+                Placeholder="{x:Static strings:AppStrings.EmailPlaceholder}"
+                Text="{x:Binding Email}"
+                ClearButtonVisibility="WhileEditing">
                 <Entry.Behaviors>
                     <behaviors:EventToCommandBehavior Command="{x:Binding EntryUnfocusedCommand}" EventName="Unfocused" UserArgsInsteatSender="False" CommandParameter="Email"/>
                 </Entry.Behaviors>
             </Entry>
-            <Label  Text="{x:Binding Path=[Email]}"
-                IsVisible="{x:Binding Path=[Email], Converter={StaticResource StringToBooleanConverter}}"/>
-            <Entry 
-       Placeholder="{x:Static strings:AppStrings.PasswordPlaceholder}"
-       ClearButtonVisibility="WhileEditing"
-       Text="{x:Binding Password}"
-       IsPassword="True">
+            <Label  Margin="0,0,0,25"
+                Text="{x:Binding Path=[Email]}"
+                IsVisible="Visible"
+                 TextColor="Red"/>
+            <Label Margin="0,0,0,5" Text="Password"/>
+            <Entry Margin="0,0,0,10"
+                    Placeholder="{x:Static strings:AppStrings.PasswordPlaceholder}"
+                    ClearButtonVisibility="WhileEditing"
+                    Text="{x:Binding Password}"
+                    IsPassword="True">
                 <Entry.Behaviors>
                     <behaviors:EventToCommandBehavior Command="{x:Binding EntryUnfocusedCommand}" EventName="Unfocused" UserArgsInsteatSender="False" CommandParameter="Password"/>
                 </Entry.Behaviors>
             </Entry>
-            <Label  Text="{x:Binding Path=[Password]}"
-                IsVisible="{x:Binding Path=[Password], Converter={StaticResource StringToBooleanConverter}}"/>
-            <Button 
-       Text="{x:Static strings:AppStrings.RegisterButton}"
-       Command="{x:Binding RegisterCommand}"/>
-            <Button 
-       Text="{x:Static strings:AppStrings.LoginButton}"
-       Command="{x:Binding LoginCommand}"/>
-            <Button
-        Text="{x:Static strings:AppStrings.RecoveryPasswordButton}"
-        Command="{x:Binding RecoveryPasswordCommand}"/>
+            <Label  Text="Password recovery"
+                    HorizontalOptions="End" Style="{StaticResource HyperlinkLabelStyle}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{x:Binding RecoveryPasswordCommand}"/>
+                </Label.GestureRecognizers>
+            </Label>
+            <Label      Margin="0,0,0,25"
+                        Text="{x:Binding Path=[Password]}"
+                        IsVisible="Visible"
+                        TextColor="Red"/>
+            <Button Margin="0,0,0,10" HorizontalOptions="Center" LineBreakMode="TailTruncation"
+                 Text="{x:Static strings:AppStrings.LoginButton}"
+                 Command="{x:Binding LoginCommand}"/>
+            <Button Margin="0,0,0,10" HorizontalOptions="Center" LineBreakMode="TailTruncation"
+                Text="{x:Static strings:AppStrings.RegisterButton}"
+                 Command="{x:Binding RegisterCommand}"/>
         </StackLayout>
     </Border>
 </views:BaseView>

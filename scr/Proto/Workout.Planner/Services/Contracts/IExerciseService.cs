@@ -2,7 +2,7 @@
 {
     using DataModel;
 
-    public interface ITrainingService : IService<TrainingPlan>
+    public interface IExerciseService : IService<Exercise>
     {
     }
 }

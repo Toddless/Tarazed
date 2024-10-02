@@ -1,6 +1,5 @@
 ﻿namespace Workout.Planner.ViewModels
 {
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using Microsoft.Extensions.Logging;
     using Workout.Planner.Extensions;
@@ -8,37 +7,37 @@
     using Workout.Planner.Models;
     using Workout.Planner.Services.Contracts;
 
-    public class UnitPageViewModel : LoadDataBaseViewModel, IQueryAttributable
+    public class ExercisePageViewModel : LoadDataBaseViewModel, IQueryAttributable
     {
+        private readonly IExerciseService _exerciseService;
         private readonly IUnitService _unitService;
-        private readonly ITrainingService _trainingService;
         private readonly ISessionService _sessionService;
-        private ObservableCollection<UnitModel>? _units;
-        private UnitModel? _unit;
+        private ObservableCollection<ExerciseModel>? _exercises;
+        private ExerciseModel? _exercise;
         private long? _id;
 
-        public UnitPageViewModel(
+        public ExercisePageViewModel(
             INavigationService navigationService,
-            ILogger<LoadDataBaseViewModel> logger,
+            ILogger<ExercisePageViewModel> logger,
             IDispatcher dispatcher,
-            IUnitService unitService,
             ISessionService sessionService,
-            ITrainingService trainingService)
+            IExerciseService exerciseService,
+            IUnitService unitService)
             : base(navigationService, logger, dispatcher)
         {
-            ArgumentNullException.ThrowIfNull(trainingService);
+            ArgumentNullException.ThrowIfNull(exerciseService);
             ArgumentNullException.ThrowIfNull(sessionService);
             ArgumentNullException.ThrowIfNull(unitService);
-            SelectUnitCommand = new Command(SelectUnit, CanSelect);
-            AddUnitCommand = new Command(AddUnit, CanAddUnit);
-            _trainingService = trainingService;
-            _sessionService = sessionService;
+            SelectExerciseCommand = new Command(SelectExercise, CanSelect);
+            AddExerciseCommand = new Command(AddExercise, CanAdd);
             _unitService = unitService;
+            _exerciseService = exerciseService;
+            _sessionService = sessionService;
         }
 
-        public Command AddUnitCommand { get; }
+        public Command SelectExerciseCommand { get; }
 
-        public Command SelectUnitCommand { get; }
+        public Command AddExerciseCommand { get; }
 
         public long? Id
         {
@@ -49,22 +48,22 @@
             }
         }
 
-        public UnitModel? Unit
+        public ExerciseModel? Exercise
         {
-            get => _unit;
+            get => _exercise;
             set
             {
-                if (SetProperty(ref _unit, value))
+                if (SetProperty(ref _exercise, value))
                 {
-                    SelectUnitCommand.Execute(Unit);
+                    SelectExerciseCommand.Execute(Exercise);
                 }
             }
         }
 
-        public ObservableCollection<UnitModel>? Units
+        public ObservableCollection<ExerciseModel>? Exercises
         {
-            get => _units;
-            set => SetProperty(ref _units, value);
+            get => _exercises;
+            set => SetProperty(ref _exercises, value);
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -77,12 +76,12 @@
             try
             {
                 token = GetCancelationToken();
-                var unit = await _trainingService.GetDataAsync(true, token, [Id!.Value]).ConfigureAwait(false);
+                var exercise = await _unitService.GetDataAsync(true, token, [Id!.Value]).ConfigureAwait(false);
 
                 await DispatchToUI(() =>
                 {
-                    Units = new ObservableCollection<UnitModel>(unit.Where(x => x.Id == Id)
-                        .SelectMany(x => UnitModel.Import(x.Units, EditUnitAsync, CanEditUnit, DeleteUnitAsync, CanDeleteUnit)));
+                    Exercises = new ObservableCollection<ExerciseModel>(exercise.Where(x => x.Id == Id)
+                        .SelectMany(x => ExerciseModel.Import(x.Exercises, EditExerciseAsync, CanEditUnit, DeleteExerciseAsync, CanDeleteUnit)));
                 }).ConfigureAwait(false);
             }
             catch (Exception ex) when (ex is OperationCanceledException or ObjectDisposedException)
@@ -95,7 +94,7 @@
             }
         }
 
-        protected async Task DeleteUnitAsync(UnitModel model)
+        protected async Task DeleteExerciseAsync(ExerciseModel model)
         {
             CancellationToken token = default;
             try
@@ -103,7 +102,7 @@
                 token = GetCancelationToken();
                 await EnsureAccesTokenAsync(_sessionService).ConfigureAwait(false);
 
-                var result = await _unitService.DeleteDataAsync([model.Unit.Id], token).ConfigureAwait(false);
+                var result = await _exerciseService.DeleteDataAsync([model.Exercise.Id], token).ConfigureAwait(false);
                 if (!result)
                 {
                     return;
@@ -121,28 +120,28 @@
             }
         }
 
-        protected async void SelectUnit()
+        protected async void SelectExercise()
         {
             await NavigationService.NavigateToOnUIAsync(
-                RouteNames.ExercisePage,
-                new Dictionary<string, object> { { NavigationParameterNames.EntityId, _unit!.Id } }).ConfigureAwait(false);
+                RouteNames.ExerciseDetailPage,
+                new Dictionary<string, object> { { nameof(Exercise.Id), _exercise!.Id } }).ConfigureAwait(false);
         }
 
-        protected async Task EditUnitAsync(UnitModel model)
+        protected async Task EditExerciseAsync(ExerciseModel model)
         {
             await NavigationService.NavigateToOnUIAsync(
-                RouteNames.EditUnitPage,
+                RouteNames.EditExercisePage,
                 new Dictionary<string, object>
                 {
-                    { NavigationParameterNames.EntityId, model.Unit!.Id },
+                    { NavigationParameterNames.EntityId, model.Exercise!.Id },
                     { NavigationParameterNames.RelatedId, Id! },
                 }).ConfigureAwait(false);
         }
 
-        protected async void AddUnit()
+        protected async void AddExercise()
         {
             await NavigationService.NavigateToOnUIAsync(
-                RouteNames.EditUnitPage,
+                RouteNames.EditExercisePage,
                 new Dictionary<string, object> { { NavigationParameterNames.RelatedId, Id! } }).ConfigureAwait(false);
         }
 
@@ -154,14 +153,14 @@
         protected override void RefreshCommands()
         {
             base.RefreshCommands();
-            SelectUnitCommand?.ChangeCanExecute();
-            AddUnitCommand?.ChangeCanExecute();
+            SelectExerciseCommand?.ChangeCanExecute();
+            AddExerciseCommand?.ChangeCanExecute();
 
-            if (Units != null)
+            if (Exercises != null)
             {
-                foreach (var unit in Units)
+                foreach (var exercise in Exercises)
                 {
-                    unit.RefreshCommands();
+                    exercise.RefreshCommands();
                 }
             }
         }
@@ -171,17 +170,17 @@
             return !IsBusy;
         }
 
-        private bool CanAddUnit()
+        private bool CanAdd()
         {
             return !IsBusy;
         }
 
-        private bool CanEditUnit(UnitModel model)
+        private bool CanEditUnit(ExerciseModel model)
         {
             return !IsBusy && model != null;
         }
 
-        private bool CanDeleteUnit(UnitModel model)
+        private bool CanDeleteUnit(ExerciseModel model)
         {
             return !IsBusy && model != null;
         }

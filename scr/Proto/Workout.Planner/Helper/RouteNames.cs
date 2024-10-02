@@ -1,4 +1,4 @@
-﻿namespace Workout.Planner.Extensions
+﻿namespace Workout.Planner.Helper
 {
     public static class RouteNames
     {
@@ -18,7 +18,11 @@
         public static readonly string HomePage = $"//{nameof(HomePage)}";
         public static readonly string LoginPage = $"//{nameof(LoginPage)}";
         public static readonly string UnitPage = $"/{nameof(UnitPage)}";
+        public static readonly string ExercisePage = $"/{nameof(ExercisePage)}";
         public static readonly string EditTrainingPage = $"/{nameof(EditTrainingPage)}";
+        public static readonly string EditUnitPage = $"/{nameof(EditUnitPage)}";
+        public static readonly string EditExercisePage = $"/{nameof(EditExercisePage)}";
+        public static readonly string ExerciseDetailPage = $"/{nameof(ExerciseDetailPage)}";
         public static readonly string SettingsPage = $"/{nameof(SettingsPage)}";
         public static readonly string UserPage = $"/{nameof(UserPage)}";
         public static readonly string AboutPage = $"/{nameof(AboutPage)}";

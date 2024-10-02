@@ -6,7 +6,7 @@
     using DataModel.Attributes;
     using DataModel.Resources;
 
-    public class Unit : IEntity
+    public class Unit : IEntity, IHaveName
     {
         [Required(ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.FieldIsRequired))]
         [MinLength(4, ErrorMessageResourceType = typeof(Errors), ErrorMessageResourceName = nameof(Errors.FieldIsToShort))]

@@ -3,7 +3,7 @@
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-     xmlns:models="clr-namespace:Workout.Planner.Models">
+    xmlns:models="clr-namespace:Workout.Planner.Models">
 
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
@@ -31,7 +31,7 @@
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="BorderWidth" Value="0"/>
         <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="Padding" Value="14,10"/>
+        <Setter Property="Padding" Value="20,10"/>
         <Setter Property="MinimumHeightRequest" Value="44"/>
         <Setter Property="MinimumWidthRequest" Value="44"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
@@ -161,7 +161,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Label">
+    <Style x:Key="LabelBaseStyle" TargetType="Label">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
@@ -180,22 +180,29 @@
         </Setter>
     </Style>
 
+    <Style TargetType="Label" BasedOn="{StaticResource LabelBaseStyle}"/>
+
+
     <Style TargetType="Span">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="Headline">
+    <Style TargetType="Label" x:Key="Headline" BasedOn="{StaticResource LabelBaseStyle}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource White}}" />
         <Setter Property="FontSize" Value="32" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
 
-    <Style TargetType="Label" x:Key="SubHeadline">
+    <Style TargetType="Label" x:Key="SubHeadline" BasedOn="{StaticResource LabelBaseStyle}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource White}}" />
         <Setter Property="FontSize" Value="24" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="HyperlinkLabelStyle" TargetType="Label" BasedOn="{StaticResource LabelBaseStyle}">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource LightBlue}}"/>
     </Style>
 
     <Style TargetType="ListView">
@@ -427,6 +434,20 @@
     <DataTemplate x:Key="TrainingPlanDataTemplate" x:DataType="models:TrainingPlanModel">
         <HorizontalStackLayout>
             <Label Text="{Binding Name}"/>
+            <Button Text="Edit" Command="{Binding EditCommand}"/>
+            <Button Text="Delete" Command="{Binding DeleteCommand}"/>
+        </HorizontalStackLayout>
+    </DataTemplate>
+    <DataTemplate x:Key="UnitsDataTemplate" x:DataType="models:UnitModel">
+        <HorizontalStackLayout>
+            <Label Text="{Binding UnitName}"/>
+            <Button Text="Edit" Command="{Binding EditCommand}"/>
+            <Button Text="Delete" Command="{Binding DeleteCommand}"/>
+        </HorizontalStackLayout>
+    </DataTemplate>
+    <DataTemplate x:Key="ExercisesDataTemplate" x:DataType="models:ExerciseModel">
+        <HorizontalStackLayout>
+            <Label Text="{Binding ExerciseName}"/>
             <Button Text="Edit" Command="{Binding EditCommand}"/>
             <Button Text="Delete" Command="{Binding DeleteCommand}"/>
         </HorizontalStackLayout>

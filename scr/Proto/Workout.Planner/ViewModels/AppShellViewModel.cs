@@ -3,6 +3,7 @@
     using System.Collections.ObjectModel;
     using Microsoft.Extensions.Logging;
     using Workout.Planner.Extensions;
+    using Workout.Planner.Helper;
     using Workout.Planner.Models;
     using Workout.Planner.Services.Contracts;
 

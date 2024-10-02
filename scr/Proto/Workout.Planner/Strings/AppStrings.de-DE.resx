@@ -142,10 +142,10 @@
     <value>Speichern</value>
   </data>
   <data name="TitelCreate" xml:space="preserve">
-    <value>Plan erstellen</value>
+    <value> erstellen</value>
   </data>
   <data name="TitelEdit" xml:space="preserve">
-    <value>Plan bearbeiten</value>
+    <value> bearbeiten</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>

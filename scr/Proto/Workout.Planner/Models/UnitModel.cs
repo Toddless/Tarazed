@@ -4,13 +4,23 @@
 
     public class UnitModel : ObservableObject
     {
+        private Func<UnitModel, Task> _editUnitFunc;
+        private Func<UnitModel, Task> _deleteUnitFunc;
+        private Func<UnitModel, bool> _canEditUnit;
+        private Func<UnitModel, bool> _canDeleteUnit;
         private Unit _unit;
         private long _id;
         private string _unitName;
 
         private UnitModel()
         {
+            EditCommand = new Command(EditAsync, CanEdit);
+            DeleteCommand = new Command(DeleteAsync, CanDelete);
         }
+
+        public Command EditCommand { get; }
+
+        public Command DeleteCommand { get; }
 
         public Unit Unit
         {
@@ -30,20 +40,55 @@
             set => SetProperty(ref _unitName, value);
         }
 
-        public static UnitModel Import(Unit unit)
-        {
-            return new UnitModel() { Id = unit.Id, UnitName = unit.Name, Unit = unit };
-        }
-
-        public static IEnumerable<UnitModel> Import(IEnumerable<Unit>? units)
+        public static IEnumerable<UnitModel> Import(
+            IEnumerable<Unit>? units,
+            Func<UnitModel, Task> editUnitAsync,
+            Func<UnitModel, bool> canEditUnit,
+            Func<UnitModel, Task> deleteUnitAsync,
+            Func<UnitModel, bool> canDeleteUnit)
         {
             if (units != null)
             {
                 foreach (var item in units)
                 {
-                    yield return new UnitModel() { Id = item.Id, UnitName = item.Name, Unit = item };
+                    yield return new UnitModel()
+                    {
+                        Unit = item,
+                        UnitName = item.Name,
+                        Id = item.Id,
+                        _editUnitFunc = editUnitAsync,
+                        _canEditUnit = canEditUnit,
+                        _deleteUnitFunc = deleteUnitAsync,
+                        _canDeleteUnit = canDeleteUnit,
+                    };
                 }
             }
+        }
+
+        public void RefreshCommands()
+        {
+            EditCommand?.ChangeCanExecute();
+            DeleteCommand?.ChangeCanExecute();
+        }
+
+        private bool CanEdit()
+        {
+            return _editUnitFunc != null && _canEditUnit != null && _canEditUnit.Invoke(this);
+        }
+
+        private async void EditAsync()
+        {
+            await _editUnitFunc.Invoke(this);
+        }
+
+        private bool CanDelete()
+        {
+            return _editUnitFunc != null && _canEditUnit != null && _canDeleteUnit.Invoke(this);
+        }
+
+        private async void DeleteAsync()
+        {
+            await _deleteUnitFunc.Invoke(this);
         }
     }
 }

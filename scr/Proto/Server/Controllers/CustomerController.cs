@@ -5,11 +5,14 @@
     using System.ComponentModel.DataAnnotations;
     using DataAccessLayer;
     using DataModel;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Server.Extensions;
     using Server.Filters;
 
+    [Authorize]
+    [Produces("application/json")]
     public class CustomerController
         : Controller
     {
@@ -28,8 +31,9 @@
         }
 
         [HttpPut("UpdateCustomer")]
-        public async Task<Customer?> UpdateCustomerAsync(Customer customer)
+        public async Task<Customer?> UpdateCustomerAsync([FromBody]Customer customer)
         {
+            var body = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
             if (User == null)
             {
                 throw new ServerException(DataModel.Resources.Errors.NullObject);
@@ -51,6 +55,7 @@
                 throw new ServerException(DataModel.Resources.Errors.DeletingById);
             }
 
+            currentUser.UserName = customer.Email;
             currentUser.Email = customer.Email;
             try
             {

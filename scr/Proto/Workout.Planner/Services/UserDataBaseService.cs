@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Workout.Planner.Extensions;
-    using Workout.Planner.Services.Contracts;
+    using Workout.Planner.Helper;
 
     public abstract class UserDataBaseService<TU>
         where TU : class

@@ -6,15 +6,17 @@
              xmlns:views="clr-namespace:Workout.Planner.Views"
              x:Class="Workout.Planner.Views.HomePage"
              x:DataType="viewModels:HomePageViewModel">
+    
     <StackLayout  Spacing="10" Margin="10">
-        <Frame MaximumWidthRequest="350" HorizontalOptions="StartAndExpand">
+        <Frame HorizontalOptions="StartAndExpand">
 
-            <CollectionView ItemsSource="{x:Binding Plans}"
+            <CollectionView
+                    ItemsSource="{x:Binding Plans}"
                     ItemTemplate="{StaticResource TrainingPlanDataTemplate}"
-                    SelectedItem="{x:Binding SelectedPlan, Mode=TwoWay}"
+                    SelectedItem="{x:Binding Plan, Mode=TwoWay}"
                     SelectionMode="Single"/>
         </Frame>
-        <Button Text="{x:Static strings:AppStrings.AddNewPlan}"
-            Command="{x:Binding AddCommand}"/>
+        <Button Text="{x:Static strings:AppStrings.Add}"
+                Command="{x:Binding AddCommand}"/>
     </StackLayout>
 </views:BaseView>

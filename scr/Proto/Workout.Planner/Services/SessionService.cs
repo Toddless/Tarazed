@@ -2,6 +2,7 @@
 {
     using DataModel;
     using Workout.Planner.Extensions;
+    using Workout.Planner.Helper;
 
     public class SessionService : ISessionService
     {

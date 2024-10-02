@@ -9,6 +9,7 @@
     using Workout.Planner.Extensions;
     using Workout.Planner.Strings;
     using Workout.Planner.Services.Contracts;
+    using Workout.Planner.Helper;
 
     public class RegisterUserPageViewModel : BaseViewModel
     {

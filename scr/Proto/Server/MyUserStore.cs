@@ -41,5 +41,15 @@
 
             return IdentityResult.Success;
         }
+
+// im fall wenn man rolle braucht, muss man das ins migration hinzugefügt werden und auch MyUserStore im Startup wieder eingeschaltet.
+//   migrationBuilder.InsertData(
+//       table: "AspNetRoles",
+//       columns: new[] { "Id", "Name", "NormalizedName", "ConcurrencyStamp" },
+//       values: new object[] { "1", "Admin", "Admin", "a79ca8c5-7ecf-489d-a292-a99c2fd88717" });
+//   migrationBuilder.InsertData(
+//       table: "AspNetRoles",
+//       columns: new[] { "Id", "Name", "NormalizedName", "ConcurrencyStamp" },
+//       values: new object[] { "2", "User", "User", "42e40409-d827-445a-8075-fc93a3d7f210" });
     }
 }

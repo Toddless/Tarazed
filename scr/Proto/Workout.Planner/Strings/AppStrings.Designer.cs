@@ -70,6 +70,15 @@ namespace Workout.Planner.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        internal static string Add {
+            get {
+                return ResourceManager.GetString("Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add new plan.
         /// </summary>
         internal static string AddNewPlan {
@@ -201,6 +210,15 @@ namespace Workout.Planner.Strings {
         internal static string EnterEmailToPasswordRecovery {
             get {
                 return ResourceManager.GetString("EnterEmailToPasswordRecovery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exercise .
+        /// </summary>
+        internal static string ExerciseEntityName {
+            get {
+                return ResourceManager.GetString("ExerciseEntityName", resourceCulture);
             }
         }
         
@@ -385,7 +403,7 @@ namespace Workout.Planner.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create plan.
+        ///   Looks up a localized string similar to Create.
         /// </summary>
         internal static string TitelCreate {
             get {
@@ -394,11 +412,29 @@ namespace Workout.Planner.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit plan.
+        ///   Looks up a localized string similar to Edit.
         /// </summary>
         internal static string TitelEdit {
             get {
                 return ResourceManager.GetString("TitelEdit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trainings Plan.
+        /// </summary>
+        internal static string TrainingPlaneEntityName {
+            get {
+                return ResourceManager.GetString("TrainingPlaneEntityName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unit.
+        /// </summary>
+        internal static string UnitEntityName {
+            get {
+                return ResourceManager.GetString("UnitEntityName", resourceCulture);
             }
         }
         

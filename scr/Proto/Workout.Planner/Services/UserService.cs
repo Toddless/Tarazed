@@ -1,7 +1,7 @@
 ﻿namespace Workout.Planner.Services
 {
     using DataModel;
-    using Workout.Planner.Extensions;
+    using Workout.Planner.Helper;
     using Workout.Planner.Services.Contracts;
 
     public class UserService : IUserService

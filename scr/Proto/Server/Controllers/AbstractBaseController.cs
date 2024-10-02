@@ -62,7 +62,7 @@
                 }
 
                 // sucht nach gegebene Ids, die currentUser gehören,
-                // falls null eingegeben wurde, gibt alle items currentsUsers zurück
+                // falls null eingegeben wurde, gibt alle items des currentsUsers zurück
                 IQueryable<TU> query = context.Set<TU>().Where(o => o.CustomerId == currentUser.Id);
 
                 if (ids?.Any() ?? false)
@@ -167,6 +167,8 @@
                 {
                     throw new ServerException(DataModel.Resources.Errors.ElementNotExists);
                 }
+
+                item.CustomerId = currentUser!.Id;
 
                 set.Update(item);
                 await SaveChangesAsync(context).ConfigureAwait(false);
