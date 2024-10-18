@@ -11,7 +11,8 @@
     public class CustomSKCanvasView : SKCanvasView
     {
         public static readonly BindableProperty SourceProperty = BindableProperty.Create(nameof(SourceProperty), typeof(string), typeof(CustomSKCanvasView), null, BindingMode.OneWay, null, propertyChanged: OnSourcePropertyChanged);
-        public static readonly BindableProperty GroupChangeProperty = BindableProperty.Create(nameof(GroupChangeProperty), typeof(Dictionary<Muscle, Intensity>), typeof(CustomSKCanvasView), null, BindingMode.OneWay, null, propertyChanged: OnGroupChange);
+        public static readonly BindableProperty MuscleGroupChangeProperty = BindableProperty.Create(nameof(MuscleGroupChangeProperty), typeof(string), typeof(CustomSKCanvasView), null, BindingMode.OneWay, null, propertyChanged: OnMuscleGroupChange);
+        public static readonly BindableProperty IntensityGroupChangeProperty = BindableProperty.Create(nameof(IntensityGroupChangeProperty), typeof(string), typeof(CustomSKCanvasView), null, BindingMode.OneWay, null, propertyChanged: OnIntensityGroupChange);
 
         private const string IdAttributeName = "id";
         private SKSvg? _svg;
@@ -24,10 +25,16 @@
             _assembly = GetType().Assembly;
         }
 
-        public Dictionary<Muscle, Intensity> GroupChange
+        public string MuscleGroupChange
         {
-            get { return (Dictionary<Muscle, Intensity>)GetValue(GroupChangeProperty); }
-            set { SetValue(GroupChangeProperty, value); }
+            get { return (string)GetValue(MuscleGroupChangeProperty); }
+            set { SetValue(MuscleGroupChangeProperty, value); }
+        }
+
+        public string IntensityGroupChange
+        {
+            get { return (string)GetValue(IntensityGroupChangeProperty); }
+            set { SetValue(IntensityGroupChangeProperty, value); }
         }
 
         public string Source
@@ -68,11 +75,21 @@
             }
         }
 
+        private static void OnIntensityGroupChange(BindableObject bindable, object oldValue, object newValue)
+        {
+
+        }
+
+        private static void OnMuscleGroupChange(BindableObject bindable, object oldValue, object newValue)
+        {
+
+        }
+
         private static void OnGroupChange(BindableObject bindable, object oldValue, object newValue)
         {
             if (bindable is CustomSKCanvasView canvas)
             {
-                canvas.ChangeGroupColor((Dictionary<Muscle, Intensity>)newValue);
+                canvas.ChangeGroupColor();
                 canvas.InvalidateSurface();
             }
         }
@@ -114,16 +131,15 @@
             }
         }
 
-        private void ChangeGroupColor(Dictionary<Muscle, Intensity> keyValuePairs)
+        private void ChangeGroupColor(Muscle muscle, Intensity intensity)
         {
-            foreach (var item in keyValuePairs)
+            var muscleGroup = muscle.ToString().ToLower();
+            var intensityGroup = intensity.ToString().ToLower();
+            if (_xElementsIds.ContainsKey(muscleGroup))
             {
-                if (_xElementsIds.ContainsKey(item.Key.ToString().ToLower()))
-                {
-                    XElement element = _xElementsIds[item.Key.ToString().ToLower()];
-                    element.Attributes().FirstOrDefault()?.ToString();
-                    element.Descendants().ToList().ForEach(x => x.Attribute("class") !.Value = "st3");
-                }
+                XElement element = _xElementsIds[muscleGroup];
+                element.Attributes().FirstOrDefault()?.ToString();
+                element.Descendants().ToList().ForEach(x => x.Attribute("class")!.Value = "st3");
             }
         }
 

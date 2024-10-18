@@ -13,8 +13,8 @@
         private readonly IExerciseService _exerciseService;
         private readonly IUnitService _unitService;
         private ObservableCollection<ExerciseModel>? _exercises;
+        private ObservableCollection<MuscleIntensityLevelModel>? _muscleIntensity;
         private ExerciseModel? _exercise;
-        private Dictionary<Muscle, Intensity>? _musckelGruppe = new();
         private long? _id;
 
         public ExercisePageViewModel(
@@ -35,15 +35,6 @@
 
         public Command SelectedItemCommand { get; }
 
-        public Dictionary<Muscle, Intensity>? MuskelGruppe
-        {
-            get => _musckelGruppe;
-            set
-            {
-                SetProperty(ref _musckelGruppe, value);
-            }
-        }
-
         public long? Id
         {
             get => _id;
@@ -59,6 +50,15 @@
                 {
                     SelectedItemCommand?.Execute(Exercise);
                 }
+            }
+        }
+
+        public ObservableCollection<MuscleIntensityLevelModel>? MuscleIntensity
+        {
+            get => _muscleIntensity;
+            set
+            {
+                SetProperty(ref _muscleIntensity, value);
             }
         }
 
@@ -109,7 +109,7 @@
 
                 await DispatchToUI(() =>
                  {
-                     MuskelGruppe = GetKeyValuePairs(exercise.SelectMany(x => x.MuscleIntensityLevelId!));
+                     MuscleIntensity = new ObservableCollection<MuscleIntensityLevelModel>(exercise.SelectMany(x=> ));
                  }).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -121,20 +121,6 @@
                 await DispatchToUI(() => ReleaseCancelationToken(token)).ConfigureAwait(false);
             }
         }
-
-        private Dictionary<Muscle, Intensity> GetKeyValuePairs(IEnumerable<MuscleIntensityLevel> intensity)
-        {
-            if (intensity != null)
-            {
-                foreach (var item in intensity)
-                {
-                    _musckelGruppe!.Add(item.Muscle, item.Intensity);
-                }
-            }
-
-            return _musckelGruppe!;
-        }
-
         protected bool CanExecuteExerciseSelected()
         {
             return !IsBusy;
