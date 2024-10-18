@@ -1,6 +1,7 @@
 ﻿namespace Workout.Planner.ViewModels
 {
     using System.Collections.ObjectModel;
+    using DataModel;
     using Microsoft.Extensions.Logging;
     using Workout.Planner.Extensions;
     using Workout.Planner.Helper;
@@ -13,6 +14,7 @@
         private readonly IUnitService _unitService;
         private ObservableCollection<ExerciseModel>? _exercises;
         private ExerciseModel? _exercise;
+        private Dictionary<Muscle, Intensity>? _musckelGruppe = new();
         private long? _id;
 
         public ExercisePageViewModel(
@@ -26,8 +28,20 @@
         {
             ArgumentNullException.ThrowIfNull(exerciseService);
             ArgumentNullException.ThrowIfNull(unitService);
+            SelectedItemCommand = new Command(ExecuteExerciseSelected, CanExecuteExerciseSelected);
             _exerciseService = exerciseService;
             _unitService = unitService;
+        }
+
+        public Command SelectedItemCommand { get; }
+
+        public Dictionary<Muscle, Intensity>? MuskelGruppe
+        {
+            get => _musckelGruppe;
+            set
+            {
+                SetProperty(ref _musckelGruppe, value);
+            }
         }
 
         public long? Id
@@ -39,7 +53,13 @@
         public ExerciseModel? Exercise
         {
             get => _exercise;
-            set => SetProperty(ref _exercise, value);
+            set
+            {
+                if (SetProperty(ref _exercise, value))
+                {
+                    SelectedItemCommand?.Execute(Exercise);
+                }
+            }
         }
 
         public ObservableCollection<ExerciseModel>? Exercises
@@ -65,7 +85,7 @@
                 await DispatchToUI(() =>
                 {
                     Exercises = new ObservableCollection<ExerciseModel>(unit.Where(x => x.Id == Id)
-                        .Select(x => ExerciseModel.Import(x.Exercises)));
+                        .SelectMany(x => ExerciseModel.Import(x.Exercises)));
                 }).ConfigureAwait(false);
             }
             catch (Exception ex) when (ex is OperationCanceledException or ObjectDisposedException)
@@ -76,6 +96,48 @@
             {
                 await DispatchToUI(() => ReleaseCancelationToken(token)).ConfigureAwait(false);
             }
+        }
+
+        protected async void ExecuteExerciseSelected()
+        {
+            CancellationToken token = default;
+            try
+            {
+                token = GetCancelationToken();
+
+                var exercise = await _exerciseService.GetDataAsync(true, token, [Exercise!.Id]).ConfigureAwait(false);
+
+                await DispatchToUI(() =>
+                 {
+                     MuskelGruppe = GetKeyValuePairs(exercise.SelectMany(x => x.MuscleIntensityLevelId!));
+                 }).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Logger.LoggingException(this, ex);
+            }
+            finally
+            {
+                await DispatchToUI(() => ReleaseCancelationToken(token)).ConfigureAwait(false);
+            }
+        }
+
+        private Dictionary<Muscle, Intensity> GetKeyValuePairs(IEnumerable<MuscleIntensityLevel> intensity)
+        {
+            if (intensity != null)
+            {
+                foreach (var item in intensity)
+                {
+                    _musckelGruppe!.Add(item.Muscle, item.Intensity);
+                }
+            }
+
+            return _musckelGruppe!;
+        }
+
+        protected bool CanExecuteExerciseSelected()
+        {
+            return !IsBusy;
         }
 
         protected override string? Validate(string collumName)
@@ -89,9 +151,6 @@
         protected override void RefreshCommands()
         {
             base.RefreshCommands();
-            SelectExerciseCommand?.ChangeCanExecute();
-            AddExerciseCommand?.ChangeCanExecute();
-
             if (Exercises != null)
             {
                 foreach (var exercise in Exercises)

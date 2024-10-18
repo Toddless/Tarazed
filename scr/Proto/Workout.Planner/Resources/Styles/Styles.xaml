@@ -474,8 +474,6 @@
     <DataTemplate x:Key="ExercisesDataTemplate" x:DataType="models:ExerciseModel">
         <HorizontalStackLayout>
             <Label Text="{x:Binding Name}"/>
-            <Button Text="Edit" Command="{x:Binding EditCommand}"/>
-            <Button Text="Delete" Command="{x:Binding DeleteCommand}"/>
         </HorizontalStackLayout>
     </DataTemplate>
 </ResourceDictionary>

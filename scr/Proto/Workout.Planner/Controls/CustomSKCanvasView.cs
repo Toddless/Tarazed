@@ -2,6 +2,7 @@
 {
     using System.Reflection;
     using System.Xml.Linq;
+    using DataModel;
     using SkiaSharp;
     using SkiaSharp.Views.Maui;
     using SkiaSharp.Views.Maui.Controls;
@@ -10,7 +11,7 @@
     public class CustomSKCanvasView : SKCanvasView
     {
         public static readonly BindableProperty SourceProperty = BindableProperty.Create(nameof(SourceProperty), typeof(string), typeof(CustomSKCanvasView), null, BindingMode.OneWay, null, propertyChanged: OnSourcePropertyChanged);
-        public static readonly BindableProperty GroupChangeProperty = BindableProperty.Create(nameof(GroupChangeProperty), typeof(string), typeof(CustomSKCanvasView), null, BindingMode.OneWay, null, propertyChanged: OnGroupChange);
+        public static readonly BindableProperty GroupChangeProperty = BindableProperty.Create(nameof(GroupChangeProperty), typeof(Dictionary<Muscle, Intensity>), typeof(CustomSKCanvasView), null, BindingMode.OneWay, null, propertyChanged: OnGroupChange);
 
         private const string IdAttributeName = "id";
         private SKSvg? _svg;
@@ -23,9 +24,9 @@
             _assembly = GetType().Assembly;
         }
 
-        public string GroupChange
+        public Dictionary<Muscle, Intensity> GroupChange
         {
-            get { return (string)GetValue(GroupChangeProperty); }
+            get { return (Dictionary<Muscle, Intensity>)GetValue(GroupChangeProperty); }
             set { SetValue(GroupChangeProperty, value); }
         }
 
@@ -71,7 +72,7 @@
         {
             if (bindable is CustomSKCanvasView canvas)
             {
-                canvas.ChangeGroupColor((string)newValue);
+                canvas.ChangeGroupColor((Dictionary<Muscle, Intensity>)newValue);
                 canvas.InvalidateSurface();
             }
         }
@@ -94,7 +95,7 @@
                 return;
             }
 
-            using (var stream = _assembly.GetManifestResourceStream($"GraphicPlayground.Resources.Images.{Source}"))
+            using (var stream = _assembly.GetManifestResourceStream($"Workout.Planner.Resources.Images.{Source}"))
             {
                 if ((stream?.Length ?? 0) == 0)
                 {
@@ -113,19 +114,16 @@
             }
         }
 
-        private void ChangeGroupColor(string groupId)
+        private void ChangeGroupColor(Dictionary<Muscle, Intensity> keyValuePairs)
         {
-            if (_xElementsIds.ContainsKey(groupId))
+            foreach (var item in keyValuePairs)
             {
-                XElement element = _xElementsIds[groupId];
-                element.Attributes().FirstOrDefault()?.ToString();
-                var randomClass = "st5";
-                if (groupId == "abs" || groupId == "calves")
+                if (_xElementsIds.ContainsKey(item.Key.ToString().ToLower()))
                 {
-                    randomClass = "st3";
+                    XElement element = _xElementsIds[item.Key.ToString().ToLower()];
+                    element.Attributes().FirstOrDefault()?.ToString();
+                    element.Descendants().ToList().ForEach(x => x.Attribute("class") !.Value = "st3");
                 }
-
-                element.Descendants().ToList().ForEach(x => x.Attribute("class").Value = randomClass);
             }
         }
 
@@ -142,16 +140,6 @@
             return root.Descendants().
                 Where(x => !string.IsNullOrWhiteSpace(x.Attribute(IdAttributeName)?.Value?.Trim())).
                 ToDictionary(x => x.Attribute(IdAttributeName)!.Value.Trim(), y => y);
-        }
-
-        private string GetRandomClass()
-        {
-            var availableClasses = new List<string> { "st2", "st3", "st4", "st5", "st6" };
-
-            Random random = new();
-            int randomIndex = random.Next(availableClasses.Count);
-
-            return availableClasses[randomIndex];
         }
     }
 }

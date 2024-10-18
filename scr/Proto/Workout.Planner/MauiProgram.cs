@@ -40,7 +40,6 @@
             builder.Services.AddTransient<EditUnitPage>();
             builder.Services.AddTransient<SettingsPage>();
             builder.Services.AddTransient<RegisterUserPage>();
-            builder.Services.AddTransient<ExerciseDetailPage>();
             builder.Services.AddTransient<PasswordRecoveryPage>();
             builder.Services.AddTransient<EditTrainingPage>();
             builder.Services.AddTransient<EditExercisePage>();

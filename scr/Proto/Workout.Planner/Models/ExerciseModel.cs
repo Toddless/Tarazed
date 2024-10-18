@@ -4,18 +4,14 @@
 
     public class ExerciseModel : ObservableObject
     {
-        private Exercise _exercise;
+        private Exercise? _exercise;
         private string? _description;
-        private string _name;
+        private string? _name;
         private long _id;
 
         public ExerciseModel()
         {
         }
-
-        public Command EditCommand { get; set; }
-
-        public Command DeleteCommand { get; set; }
 
         public Exercise Exercise
         {
@@ -32,7 +28,7 @@
         public long Id
         {
             get => _id;
-            set => SetProperty(ref _id, value);
+            private set => SetProperty(ref _id, value);
         }
 
         public string? Description
@@ -44,28 +40,25 @@
             }
         }
 
-        public static ExerciseModel Import(IEnumerable<Exercise>? exercises)
+        public static IEnumerable<ExerciseModel> Import(IEnumerable<Exercise>? exercises)
         {
-            if (exercises == null)
+            if (exercises != null)
             {
-                throw new Exception();
+                foreach (var item in exercises)
+                {
+                    yield return new ExerciseModel()
+                    {
+                        Exercise = item,
+                        Name = item.Name,
+                        Description = item.Description,
+                        Id = item.Id,
+                    };
+                }
             }
-
-            var exercise = exercises.First();
-
-            return new ExerciseModel()
-            {
-                Exercise = exercise,
-                Id = exercise.Id,
-                Description = exercise.Description,
-                Name = exercise.Name,
-            };
         }
 
         public void RefreshCommands()
         {
-            EditCommand?.ChangeCanExecute();
-            DeleteCommand?.ChangeCanExecute();
         }
     }
 }

@@ -56,10 +56,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiImage Remove="Resources\Images\muskelmappe.svg" />
 	  <MauiImage Remove="Resources\Images\questionmarkicon.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Images\muskelmappe.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\Images\muskelmappe.svg" />
 	  <EmbeddedResource Include="Resources\Images\questionmarkicon.svg" />
 	</ItemGroup>
 
