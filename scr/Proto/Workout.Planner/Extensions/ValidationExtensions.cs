@@ -3,6 +3,9 @@
     using System.Text.RegularExpressions;
     using Workout.Planner.Strings;
 
+    /// <summary>
+    /// Hauptstelle wo man alle benötigte properties validiert.
+    /// </summary>
     public static partial class ValidationExtensions
     {
         public static string ValidateEmail(string email)

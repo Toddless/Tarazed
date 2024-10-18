@@ -14,7 +14,7 @@
         {
         }
 
-        // TODO wie bekomme ich die version....
+        // TODO wie bekommt man eine version....
         public string Version => AppStrings.Version;
 
         public string Developer => AppStrings.Developer;

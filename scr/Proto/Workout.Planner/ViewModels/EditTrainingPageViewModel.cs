@@ -25,13 +25,13 @@
 
         protected override TrainingPlan GetUpdateEntity()
         {
-            _entity!.Name = this.Name!;
-            return _entity;
+            Entity!.Name = this.Name!;
+            return Entity;
         }
 
         protected override bool CanSaveChanges()
         {
-            return base.CanSaveChanges() && _entity != null && Name != _entity.Name;
+            return base.CanSaveChanges() && Entity != null && Name != Entity.Name;
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿namespace Workout.Planner.Services.Contracts
 {
     using DataModel;
-    using Workout.Planner.Extensions;
     using Workout.Planner.Helper;
 
     public class SessionService : ISessionService
@@ -29,7 +28,7 @@
         {
             SecureStorage.Default.RemoveAll();
             var accesTokenExpireTime = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(responseToken.ExpiresIn).Ticks;
-            var refreshTokenExpireTime = DateTime.UtcNow.Ticks + TimeSpan.FromMinutes(30).Ticks;
+            var refreshTokenExpireTime = DateTime.UtcNow.Ticks + TimeSpan.FromDays(30).Ticks;
             await SecureStorage.Default.SetAsync("accessToken", responseToken.AccessToken).ConfigureAwait(false);
             await SecureStorage.Default.SetAsync("tokenType", responseToken.TokenType).ConfigureAwait(false);
             await SecureStorage.Default.SetAsync("refreshToken", responseToken.RefreshToken).ConfigureAwait(false);

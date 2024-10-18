@@ -7,12 +7,22 @@
 
     public abstract class LoadDataBaseViewModel : BaseViewModel
     {
+        private readonly ISessionService _sessionService;
+
         protected LoadDataBaseViewModel(
             INavigationService navigationService,
             ILogger<LoadDataBaseViewModel> logger,
-            IDispatcher dispatcher)
+            IDispatcher dispatcher,
+            ISessionService sessionService)
             : base(navigationService, logger, dispatcher)
         {
+            ArgumentNullException.ThrowIfNull(sessionService);
+            _sessionService = sessionService;
+        }
+
+        protected ISessionService SessionService
+        {
+            get { return _sessionService; }
         }
 
         public override async void Activated()
@@ -40,16 +50,16 @@
 
         protected abstract Task LoadDataAsync(CancellationToken token);
 
-        protected async Task EnsureAccesTokenAsync(ISessionService sessionService)
+        protected async Task EnsureAccesTokenAsync()
         {
             try
             {
-                await sessionService.EnsureAccessTokenNotExpiredAsync().ConfigureAwait(false);
+                await _sessionService.EnsureAccessTokenNotExpiredAsync().ConfigureAwait(false);
             }
             catch (UnauthorizedAccessException ex)
             {
                 Logger.LoggingException(this, ex);
-                await DispatchToUI(() => NavigationService.ShowModalAsync(RouteNames.LoginPage)).ConfigureAwait(false);
+                await NavigationService.ShowModalAsync(RouteNames.LoginPage).ConfigureAwait(false);
             }
         }
     }

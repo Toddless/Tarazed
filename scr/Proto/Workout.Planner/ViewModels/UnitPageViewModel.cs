@@ -10,29 +10,26 @@
 
     public class UnitPageViewModel : LoadDataBaseViewModel, IQueryAttributable
     {
-        private readonly IUnitService _unitService;
         private readonly ITrainingService _trainingService;
-        private readonly ISessionService _sessionService;
+        private readonly IUnitService _unitService;
         private ObservableCollection<UnitModel>? _units;
         private UnitModel? _unit;
         private long? _id;
 
         public UnitPageViewModel(
             INavigationService navigationService,
-            ILogger<LoadDataBaseViewModel> logger,
+            ILogger<UnitPageViewModel> logger,
             IDispatcher dispatcher,
-            IUnitService unitService,
             ISessionService sessionService,
+            IUnitService unitService,
             ITrainingService trainingService)
-            : base(navigationService, logger, dispatcher)
+            : base(navigationService, logger, dispatcher, sessionService)
         {
             ArgumentNullException.ThrowIfNull(trainingService);
-            ArgumentNullException.ThrowIfNull(sessionService);
             ArgumentNullException.ThrowIfNull(unitService);
-            SelectUnitCommand = new Command(SelectUnit, CanSelect);
-            AddUnitCommand = new Command(AddUnit, CanAddUnit);
+            SelectUnitCommand = new Command(ExecuteSelectUnit, CanSelectUnit);
+            AddUnitCommand = new Command(ExecuteAddUnit, CanAddUnit);
             _trainingService = trainingService;
-            _sessionService = sessionService;
             _unitService = unitService;
         }
 
@@ -77,11 +74,14 @@
             try
             {
                 token = GetCancelationToken();
-                var unit = await _trainingService.GetDataAsync(true, token, [Id!.Value]).ConfigureAwait(false);
 
+                // wie kommen hier von der seite "Home" mit dem id des trainingsplans und holen uns das plan mit allen units
+                var trainingPlan = await _trainingService.GetDataAsync(true, token, [Id!.Value]).ConfigureAwait(false);
+
+                // und hier werden die im UnitModel umwandeln
                 await DispatchToUI(() =>
                 {
-                    Units = new ObservableCollection<UnitModel>(unit.Where(x => x.Id == Id)
+                    Units = new ObservableCollection<UnitModel>(trainingPlan.Where(x => x.Id == Id)
                         .SelectMany(x => UnitModel.Import(x.Units, EditUnitAsync, CanEditUnit, DeleteUnitAsync, CanDeleteUnit)));
                 }).ConfigureAwait(false);
             }
@@ -101,7 +101,8 @@
             try
             {
                 token = GetCancelationToken();
-                await EnsureAccesTokenAsync(_sessionService).ConfigureAwait(false);
+
+                await EnsureAccesTokenAsync().ConfigureAwait(false);
 
                 var result = await _unitService.DeleteDataAsync([model.Unit.Id], token).ConfigureAwait(false);
                 if (!result)
@@ -121,7 +122,7 @@
             }
         }
 
-        protected async void SelectUnit()
+        protected async void ExecuteSelectUnit()
         {
             await NavigationService.NavigateToOnUIAsync(
                 RouteNames.ExercisePage,
@@ -139,7 +140,7 @@
                 }).ConfigureAwait(false);
         }
 
-        protected async void AddUnit()
+        protected async void ExecuteAddUnit()
         {
             await NavigationService.NavigateToOnUIAsync(
                 RouteNames.EditUnitPage,
@@ -148,6 +149,9 @@
 
         protected override string? Validate(string collumName)
         {
+            // zur zeit nichts zum validieren
+            // entweder in der Zukunft die methode verschieben, oder einfach hier stehen bleiben
+            // da es sein kann, dass man die später benötigt
             return string.Empty;
         }
 
@@ -166,7 +170,7 @@
             }
         }
 
-        private bool CanSelect()
+        private bool CanSelectUnit()
         {
             return !IsBusy;
         }

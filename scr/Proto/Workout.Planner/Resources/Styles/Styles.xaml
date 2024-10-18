@@ -432,25 +432,50 @@
     </Style>
 
     <DataTemplate x:Key="TrainingPlanDataTemplate" x:DataType="models:TrainingPlanModel">
-        <HorizontalStackLayout>
-            <Label Text="{Binding Name}"/>
-            <Button Text="Edit" Command="{Binding EditCommand}"/>
-            <Button Text="Delete" Command="{Binding DeleteCommand}"/>
-        </HorizontalStackLayout>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Label
+                    Grid.Column="0"
+                    BackgroundColor="Gray"
+                    FontSize="Medium"
+                    Padding="6"
+                    FontAttributes="Bold"
+                    Text="{x:Binding Name}" HorizontalOptions="Fill"/>
+            <ImageButton
+                    Grid.Column="1"
+                    Background="Gray"
+                    Source="editicon.png"
+                    WidthRequest="2"
+                    HeightRequest="2"
+                    Command="{x:Binding EditCommand}" HorizontalOptions="End"/>
+            <ImageButton
+                    Grid.Column="2"
+                    Source="trash.png"
+                    WidthRequest="2"
+                    HeightRequest="2"
+                    Background="Gray"
+                    Command="{x:Binding DeleteCommand}" HorizontalOptions="End"/>
+        </Grid>
     </DataTemplate>
     <DataTemplate x:Key="UnitsDataTemplate" x:DataType="models:UnitModel">
         <HorizontalStackLayout>
-            <Label Text="{Binding UnitName}"/>
-            <Button Text="Edit" Command="{Binding EditCommand}"/>
-            <Button Text="Delete" Command="{Binding DeleteCommand}"/>
+            <Label Text="{x:Binding UnitName}"/>
+            <Button Text="Edit" Command="{x:Binding EditCommand}"/>
+            <Button Text="Delete" Command="{x:Binding DeleteCommand}"/>
         </HorizontalStackLayout>
     </DataTemplate>
     <DataTemplate x:Key="ExercisesDataTemplate" x:DataType="models:ExerciseModel">
         <HorizontalStackLayout>
-            <Label Text="{Binding ExerciseName}"/>
-            <Button Text="Edit" Command="{Binding EditCommand}"/>
-            <Button Text="Delete" Command="{Binding DeleteCommand}"/>
+            <Label Text="{x:Binding Name}"/>
+            <Button Text="Edit" Command="{x:Binding EditCommand}"/>
+            <Button Text="Delete" Command="{x:Binding DeleteCommand}"/>
         </HorizontalStackLayout>
     </DataTemplate>
-
 </ResourceDictionary>

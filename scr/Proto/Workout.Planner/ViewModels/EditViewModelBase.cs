@@ -14,9 +14,8 @@
     public abstract class EditViewModelBase<TEntity> : LoadDataBaseViewModel, IQueryAttributable
         where TEntity : class, IHaveName, IEntity, new()
     {
-        protected readonly ISessionService _sessionService;
-        protected readonly IService<TEntity> _service;
-        protected TEntity? _entity;
+        private readonly IService<TEntity> _service;
+        private TEntity? _entity;
         private string? _name;
         private long? _id;
 
@@ -26,13 +25,11 @@
             IDispatcher dispatcher,
             ISessionService sessionService,
             IService<TEntity> service)
-            : base(navigationService, logger, dispatcher)
+            : base(navigationService, logger, dispatcher, sessionService)
         {
-            ArgumentNullException.ThrowIfNull(sessionService);
             ArgumentNullException.ThrowIfNull(service);
-            SaveCommand = new Command(SaveChangesAsync, CanSaveChanges);
+            SaveCommand = new Command(ExecuteSaveChangesAsync, CanSaveChanges);
             EntryUnfocusedCommand = new Command(OnEntryUnfocused);
-            _sessionService = sessionService;
             _service = service;
             RegisterProperties();
         }
@@ -57,6 +54,16 @@
         public string Titel
         {
             get { return Id != 0 ? AppStrings.TitelEdit + " " + EntityName : AppStrings.TitelCreate + " " + EntityName; }
+        }
+
+        protected TEntity? Entity
+        {
+            get { return _entity; }
+        }
+
+        protected IService<TEntity> Service
+        {
+            get { return _service; }
         }
 
         protected abstract string EntityName { get; }
@@ -87,10 +94,9 @@
             try
             {
                 token.ThrowIfCancellationRequested();
-                await EnsureAccesTokenAsync(_sessionService).ConfigureAwait(false);
+                await EnsureAccesTokenAsync().ConfigureAwait(false);
 
-                // aber im fall wenn es nichts ausgewählt wurde, wird hier null übergeben, was führt dazu, dass
-                // wir alle pläne laden. Diese seite kann sich mit mehrere plane nicht umgehen => wird exception geworfen.
+                // default wert fürs long = 0. Statt HasValue sollte man != 0 nutzen
                 if (Id != 0)
                 {
                     var result = await _service.GetDataAsync(false, token, [Id!.Value]).ConfigureAwait(false);
@@ -123,13 +129,13 @@
 
         protected abstract void LoadOnUI(TEntity entity);
 
-        protected async void SaveChangesAsync()
+        protected async void ExecuteSaveChangesAsync()
         {
             CancellationToken token = default;
             try
             {
-                await EnsureAccesTokenAsync(_sessionService).ConfigureAwait(false);
                 token = GetCancelationToken();
+                await EnsureAccesTokenAsync().ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(Name))
                 {
                     return;
@@ -170,12 +176,10 @@
             switch (collumName)
             {
                 case nameof(Name):
-                    if (string.IsNullOrWhiteSpace(Name))
-                    {
-                        return AppStrings.IsRequerd;
-                    }
-
+                    // die methode kümmert sich um mögliche null, das als argument übergeben werden kann.
+#pragma warning disable CS8604 // Possible null reference argument.
                     result = ValidationExtensions.ValidateName(Name);
+#pragma warning restore CS8604 // Possible null reference argument.
                     if (!string.IsNullOrWhiteSpace(result))
                     {
                         return result;

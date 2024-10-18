@@ -2,6 +2,7 @@
 {
     using Microsoft.Extensions.Logging;
     using Serilog;
+    using SkiaSharp.Views.Maui.Controls.Hosting;
     using Workout.Planner.Services;
     using Workout.Planner.Services.Contracts;
     using Workout.Planner.ViewModels;
@@ -15,6 +16,7 @@
             SetupSerilog();
             builder
                 .UseMauiApp<App>()
+                .UseSkiaSharp()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -38,6 +40,7 @@
             builder.Services.AddTransient<EditUnitPage>();
             builder.Services.AddTransient<SettingsPage>();
             builder.Services.AddTransient<RegisterUserPage>();
+            builder.Services.AddTransient<ExerciseDetailPage>();
             builder.Services.AddTransient<PasswordRecoveryPage>();
             builder.Services.AddTransient<EditTrainingPage>();
             builder.Services.AddTransient<EditExercisePage>();

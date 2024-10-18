@@ -2,7 +2,6 @@
 {
     using System.Collections.ObjectModel;
     using System.Threading;
-    using DataModel;
     using Microsoft.Extensions.Logging;
     using Workout.Planner.Extensions;
     using Workout.Planner.Helper;
@@ -13,8 +12,6 @@
     public class HomePageViewModel : LoadDataBaseViewModel
     {
         private readonly ITrainingService _trainingService;
-        private readonly ISessionService _sessionService;
-
         private ObservableCollection<TrainingPlanModel>? _plans;
         private TrainingPlanModel? _plan;
 
@@ -24,15 +21,13 @@
             IDispatcher dispatcher,
             ISessionService sessionService,
             INavigationService navigationService)
-            : base(navigationService, logger, dispatcher)
+            : base(navigationService, logger, dispatcher, sessionService)
         {
-            ArgumentNullException.ThrowIfNull(sessionService);
             ArgumentNullException.ThrowIfNull(trainingService);
 
-            SelectItemCommand = new Command(SelectPlan, CanSelectPlan);
-            AddCommand = new Command(AddPlan, CanAddPlan);
+            SelectItemCommand = new Command(ExecuteSelectPlan, CanSelectPlan);
+            AddCommand = new Command(ExecuteAddPlan, CanAddPlan);
             _trainingService = trainingService;
-            _sessionService = sessionService;
         }
 
         public Command SelectItemCommand { get; }
@@ -62,7 +57,7 @@
             try
             {
                 token.ThrowIfCancellationRequested();
-                await EnsureAccesTokenAsync(_sessionService).ConfigureAwait(false);
+                await EnsureAccesTokenAsync().ConfigureAwait(false);
                 var plans = await _trainingService.GetDataAsync(false, token).ConfigureAwait(false);
                 await DispatchToUI(() =>
                 {
@@ -84,13 +79,12 @@
             CancellationToken token = default;
             try
             {
-                await EnsureAccesTokenAsync(_sessionService).ConfigureAwait(false);
+                await EnsureAccesTokenAsync().ConfigureAwait(false);
                 token = GetCancelationToken();
                 var result = await _trainingService.DeleteDataAsync([model.Plan.Id], token).ConfigureAwait(false);
                 if (result == true)
                 {
-                    // herausfinden wie man schöner ergebniss der aktion anzeigt
-                    // statt solches popup
+                    // todo: popups loswerden
                     await NavigationService.DisplayAlertOnUiAsync(
                         AppStrings.Information,
                         AppStrings.Deleted,
@@ -98,6 +92,7 @@
                 }
                 else
                 {
+                    // todo: popups loswerden
                     await NavigationService.DisplayAlertOnUiAsync(
                         AppStrings.Information,
                         AppStrings.SomethingWrong,
@@ -116,7 +111,7 @@
             }
         }
 
-        protected async void SelectPlan()
+        protected async void ExecuteSelectPlan()
         {
             await NavigationService.NavigateToOnUIAsync(
                 RouteNames.UnitPage,
@@ -131,7 +126,7 @@
                new Dictionary<string, object> { { NavigationParameterNames.EntityId, model.Plan!.Id } }).ConfigureAwait(false);
         }
 
-        protected async void AddPlan()
+        protected async void ExecuteAddPlan()
         {
            await NavigationService.NavigateToOnUIAsync(RouteNames.EditTrainingPage).ConfigureAwait(false);
         }

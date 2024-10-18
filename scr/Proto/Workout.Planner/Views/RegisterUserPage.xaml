@@ -14,7 +14,7 @@
         <converter:StringToBooleanConverter x:Key="StringToBooleanConverter"/>
     </views:BaseView.Resources>
     <Shell.BackButtonBehavior>
-        <BackButtonBehavior Command="{x:Binding RegisterUserPageBackButtonCommand}"/>
+        <BackButtonBehavior Command="{x:Binding BackButtonCommand}"/>
     </Shell.BackButtonBehavior>
     <Border Margin="50,100" Background="Transparent">
         <StackLayout Spacing="10" Margin="10" VerticalOptions="CenterAndExpand" Background="Transparent">

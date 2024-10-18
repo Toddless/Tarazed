@@ -4,7 +4,7 @@
     using System.Net.Http.Json;
     using System.Text.Json;
     using Microsoft.Net.Http.Headers;
-    using Workout.Planner.Extensions;
+    using Workout.Planner.Helper;
 
     public class RestApiService : IRestApiService
     {
@@ -21,7 +21,7 @@
 
             if (_httpClient == null)
             {
-                throw new NotSupportedException(nameof(this.GetAsync) + ExceptionMessages.NotSupportedException);
+                throw new NotSupportedException(nameof(this.GetUserAsync) + ExceptionMessages.NotSupportedException);
             }
 
             request = await _httpClient.GetAsync(route, token).ConfigureAwait(false);

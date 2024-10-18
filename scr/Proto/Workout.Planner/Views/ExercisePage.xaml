@@ -4,21 +4,23 @@
              xmlns:viewModels="clr-namespace:Workout.Planner.ViewModels"
              xmlns:strings="clr-namespace:Workout.Planner.Strings"
              xmlns:views="clr-namespace:Workout.Planner.Views"
+             x:DataType="viewModels:ExercisePageViewModel"
              x:Class="Workout.Planner.Views.ExercisePage"
              Shell.FlyoutBehavior="Disabled"
-             x:DataType="viewModels:ExercisePageViewModel"
              Title="My Exercises">
-
-    <StackLayout  Spacing="10" Margin="10">
-        <Frame HorizontalOptions="StartAndExpand">
-
+    <Grid>
+        <Grid.RowDefinitions>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Frame>
             <CollectionView
              ItemsSource="{x:Binding Exercises}"
              ItemTemplate="{StaticResource ExercisesDataTemplate}"
              SelectedItem="{x:Binding Exercise, Mode=TwoWay}"
              SelectionMode="Single"/>
         </Frame>
-        <Button Text="{x:Static strings:AppStrings.Add}"
-         Command="{x:Binding AddExerciseCommand}"/>
-    </StackLayout>
+    </Grid>
 </views:BaseView>

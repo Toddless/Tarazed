@@ -1,4 +1,4 @@
-﻿namespace Workout.Planner.Extensions
+﻿namespace Workout.Planner.Helper
 {
     public static class ExceptionMessages
     {

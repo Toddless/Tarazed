@@ -14,8 +14,8 @@
     {
         private ILoginService _loginService;
 #if DEBUG
-        private string _password = "String1";
-        private string _email = "mail@mail.com";
+        private string? _password = "String1";
+        private string? _email = "mail@mail.com";
 
 #else
         private string _password;
@@ -29,9 +29,9 @@
             : base(navigationService, logger, dispatcher)
         {
             ArgumentNullException.ThrowIfNull(loginService);
-            RecoveryPasswordCommand = new Command(async () => await PasswordRecoveryAsync(), CanRecovery);
-            RegisterCommand = new Command(async () => await RegisterUser(), CanRegister);
-            LoginCommand = new Command(async () => await LoginUserAsync(), CanLogin);
+            RecoveryPasswordCommand = new Command(async () => await ExecutePasswordRecoveryAsync(), CanPasswordRecovery);
+            RegisterCommand = new Command(async () => await ExecuteRegisterUser(), CanRegisterUser);
+            LoginCommand = new Command(async () => await ExecuteLoginUserAsync(), CanLoginUser);
             EntryUnfocusedCommand = new Command(OnEntryUnfocused);
             _loginService = loginService;
             RegisterProperties();
@@ -46,20 +46,20 @@
         public Command LoginCommand { get; }
 
         [PropertyToValidate]
-        public string Password
+        public string? Password
         {
             get => _password;
             set { SetProperty(ref _password, value); }
         }
 
         [PropertyToValidate]
-        public string Email
+        public string? Email
         {
             get => _email;
             set { SetProperty(ref _email, value); }
         }
 
-        protected async Task LoginUserAsync()
+        protected async Task ExecuteLoginUserAsync()
         {
             try
             {
@@ -82,7 +82,7 @@
             }
         }
 
-        protected async Task PasswordRecoveryAsync()
+        protected async Task ExecutePasswordRecoveryAsync()
         {
             await NavigationService.NavigateToOnUIAsync(RouteNames.PasswordRecoveryPage).ConfigureAwait(false);
         }
@@ -92,7 +92,7 @@
             await NavigationService.CloseModalAsync().ConfigureAwait(false);
         }
 
-        protected async Task RegisterUser()
+        protected async Task ExecuteRegisterUser()
         {
             await NavigationService.NavigateToOnUIAsync(RouteNames.RegisterUserPage).ConfigureAwait(false);
         }
@@ -133,17 +133,17 @@
             return null;
         }
 
-        private bool CanRecovery()
+        private bool CanPasswordRecovery()
         {
             return !IsBusy && !HasError;
         }
 
-        private bool CanLogin()
+        private bool CanLoginUser()
         {
             return !IsBusy && !HasError;
         }
 
-        private bool CanRegister()
+        private bool CanRegisterUser()
         {
             return !IsBusy;
         }

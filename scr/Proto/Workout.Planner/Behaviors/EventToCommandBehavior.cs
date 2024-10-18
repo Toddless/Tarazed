@@ -80,7 +80,7 @@
 
             EventInfo eventInfo = AssociatedObject?.GetType().GetRuntimeEvent(eventName) ?? throw new ArgumentNullException(string.Format("EventToCommandBehavior: Can't register the '{0}' event.", EventName));
             MethodInfo? methodInfo = typeof(EventToCommandBehavior).GetTypeInfo().GetDeclaredMethod(nameof(OnEvent));
-            _eventHandler = methodInfo?.CreateDelegate(eventInfo.EventHandlerType, this);
+            _eventHandler = methodInfo?.CreateDelegate(eventInfo.EventHandlerType!, this);
             eventInfo.AddEventHandler(AssociatedObject, _eventHandler);
         }
 

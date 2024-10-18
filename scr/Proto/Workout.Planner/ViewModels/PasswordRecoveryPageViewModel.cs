@@ -14,22 +14,23 @@
     public class PasswordRecoveryPageViewModel : LoadDataBaseViewModel
     {
         private readonly ILoginService _loginService;
-        private string _confirmPassword;
-        private string _newPassword;
-        private string _resetCode;
-        private string _email;
+        private string? _confirmPassword;
+        private string? _newPassword;
+        private string? _resetCode;
+        private string? _email;
         private bool _emailIsSent;
 
         public PasswordRecoveryPageViewModel(
             INavigationService navigationService,
             ILogger<PasswordRecoveryPageViewModel> logger,
             IDispatcher dispatcher,
+            ISessionService sessionService,
             ILoginService loginService)
-            : base(navigationService, logger, dispatcher)
+            : base(navigationService, logger, dispatcher, sessionService)
         {
-            BackCommand = new Command(ExecuteBackAsync);
-            SaveNewPasswordCommand = new Command(async () => await SaveNewPasswordAsync(), CanSave);
+            SaveNewPasswordCommand = new Command(async () => await ExecuteSaveNewPasswordAsync(), CanSaveNewPassword);
             EntryUnfocusedCommand = new Command(OnEntryUnfocused);
+            BackCommand = new Command(ExecuteBackAsync);
             _loginService = loginService;
             RegisterProperties();
         }
@@ -46,30 +47,29 @@
             set { SetProperty(ref _emailIsSent, value); }
         }
 
-        // Validierung des Feldes temporär deaktiviert, da das Format des Reset-Codes noch nicht bekannt ist
         [PropertyToValidate]
-        public string ResetCode
+        public string? ResetCode
         {
             get => _resetCode;
             set { SetProperty(ref _resetCode, value); }
         }
 
         [PropertyToValidate]
-        public string ConfirmPassword
+        public string? ConfirmPassword
         {
             get => _confirmPassword;
             set { SetProperty(ref _confirmPassword, value); }
         }
 
         [PropertyToValidate]
-        public string NewPassword
+        public string? NewPassword
         {
             get => _newPassword;
             set { SetProperty(ref _newPassword, value); }
         }
 
         [PropertyToValidate]
-        public string Email
+        public string? Email
         {
             get => _email;
             set { SetProperty(ref _email, value); }
@@ -79,10 +79,10 @@
         {
             try
             {
-                // für die Autovervollständigen ist ein custom popup benötigt. Zur zeit lasse es so wie es ist
-                // den nutzer muss im feld des promts ein email eingeben.
                 GetCancelationToken();
                 token.ThrowIfCancellationRequested();
+
+                // todo: popups loswerden
                 string answer = await NavigationService.DisplayPromtOnUiAsync(
                     AppStrings.Information,
                     AppStrings.EnterEmailToPasswordRecovery,
@@ -99,6 +99,8 @@
                     Email = answer;
                     PasswordRecoveryModel passwordRecovery = new() { Email = answer };
                     await _loginService.RecoverUserPasswordAsync(passwordRecovery, true);
+
+                    // todo: popups loswerden
                     await NavigationService.DisplayAlertOnUiAsync(
                         AppStrings.Information,
                         AppStrings.ResetCodeIsSend,
@@ -106,6 +108,7 @@
                 }
                 else
                 {
+                    // todo: popups loswerden
                     await NavigationService.DisplayAlertOnUiAsync(
                         AppStrings.Warning,
                         AppStrings.EmailFormatWrong,
@@ -123,14 +126,16 @@
             }
         }
 
-        protected async Task SaveNewPasswordAsync()
+        protected async Task ExecuteSaveNewPasswordAsync()
         {
             try
             {
                 PasswordRecoveryModel recovery = new() { Email = Email, ResetCode = ResetCode, NewPassword = NewPassword };
-                // überprüfung ob es funktioniert
+
+                // todo: das feedback fällt, nicht ganz klar ob das request erfolgreich war oder nicht
                 await _loginService.RecoverUserPasswordAsync(recovery, false).ConfigureAwait(false);
 
+                // todo: zwei objekte mit den selben werten zu erstellen gefällt mir nicht, mal gucken ob man besser lösen kann
                 UserRequest loginAfterRecovery = new() { Email = recovery.Email, Password = recovery.NewPassword };
 
                 await _loginService.LoginAsync(loginAfterRecovery).ConfigureAwait(false);
@@ -141,6 +146,7 @@
             {
                 Logger.LoggingException(this, ex);
 
+                // todo: popups loswerden
                 await NavigationService.DisplayAlertOnUiAsync(
                     AppStrings.Information,
                     AppStrings.EmailOrResetCode,
@@ -156,7 +162,10 @@
                 case nameof(Email):
 
                     // Obwohl Email-Feld aufgefühlt ist, erscheint sich das error "IsRequered".
-                    // herausfinden wie man das löst. 
+                    // herausfinden wie man das löst.
+
+                    // mögliche null argument handling ist in der methode vorgesehen.
+#pragma warning disable CS8604 // Possible null reference argument.
                     result = ValidationExtensions.ValidateEmail(Email);
                     if (!string.IsNullOrWhiteSpace(result))
                     {
@@ -170,6 +179,7 @@
                     {
                         return result;
                     }
+#pragma warning restore CS8604 // Possible null reference argument.
 
                     break;
                 case nameof(ConfirmPassword):
@@ -205,7 +215,7 @@
             await NavigationService.ShowModalAsync(RouteNames.LoginPage).ConfigureAwait(false);
         }
 
-        private bool CanSave()
+        private bool CanSaveNewPassword()
         {
             return !HasError && !IsBusy;
         }

@@ -23,7 +23,6 @@
             ArgumentNullException.ThrowIfNull(navigationService);
             ArgumentNullException.ThrowIfNull(dispatcher);
             ArgumentNullException.ThrowIfNull(logger);
-            _cts = new CancellationTokenSource();
             _navigationService = navigationService;
             _dispatcher = dispatcher;
             _logger = logger;
@@ -72,7 +71,7 @@
             {
                 // null ist nur dann möglich, wenn die methode "RegisterProperty" in der classe
                 // ohne [PropertyToValide] attribute und dann indexer aufgeruft wurde
-                return Validate(collumName) !;
+                return Validate(collumName)!;
             }
         }
 
@@ -84,8 +83,8 @@
         {
             try
             {
-                _cts?.Cancel();
-                _cts?.Dispose();
+                Cts.Cancel();
+                Cts.Dispose();
                 _cts = null;
                 CancellationTokenSources.Clear();
             }

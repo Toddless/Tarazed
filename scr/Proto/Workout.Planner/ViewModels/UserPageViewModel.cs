@@ -11,43 +11,32 @@
     public class UserPageViewModel : LoadDataBaseViewModel
     {
         private readonly IUserService _userService;
-        private readonly ISessionService _sessionService;
-        private string? _email;
-        private bool _emailIsValid;
         private Customer? _customer;
+        private string? _email;
 
         public UserPageViewModel(
             INavigationService navigationService,
             ILogger<UserPageViewModel> logger,
             IDispatcher dispatcher,
-            IUserService userService,
-            ISessionService sessionService)
-            : base(navigationService, logger, dispatcher)
+            ISessionService sessionService,
+            IUserService userService)
+            : base(navigationService, logger, dispatcher, sessionService)
         {
+            SaveChangesCommand = new Command(async () => await ExecuteSaveChangesAsync());
+            ArgumentNullException.ThrowIfNull(userService);
             _userService = userService;
-            _sessionService = sessionService;
-            SaveChangesCommand = new Command(async () => await SaveChangesAsync());
         }
 
         public Customer? Customer
         {
             get => _customer;
+
+            // customer liegt im hintergrund und wird nie an der Oberfläche gezeigt =>
+            // SetProperty nicht benötigt
             private set => _customer = value;
         }
 
         public Command SaveChangesCommand { get; }
-
-        public bool EmailIsValid
-        {
-            get => _emailIsValid;
-            set
-            {
-                if (SetProperty(ref _emailIsValid, value))
-                {
-                    RefreshCommands();
-                }
-            }
-        }
 
         public string? Email
         {
@@ -55,13 +44,15 @@
             set => SetProperty(ref _email, value);
         }
 
-        public async Task SaveChangesAsync()
+        public async Task ExecuteSaveChangesAsync()
         {
             CancellationToken token = default;
             try
             {
+                // userpage noch nicht komplett bearbeitet. Erste Entwurf hatte ich schon gemacht
+                // aber im großen und ganzen noch keine gedanken.
                 token = GetCancelationToken();
-                await EnsureAccesTokenAsync(_sessionService).ConfigureAwait(false);
+                await EnsureAccesTokenAsync().ConfigureAwait(false);
                 Customer changedUser = new() { Email = Email!, UId = Customer!.UId };
                 await _userService.UpdateCustomerAsync(token, changedUser).ConfigureAwait(false);
             }
@@ -79,7 +70,7 @@
         {
             try
             {
-                await EnsureAccesTokenAsync(_sessionService).ConfigureAwait(false);
+                await EnsureAccesTokenAsync().ConfigureAwait(false);
 
                 token.ThrowIfCancellationRequested();
 
@@ -111,11 +102,9 @@
                     result = ValidationExtensions.ValidateEmail(Email);
                     if (!string.IsNullOrWhiteSpace(result))
                     {
-                        EmailIsValid = false;
                         return result;
                     }
 
-                    EmailIsValid = true;
                     break;
 
                 default:
