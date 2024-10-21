@@ -1,5 +1,6 @@
 ﻿namespace Workout.Planner.Controls
 {
+    using System.Collections;
     using System.Reflection;
     using System.Xml.Linq;
     using DataModel;
@@ -7,34 +8,30 @@
     using SkiaSharp.Views.Maui;
     using SkiaSharp.Views.Maui.Controls;
     using Svg.Skia;
+    using Workout.Planner.Helper;
+    using Workout.Planner.Models;
 
     public class CustomSKCanvasView : SKCanvasView
     {
         public static readonly BindableProperty SourceProperty = BindableProperty.Create(nameof(SourceProperty), typeof(string), typeof(CustomSKCanvasView), null, BindingMode.OneWay, null, propertyChanged: OnSourcePropertyChanged);
-        public static readonly BindableProperty MuscleGroupChangeProperty = BindableProperty.Create(nameof(MuscleGroupChangeProperty), typeof(string), typeof(CustomSKCanvasView), null, BindingMode.OneWay, null, propertyChanged: OnMuscleGroupChange);
-        public static readonly BindableProperty IntensityGroupChangeProperty = BindableProperty.Create(nameof(IntensityGroupChangeProperty), typeof(string), typeof(CustomSKCanvasView), null, BindingMode.OneWay, null, propertyChanged: OnIntensityGroupChange);
+        public static readonly BindableProperty MuscleGroupChangeProperty = BindableProperty.Create(nameof(MuscleGroupChangeProperty), typeof(IEnumerable), typeof(CustomSKCanvasView), null, BindingMode.OneWay, null, propertyChanged: OnMuscleGroupChange);
 
         private const string IdAttributeName = "id";
-        private SKSvg? _svg;
-        private Assembly _assembly;
+        private Dictionary<string, XElement> _changedXElementsIds = [];
         private Dictionary<string, XElement> _xElementsIds = [];
         private XDocument? _document;
+        private Assembly _assembly;
+        private SKSvg? _svg;
 
         public CustomSKCanvasView()
         {
             _assembly = GetType().Assembly;
         }
 
-        public string MuscleGroupChange
+        public IEnumerable MuscleGroupChange
         {
-            get { return (string)GetValue(MuscleGroupChangeProperty); }
+            get { return (IEnumerable)GetValue(MuscleGroupChangeProperty); }
             set { SetValue(MuscleGroupChangeProperty, value); }
-        }
-
-        public string IntensityGroupChange
-        {
-            get { return (string)GetValue(IntensityGroupChangeProperty); }
-            set { SetValue(IntensityGroupChangeProperty, value); }
         }
 
         public string Source
@@ -49,7 +46,6 @@
             var canvas = e.Surface.Canvas;
             canvas.Clear();
             var info = e.Info;
-            var drawRect = new SKRect(0, 0, info.Width, info.Height);
 
             using (_svg = new SKSvg())
             {
@@ -57,7 +53,7 @@
                 {
                     if (_document == null)
                     {
-                        return;
+                        _document = new();
                     }
 
                     _document.Save(memoryStream);
@@ -70,26 +66,16 @@
                 var scaleX = info.Width / original.Width;
                 var scaleY = info.Height / original.Height;
                 var matrix = SKMatrix.CreateScale(scaleX, scaleY);
-                canvas.DrawRect(drawRect, new SKPaint() { Color = new SKColor(51, 51, 51) });
                 canvas.DrawPicture(_svg.Picture, ref matrix);
             }
         }
 
-        private static void OnIntensityGroupChange(BindableObject bindable, object oldValue, object newValue)
-        {
-
-        }
-
         private static void OnMuscleGroupChange(BindableObject bindable, object oldValue, object newValue)
-        {
-
-        }
-
-        private static void OnGroupChange(BindableObject bindable, object oldValue, object newValue)
         {
             if (bindable is CustomSKCanvasView canvas)
             {
-                canvas.ChangeGroupColor();
+                canvas.SetColorToDefault();
+                canvas.ChangeGroupColor(newValue);
                 canvas.InvalidateSurface();
             }
         }
@@ -131,16 +117,32 @@
             }
         }
 
-        private void ChangeGroupColor(Muscle muscle, Intensity intensity)
+        private void ChangeGroupColor(object newValue)
         {
-            var muscleGroup = muscle.ToString().ToLower();
-            var intensityGroup = intensity.ToString().ToLower();
-            if (_xElementsIds.ContainsKey(muscleGroup))
+            if (newValue is IEnumerable<MuscleIntensityLevelModel> s)
             {
-                XElement element = _xElementsIds[muscleGroup];
-                element.Attributes().FirstOrDefault()?.ToString();
-                element.Descendants().ToList().ForEach(x => x.Attribute("class")!.Value = "st3");
+                foreach (var item in s)
+                {
+                    XElement element = _xElementsIds[item.Muscle.ToString().ToLower()];
+                    _changedXElementsIds.Add(item.Muscle.ToString().ToLower(), element);
+                    element.Descendants().ToList().ForEach(x => x.Attribute("class")!.Value = IntensityHelper.GetIntensity(item.Intensity));
+                }
             }
+        }
+
+        private void SetColorToDefault()
+        {
+            if(_changedXElementsIds.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var item in _changedXElementsIds)
+            {
+                item.Value.Descendants().ToList().ForEach(x => x.Attribute("class")!.Value = IntensityHelper.GetIntensity(Intensity.None));
+            }
+
+            _changedXElementsIds.Clear();
         }
 
         private Dictionary<string, XElement> GetElementIds(XDocument document)

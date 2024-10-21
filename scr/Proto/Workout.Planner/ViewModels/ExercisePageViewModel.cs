@@ -1,7 +1,6 @@
 ﻿namespace Workout.Planner.ViewModels
 {
     using System.Collections.ObjectModel;
-    using DataModel;
     using Microsoft.Extensions.Logging;
     using Workout.Planner.Extensions;
     using Workout.Planner.Helper;
@@ -12,8 +11,8 @@
     {
         private readonly IExerciseService _exerciseService;
         private readonly IUnitService _unitService;
+        private ObservableCollection<MuscleIntensityLevelModel>? _muscleIntensities;
         private ObservableCollection<ExerciseModel>? _exercises;
-        private ObservableCollection<MuscleIntensityLevelModel>? _muscleIntensity;
         private ExerciseModel? _exercise;
         private long? _id;
 
@@ -53,13 +52,10 @@
             }
         }
 
-        public ObservableCollection<MuscleIntensityLevelModel>? MuscleIntensity
+        public ObservableCollection<MuscleIntensityLevelModel>? MuscleIntensities
         {
-            get => _muscleIntensity;
-            set
-            {
-                SetProperty(ref _muscleIntensity, value);
-            }
+            get => _muscleIntensities;
+            set => SetProperty(ref _muscleIntensities, value);
         }
 
         public ObservableCollection<ExerciseModel>? Exercises
@@ -109,7 +105,8 @@
 
                 await DispatchToUI(() =>
                  {
-                     MuscleIntensity = new ObservableCollection<MuscleIntensityLevelModel>(exercise.SelectMany(x=> ));
+                 MuscleIntensities = new ObservableCollection<MuscleIntensityLevelModel>(exercise
+                     .SelectMany(x => MuscleIntensityLevelModel.Import(x.MuscleIntensityLevelId)));
                  }).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -121,6 +118,7 @@
                 await DispatchToUI(() => ReleaseCancelationToken(token)).ConfigureAwait(false);
             }
         }
+
         protected bool CanExecuteExerciseSelected()
         {
             return !IsBusy;

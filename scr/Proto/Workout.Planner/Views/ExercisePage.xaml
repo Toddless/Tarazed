@@ -25,11 +25,11 @@
              ItemTemplate="{StaticResource ExercisesDataTemplate}"
              SelectedItem="{x:Binding Exercise, Mode=TwoWay}"
              SelectionMode="Single">
-            <CollectionView.ItemsLayout>
-                <LinearItemsLayout
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout
                     Orientation="Vertical"
-                    ItemSpacing="5"/>
-            </CollectionView.ItemsLayout>
+                    ItemSpacing="10"/>
+                </CollectionView.ItemsLayout>
             </CollectionView>
         </Frame>
         <Frame
@@ -40,7 +40,7 @@
                 HorizontalOptions="Fill">
             <controls:CustomSKCanvasView
                  Source="muskelmappe.svg"
-                 GroupChange="{x:Binding MuskelGruppe}"
+                 MuscleGroupChange="{x:Binding MuscleIntensities}"
                  HeightRequest="300"
                  WidthRequest="300"/>
         </Frame>

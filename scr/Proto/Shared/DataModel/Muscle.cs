@@ -12,7 +12,7 @@
         Traps = 64,
         Lats = 128,
         Glutes = 256,
-        Hamstrings = 512,
+        Hamstings = 512,
         Quads = 1024,
         Calves = 2048,
     }
