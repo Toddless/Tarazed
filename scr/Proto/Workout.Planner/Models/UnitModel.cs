@@ -4,13 +4,13 @@
 
     public class UnitModel : ObservableObject
     {
-        private Func<UnitModel, Task> _editUnitFunc;
-        private Func<UnitModel, Task> _deleteUnitFunc;
-        private Func<UnitModel, bool> _canEditUnit;
-        private Func<UnitModel, bool> _canDeleteUnit;
-        private Unit _unit;
+        private Func<UnitModel, Task>? _editUnitFunc;
+        private Func<UnitModel, Task>? _deleteUnitFunc;
+        private Func<UnitModel, bool>? _canEditUnit;
+        private Func<UnitModel, bool>? _canDeleteUnit;
+        private string? _unitName;
+        private Unit? _unit;
         private long _id;
-        private string _unitName;
 
         private UnitModel()
         {
@@ -22,7 +22,7 @@
 
         public Command DeleteCommand { get; }
 
-        public Unit Unit
+        public Unit? Unit
         {
             get => _unit;
             private set => SetProperty(ref _unit, value);
@@ -34,7 +34,7 @@
             private set => SetProperty(ref _id, value);
         }
 
-        public string UnitName
+        public string? UnitName
         {
             get => _unitName;
             set => SetProperty(ref _unitName, value);
@@ -78,17 +78,17 @@
 
         private async void EditAsync()
         {
-            await _editUnitFunc.Invoke(this);
+            await _editUnitFunc?.Invoke(this) !;
         }
 
         private bool CanDelete()
         {
-            return _editUnitFunc != null && _canEditUnit != null && _canDeleteUnit.Invoke(this);
+            return _editUnitFunc != null && _canEditUnit != null && _canDeleteUnit!.Invoke(this);
         }
 
         private async void DeleteAsync()
         {
-            await _deleteUnitFunc.Invoke(this);
+            await _deleteUnitFunc?.Invoke(this) !;
         }
     }
 }

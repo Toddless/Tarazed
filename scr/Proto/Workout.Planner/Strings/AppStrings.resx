@@ -190,7 +190,7 @@
     <value>Email already exists</value>
   </data>
   <data name="AuthorizationExpired" xml:space="preserve">
-    <value>Authorization is expired. Please login </value>
+    <value>Authorization is expired. Please login</value>
   </data>
   <data name="LogoutButton" xml:space="preserve">
     <value>Logout</value>
@@ -247,6 +247,6 @@
     <value>Add</value>
   </data>
   <data name="ExerciseEntityName" xml:space="preserve">
-    <value>Exercise </value>
+    <value>Exercise</value>
   </data>
 </root>

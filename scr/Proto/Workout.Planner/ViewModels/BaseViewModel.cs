@@ -12,7 +12,7 @@
         private readonly INavigationService _navigationService;
         private readonly ILogger<BaseViewModel> _logger;
         private readonly IDispatcher _dispatcher;
-        private readonly List<string> _fieldsToVlaidate = [];
+        private readonly List<string> _fieldsToVlaidate = new();
         private CancellationTokenSource? _cts;
 
         public BaseViewModel(
@@ -53,7 +53,9 @@
             }
         }
 
+#pragma warning disable SA1010 // Opening square brackets should be spaced correctly
         protected IList<CancellationTokenSource> CancellationTokenSources { get; } = [];
+#pragma warning restore SA1010 // Opening square brackets should be spaced correctly
 
         protected INavigationService NavigationService
         {
@@ -71,7 +73,7 @@
             {
                 // null ist nur dann möglich, wenn die methode "RegisterProperty" in der classe
                 // ohne [PropertyToValide] attribute und dann indexer aufgeruft wurde
-                return Validate(collumName)!;
+                return Validate(collumName) !;
             }
         }
 

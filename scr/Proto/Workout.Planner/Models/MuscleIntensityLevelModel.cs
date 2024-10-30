@@ -4,15 +4,14 @@
 
     public class MuscleIntensityLevelModel : ObservableObject
     {
-        private Muscle _muscle;
+        private string? _muscle;
         private Intensity _intensity;
 
         public MuscleIntensityLevelModel()
         {
-
         }
 
-        public Muscle Muscle
+        public string? Muscle
         {
             get => _muscle;
             set => SetProperty(ref _muscle, value);
@@ -24,9 +23,14 @@
             set => SetProperty(ref _intensity, value);
         }
 
+        /// <summary>
+        /// Wandelt das MuscleIntensityLevel ins MuscleIntensityLevelModel um.
+        /// </summary>
+        /// <param name="intensities">Kollektion mit Muskelgruppen und Intensitäten.</param>
+        /// <returns>Gibt das neue MuscleIntensityLevelModel zurück.</returns>
         public static IEnumerable<MuscleIntensityLevelModel> Import(IEnumerable<MuscleIntensityLevel>? intensities)
         {
-            if(intensities == null)
+            if (intensities == null)
             {
                 yield break;
             }
@@ -36,7 +40,7 @@
                 yield return new MuscleIntensityLevelModel()
                 {
                     Intensity = item.Intensity,
-                    Muscle = item.Muscle,
+                    Muscle = item.Muscle.ToString(),
                 };
             }
         }

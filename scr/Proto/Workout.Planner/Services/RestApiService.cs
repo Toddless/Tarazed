@@ -85,7 +85,7 @@
                     throw new JsonException(ExceptionMessages.TokenExpired);
                 }
 
-                return [.. result];
+                return[.. result];
             }
         }
 
@@ -226,7 +226,7 @@
         {
             _httpClient?.Dispose();
             _refreshTokenAsync = refreshTokenAsync;
-            _httpClient = new HttpClient();
+            _httpClient = new();
             _httpClient.BaseAddress = new Uri(baseUrl);
             _httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, System.Net.Mime.MediaTypeNames.Application.Json);
         }

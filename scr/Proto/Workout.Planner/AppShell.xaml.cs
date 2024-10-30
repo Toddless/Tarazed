@@ -4,6 +4,9 @@
     using Workout.Planner.ViewModels;
     using Workout.Planner.Views;
 
+    /// <summary>
+    /// Provide visual hierarchy of the app.
+    /// </summary>
     public partial class AppShell : Shell
     {
         private readonly AppShellViewModel _viewModel;

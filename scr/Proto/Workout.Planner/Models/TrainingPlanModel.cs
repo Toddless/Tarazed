@@ -4,12 +4,12 @@
 
     public class TrainingPlanModel : ObservableObject
     {
-        private Func<TrainingPlanModel, Task> _editPlanFunc;
-        private Func<TrainingPlanModel, Task> _deletePlanFunc;
-        private Func<TrainingPlanModel, bool> _canEditPlan;
-        private Func<TrainingPlanModel, bool> _canDeletePlan;
-        private TrainingPlan _plan;
-        private string _name;
+        private Func<TrainingPlanModel, Task>? _editPlanFunc;
+        private Func<TrainingPlanModel, Task>? _deletePlanFunc;
+        private Func<TrainingPlanModel, bool>? _canEditPlan;
+        private Func<TrainingPlanModel, bool>? _canDeletePlan;
+        private TrainingPlan? _plan;
+        private string? _name;
         private long _id;
 
         private TrainingPlanModel()
@@ -22,7 +22,7 @@
 
         public Command DeleteCommand { get; }
 
-        public TrainingPlan Plan
+        public TrainingPlan? Plan
         {
             get => _plan;
             private set => SetProperty(ref _plan, value);
@@ -34,7 +34,7 @@
             private set => SetProperty(ref _id, value);
         }
 
-        public string Name
+        public string? Name
         {
             get => _name;
             set => SetProperty(ref _name, value);
@@ -59,11 +59,6 @@
             };
         }
 
-        public TrainingPlan Export()
-        {
-            return new TrainingPlan() { Name = Name, Id = Id, CustomerId = _plan.CustomerId, Units = _plan.Units };
-        }
-
         public void RefreshCommands()
         {
             EditCommand?.ChangeCanExecute();
@@ -77,7 +72,7 @@
 
         private async void EditAsync()
         {
-            await _editPlanFunc.Invoke(this);
+            await _editPlanFunc?.Invoke(this) !;
         }
 
         private bool CanDelete()
@@ -87,7 +82,7 @@
 
         private async void DeleteAsync()
         {
-            await _deletePlanFunc.Invoke(this);
+            await _deletePlanFunc?.Invoke(this) !;
         }
     }
 }

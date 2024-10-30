@@ -76,7 +76,9 @@
                 token = GetCancelationToken();
 
                 // wie kommen hier von der seite "Home" mit dem id des trainingsplans und holen uns das plan mit allen units
+#pragma warning disable SA1010 // Opening square brackets should be spaced correctly
                 var trainingPlan = await _trainingService.GetDataAsync(true, token, [Id!.Value]).ConfigureAwait(false);
+#pragma warning restore SA1010 // Opening square brackets should be spaced correctly
 
                 // und hier werden die im UnitModel umwandeln
                 await DispatchToUI(() =>
@@ -100,11 +102,17 @@
             CancellationToken token = default;
             try
             {
+                // noch bearbeiten
+                if(model.Unit == null)
+                {
+                    return;
+                }
+
                 token = GetCancelationToken();
 
                 await EnsureAccesTokenAsync().ConfigureAwait(false);
 
-                var result = await _unitService.DeleteDataAsync([model.Unit.Id], token).ConfigureAwait(false);
+                var result = _unitService.DeleteDataAsync([model.Unit.Id], token);
                 if (!result)
                 {
                     return;

@@ -3,9 +3,9 @@
     public enum MesurementUnit
     {
         Kg,
-        g,
+        G,
         M,
-        cm,
+        Cm,
         Seconds,
         Minutes,
         Hours,

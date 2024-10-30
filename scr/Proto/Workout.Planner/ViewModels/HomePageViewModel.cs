@@ -79,9 +79,14 @@
             CancellationToken token = default;
             try
             {
+                if(model.Plan == null)
+                {
+                    throw new ArgumentNullException();
+                }
+
                 await EnsureAccesTokenAsync().ConfigureAwait(false);
                 token = GetCancelationToken();
-                var result = await _trainingService.DeleteDataAsync([model.Plan.Id], token).ConfigureAwait(false);
+                var result = _trainingService.DeleteDataAsync([model.Plan.Id], token);
                 if (result == true)
                 {
                     // todo: popups loswerden

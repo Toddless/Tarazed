@@ -26,7 +26,7 @@
             MenuItems.Add(new NavigationEntry() { Title = Strings.AppStrings.AboutButton, Command = new Command<string>(NavigateTo), CommandParameter = RouteNames.AboutPage });
         }
 
-        public ObservableCollection<NavigationEntry> MenuItems { get; } = [];
+        public ObservableCollection<NavigationEntry> MenuItems { get; } = new();
 
         protected override string? Validate(string collumName)
         {

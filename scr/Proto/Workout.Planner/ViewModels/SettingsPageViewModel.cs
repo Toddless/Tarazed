@@ -37,11 +37,12 @@
 
                 // todo: popups loswerden
                 // sicherheit erhöhen, da die taste kann zufälligerweise gedrückt werden
+
+                // statt delete passwort eingeben
+                // Ich lasse es so, wie es ist, da ich keinen Zugriff auf den
+                // auf der Serverseite verwendeten Passwort-Hashing-Algorithmus habe
                 var userAnswer = await NavigationService.DisplayPromtOnUiAsync(
                     Strings.AppStrings.Warning,
-                    // statt delete passwort eingeben
-                    // Ich lasse es so, wie es ist, da ich keinen Zugriff auf den
-                    // auf der Serverseite verwendeten Passwort-Hashing-Algorithmus habe
                     Strings.AppStrings.DeletingProfile,
                     Strings.AppStrings.OkButton,
                     Strings.AppStrings.CancelButton).ConfigureAwait(false);

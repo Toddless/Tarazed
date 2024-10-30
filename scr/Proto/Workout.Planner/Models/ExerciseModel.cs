@@ -13,13 +13,13 @@
         {
         }
 
-        public Exercise Exercise
+        public Exercise? Exercise
         {
             get => _exercise;
             private set => SetProperty(ref _exercise, value);
         }
 
-        public string Name
+        public string? Name
         {
             get => _name;
             set => SetProperty(ref _name, value);

@@ -8,7 +8,7 @@
     /// </summary>
     public static partial class ValidationExtensions
     {
-        public static string ValidateEmail(string email)
+        public static string ValidateEmail(string? email)
         {
             if (string.IsNullOrWhiteSpace(email))
             {
@@ -25,7 +25,7 @@
             return string.Empty;
         }
 
-        public static string ValidatePassword(string password)
+        public static string ValidatePassword(string? password)
         {
             if (string.IsNullOrWhiteSpace(password))
             {
@@ -50,7 +50,7 @@
             return string.Empty;
         }
 
-        public static string ValidateName(string name)
+        public static string ValidateName(string? name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {

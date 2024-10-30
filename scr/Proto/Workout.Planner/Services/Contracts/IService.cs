@@ -7,7 +7,7 @@
     {
         Task<TEntity> CreateDataAsync(TEntity item, CancellationToken token);
 
-        Task<bool> DeleteDataAsync(IEnumerable<long>? ids, CancellationToken token);
+        bool DeleteDataAsync(IEnumerable<long>? ids, CancellationToken token);
 
         Task<IEnumerable<TEntity>> GetDataAsync(bool additionalData, CancellationToken token, IEnumerable<long>? ids = null);
 

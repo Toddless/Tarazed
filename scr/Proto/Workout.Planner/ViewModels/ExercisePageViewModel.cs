@@ -34,6 +34,9 @@
 
         public Command SelectedItemCommand { get; }
 
+        /// <summary>
+        /// Gets or sets Id des Elterns. Wird beim Aufruf diese Seite gekriegt.
+        /// </summary>
         public long? Id
         {
             get => _id;
@@ -52,35 +55,55 @@
             }
         }
 
+        /// <summary>
+        ///  Gets or sets Kollektion für alle Muskelgrupped mit Belastungsintensitäten einer Übung.
+        /// </summary>
         public ObservableCollection<MuscleIntensityLevelModel>? MuscleIntensities
         {
             get => _muscleIntensities;
             set => SetProperty(ref _muscleIntensities, value);
         }
 
+        /// <summary>
+        /// Gets or sets Kollektion für alle Übungen des Benutzers.
+        /// </summary>
         public ObservableCollection<ExerciseModel>? Exercises
         {
             get => _exercises;
             set => SetProperty(ref _exercises, value);
         }
 
+        /// <summary>
+        /// Hier ist Id des Parents gespeichert.
+        /// Das Id wird in der Methode LoadDataAsync verwendet,
+        /// um die Kinderelementen aus der Datenbank zu laden.
+        /// </summary>
+        /// <param name="query"> To be added.</param>
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             Id = query.GetValue<long>(NavigationParameterNames.EntityId);
         }
 
+        /// <summary>
+        /// Lädt die Daten aus der Datenbank anhang der Übergebene Id.
+        /// </summary>
+        /// <param name="token">To be added.</param>
+        /// <returns>Returns no value.</returns>
         protected override async Task LoadDataAsync(CancellationToken token)
         {
             try
             {
-                token = GetCancelationToken();
                 await EnsureAccesTokenAsync().ConfigureAwait(false);
 
-                var unit = await _unitService.GetDataAsync(true, token, [Id!.Value]).ConfigureAwait(false);
+#pragma warning disable SA1010 // Opening square brackets should be spaced correctly
+                var unit = await _unitService.GetDataAsync(true, token, [Id!.Value])
+                .ConfigureAwait(false);
+#pragma warning restore SA1010 // Opening square brackets should be spaced correctly
 
                 await DispatchToUI(() =>
                 {
-                    Exercises = new ObservableCollection<ExerciseModel>(unit.Where(x => x.Id == Id)
+                    Exercises = new ObservableCollection<ExerciseModel>(
+                    unit.Where(x => x.Id == Id)
                         .SelectMany(x => ExerciseModel.Import(x.Exercises)));
                 }).ConfigureAwait(false);
             }
@@ -90,10 +113,15 @@
             }
             finally
             {
-                await DispatchToUI(() => ReleaseCancelationToken(token)).ConfigureAwait(false);
+                await DispatchToUI(() => ReleaseCancelationToken(token))
+                .ConfigureAwait(false);
             }
         }
 
+        /// <summary>
+        /// Lädt die Muskelgruppen mit der Belastungsintensität
+        /// für die ausgewählte Übung aus der Datenbank.
+        /// </summary>
         protected async void ExecuteExerciseSelected()
         {
             CancellationToken token = default;
@@ -101,12 +129,17 @@
             {
                 token = GetCancelationToken();
 
-                var exercise = await _exerciseService.GetDataAsync(true, token, [Exercise!.Id]).ConfigureAwait(false);
+#pragma warning disable SA1010 // Opening square brackets should be spaced correctly
+                var exercise = await _exerciseService.GetDataAsync(true, token, [Exercise!.Id])
+                .ConfigureAwait(false);
+#pragma warning restore SA1010 // Opening square brackets should be spaced correctly
 
                 await DispatchToUI(() =>
                  {
-                 MuscleIntensities = new ObservableCollection<MuscleIntensityLevelModel>(exercise
-                     .SelectMany(x => MuscleIntensityLevelModel.Import(x.MuscleIntensityLevelId)));
+                     MuscleIntensities = new ObservableCollection<MuscleIntensityLevelModel>(
+                     exercise
+                         .SelectMany(x => MuscleIntensityLevelModel
+                         .Import(x.MuscleIntensityLevelId)));
                  }).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -115,10 +148,16 @@
             }
             finally
             {
-                await DispatchToUI(() => ReleaseCancelationToken(token)).ConfigureAwait(false);
+                await DispatchToUI(() => ReleaseCancelationToken(token))
+                .ConfigureAwait(false);
             }
         }
 
+        /// <summary>
+        /// Stellt sicher, das UI-Thread frei ist.
+        /// </summary>
+        /// <returns>False, wenn das <seealso cref="CancellationToken"/> nicht freigegeben ist.
+        /// Mehr. <seealso cref="BaseViewModel.IsBusy"/></returns>
         protected bool CanExecuteExerciseSelected()
         {
             return !IsBusy;
@@ -127,7 +166,8 @@
         protected override string? Validate(string collumName)
         {
             // zur zeit nichts zum validieren
-            // entweder in der Zukunft die methode verschieben, oder einfach hier stehen bleiben
+            // entweder in der Zukunft die methode verschieben,
+            // oder einfach hier stehen bleiben
             // da es sein kann, dass man die später benötigt
             return string.Empty;
         }
@@ -135,12 +175,9 @@
         protected override void RefreshCommands()
         {
             base.RefreshCommands();
-            if (Exercises != null)
+            foreach (var exercise in Exercises ?? new())
             {
-                foreach (var exercise in Exercises)
-                {
-                    exercise.RefreshCommands();
-                }
+                exercise.RefreshCommands();
             }
         }
     }

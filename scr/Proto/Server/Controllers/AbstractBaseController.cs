@@ -160,7 +160,7 @@
                 var context = _context.CheckContext();
                 var set = context.Set<TU>();
                 var itemExists = await set.AsNoTracking()
-                    .Where(o => o.CustomerId == currentUser!.Id)
+                    .Where(o => o.CustomerId == currentUser!.Id && item.Id == o.Id)
                     .FirstOrDefaultAsync().ConfigureAwait(false);
 
                 if (itemExists == null)

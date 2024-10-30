@@ -97,7 +97,7 @@ namespace Workout.Planner.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Authorization is expired. Please login .
+        ///   Looks up a localized string similar to Authorization is expired. Please login.
         /// </summary>
         internal static string AuthorizationExpired {
             get {
@@ -214,7 +214,7 @@ namespace Workout.Planner.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exercise .
+        ///   Looks up a localized string similar to Exercise.
         /// </summary>
         internal static string ExerciseEntityName {
             get {

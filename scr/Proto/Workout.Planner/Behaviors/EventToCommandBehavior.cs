@@ -1,6 +1,7 @@
 ﻿namespace Workout.Planner.Behaviors
 {
     using System;
+    using System.Globalization;
     using System.Reflection;
     using System.Windows.Input;
 
@@ -121,7 +122,10 @@
                 }
                 else if (Converter != null)
                 {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                    // No culture info needed.
                     resolverParameter = Converter.Convert(eventArgs, typeof(object), null, null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 }
                 else
                 {

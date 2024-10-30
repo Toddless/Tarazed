@@ -431,6 +431,26 @@
         <Setter Property="SelectedTabColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
     </Style>
 
+    <Style TargetType="Grid"
+           x:Key="GridChangeBackgroundSelectedItem">
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup Name="CommonStates">
+                    <VisualState Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="Gray"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState Name="Selected">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="#9335FF"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
     <DataTemplate x:Key="TrainingPlanDataTemplate" x:DataType="models:TrainingPlanModel">
         <Grid>
             <Grid.RowDefinitions>
@@ -472,8 +492,12 @@
         </HorizontalStackLayout>
     </DataTemplate>
     <DataTemplate x:Key="ExercisesDataTemplate" x:DataType="models:ExerciseModel">
-        <HorizontalStackLayout>
-            <Label Text="{x:Binding Name}"/>
-        </HorizontalStackLayout>
+        <Grid Style="{StaticResource GridChangeBackgroundSelectedItem}">
+            <Label
+                     FontSize="Small"
+                     Padding="6"
+                     FontAttributes="None"
+                     Text="{x:Binding Name}"/>
+        </Grid>
     </DataTemplate>
 </ResourceDictionary>

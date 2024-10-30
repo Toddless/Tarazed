@@ -99,7 +99,9 @@
                 // default wert fürs long = 0. Statt HasValue sollte man != 0 nutzen
                 if (Id != 0)
                 {
+#pragma warning disable SA1010 // Opening square brackets should be spaced correctly
                     var result = await _service.GetDataAsync(false, token, [Id!.Value]).ConfigureAwait(false);
+#pragma warning restore SA1010 // Opening square brackets should be spaced correctly
 
                     _entity = result.Single();
                     await DispatchToUI(() =>
