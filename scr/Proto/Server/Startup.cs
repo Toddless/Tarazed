@@ -56,6 +56,7 @@
                 o.User.RequireUniqueEmail = true;
                 o.Password.RequireNonAlphanumeric = false;
             })
+
                 // .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<DatabaseContext>()
             .AddDefaultTokenProviders();
@@ -93,7 +94,7 @@
             {
                 var context = serviceScope?.ServiceProvider.GetRequiredService<DatabaseContext>();
 
-                if (!context.Database.IsInMemory())
+                if (!context!.Database.IsInMemory())
                 {
                     context?.Database.Migrate();
                 }

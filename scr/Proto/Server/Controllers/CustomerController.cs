@@ -25,6 +25,9 @@
             UserManager<ApplicationUser> manager,
             ILogger<CustomerController> logger)
         {
+            ArgumentNullException.ThrowIfNull(_manager);
+            ArgumentNullException.ThrowIfNull(_logger);
+            ArgumentNullException.ThrowIfNull(_context);
             _logger = logger;
             _context = context;
             _manager = manager;
@@ -44,12 +47,7 @@
                 throw new ServerException(DataModel.Resources.Errors.NullObject);
             }
 
-            var currentUser = await _manager.GetUserAsync(User) !;
-            if (currentUser == null)
-            {
-                throw new ServerException(DataModel.Resources.Errors.NotFound);
-            }
-
+            var currentUser = await _manager.GetUserAsync(User) ?? throw new ServerException(DataModel.Resources.Errors.NotFound);
             if (currentUser.Id != customer.UId)
             {
                 throw new ServerException(DataModel.Resources.Errors.DeletingById);
@@ -59,7 +57,7 @@
             currentUser.Email = customer.Email;
             try
             {
-                bool isValid = currentUser.ValidateObject(out List<ValidationResult> results);
+                bool isValid = ValidateObject(customer, out List<ValidationResult> results);
                 if (!isValid)
                 {
                     results.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
@@ -100,19 +98,12 @@
                 throw new ServerException("This user cannot be deleted");
             }
 
-            var user = await _manager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ServerException(DataModel.Resources.Errors.NullObject);
-            }
-
+            var user = await _manager.GetUserAsync(User) ?? throw new ServerException(DataModel.Resources.Errors.NullObject);
             try
             {
-                var context = _context.CheckContext();
-
-                var set = context.Set<ApplicationUser>();
+                var set = _context.Set<ApplicationUser>();
                 set.Remove(user);
-                var changedCount = await context.SaveChangesAsync();
+                var changedCount = await _context.SaveChangesAsync();
                 if (changedCount != 1)
                 {
                     throw new InternalServerException(string.Format(DataModel.Resources.Errors.NotSaved, typeof(ApplicationUser).Name));
@@ -142,11 +133,7 @@
                     throw new ServerException(DataModel.Resources.Errors.NullObject);
                 }
 
-                var user = await _manager.GetUserAsync(User);
-                if (user == null)
-                {
-                    throw new ServerException(DataModel.Resources.Errors.NullObject);
-                }
+                var user = await _manager.GetUserAsync(User) ?? throw new ServerException(DataModel.Resources.Errors.NullObject);
 
                 return new Customer()
                 {
@@ -164,6 +151,15 @@
                 _logger.LogError(ex, $"Unknown Error in {nameof(GetCustomerAsync)}.");
                 throw new InternalServerException(DataModel.Resources.Errors.InternalException);
             }
+        }
+
+        private static bool ValidateObject(object obj, out List<ValidationResult> results)
+        {
+            ArgumentNullException.ThrowIfNull(obj);
+
+            var validationContext = new ValidationContext(obj, serviceProvider: null, items: null);
+            results = new();
+            return Validator.TryValidateObject(obj, validationContext, results, true);
         }
     }
 }

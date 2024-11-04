@@ -58,21 +58,15 @@
         /// the items associated with the current user. Returns <c>null</c> if no items are found.</returns>
         /// <exception cref="InternalServerException">Thrown if an unexpected error occurs during the operation.</exception>
         [HttpGet]
-        public async virtual Task<IEnumerable<TU>?> GetAsync(IEnumerable<long>? ids, bool loadAdditionalData = false)
+        public virtual async Task<IEnumerable<TU>?> GetAsync(IEnumerable<long>? ids, bool loadAdditionalData = false)
         {
             try
             {
-                var context = _context.CheckContext();
-                var currentUser = await _manager.GetUserAsync(User).ConfigureAwait(false);
-
-                if (currentUser == null)
-                {
-                    throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
-                }
+                var currentUser = await _manager.GetUserAsync(User).ConfigureAwait(false) ?? throw new ServerException(DataModel.Resources.Errors.InvalidRequest);
 
                 // sucht nach gegebene Ids, die currentUser gehören,
                 // falls null eingegeben wurde, gibt alle items des currentsUsers zurück
-                IQueryable<TU> query = context.Set<TU>().Where(o => o.CustomerId == currentUser.Id);
+                IQueryable<TU> query = _context.Set<TU>().Where(o => o.CustomerId == currentUser.Id);
 
                 if (ids?.Any() ?? false)
                 {
@@ -108,7 +102,7 @@
         /// <exception cref="ArgumentNullException">Thrown if the provided item is null.</exception>
         /// <exception cref="InternalServerException">Thrown if an unexpected error occurs during the operation.</exception>
         [HttpPut]
-        public async virtual Task<TU?> CreateAsync(TU item)
+        public virtual async Task<TU?> CreateAsync(TU item)
         {
             try
             {
@@ -122,7 +116,7 @@
                     throw new ServerException(DataModel.Resources.Errors.InvalidRequest_PrimaryKeySet);
                 }
 
-                bool isValid = item.ValidateObject(out List<ValidationResult> result);
+                bool isValid = ValidateObject(item, out List<ValidationResult> result);
                 if (!isValid)
                 {
                     result.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
@@ -130,12 +124,11 @@
                 }
 
                 var currentUser = await _manager.GetUserAsync(User).ConfigureAwait(false);
-                var context = _context.CheckContext();
 
                 item.CustomerId = currentUser!.Id;
 
-                context.Set<TU>().Add(item);
-                await SaveChangesAsync(context).ConfigureAwait(false);
+                _context.Set<TU>().Add(item);
+                await SaveChangesAsync(_context).ConfigureAwait(false);
 
                 return item;
             }
@@ -158,7 +151,7 @@
         /// <returns>The task result contains the updated item of type <typeparamref name="TU"/>.</returns>
         /// <exception cref="InternalServerException">Thrown if an unexpected error occurs during the operation.</exception>
         [HttpPost]
-        public async virtual Task<TU?> UpdateAsync(TU item)
+        public virtual async Task<TU?> UpdateAsync(TU item)
         {
             try
             {
@@ -172,7 +165,7 @@
                     throw new ServerException(DataModel.Resources.Errors.InvalidRequest_PrimaryKeyNotSet);
                 }
 
-                bool isValid = item.ValidateObject(out List<ValidationResult> results);
+                bool isValid = ValidateObject(item, out List<ValidationResult> results);
                 if (!isValid)
                 {
                     results.ForEach(x => _logger?.LogDebug(x.ErrorMessage));
@@ -180,21 +173,15 @@
                 }
 
                 var currentUser = await _manager.GetUserAsync(User).ConfigureAwait(false);
-                var context = _context.CheckContext();
-                var set = context.Set<TU>();
+                var set = _context.Set<TU>();
                 var itemExists = await set.AsNoTracking()
                     .Where(o => o.CustomerId == currentUser!.Id && item.Id == o.Id)
-                    .FirstOrDefaultAsync().ConfigureAwait(false);
-
-                if (itemExists == null)
-                {
-                    throw new ServerException(DataModel.Resources.Errors.ElementNotExists);
-                }
+                    .FirstOrDefaultAsync().ConfigureAwait(false) ?? throw new ServerException(DataModel.Resources.Errors.ElementNotExists);
 
                 item.CustomerId = currentUser!.Id;
 
                 set.Update(item);
-                await SaveChangesAsync(context).ConfigureAwait(false);
+                await SaveChangesAsync(_context).ConfigureAwait(false);
                 return item;
             }
             catch (ServerException)
@@ -230,18 +217,12 @@
                     throw new ServerException(DataModel.Resources.Errors.InvalidRequest_PrimaryKeyNotSet);
                 }
 
-                var context = _context.CheckContext();
                 var currentUser = await _manager.GetUserAsync(User).ConfigureAwait(false);
 
-                var set = context.Set<TU>();
-                var itemExists = await set.FirstOrDefaultAsync(x => x.Id == id && x.CustomerId == currentUser!.Id).ConfigureAwait(false);
-                if (itemExists == null)
-                {
-                    throw new ServerException(DataModel.Resources.Errors.ElementNotExists);
-                }
-
+                var set = _context.Set<TU>();
+                var itemExists = await set.FirstOrDefaultAsync(x => x.Id == id && x.CustomerId == currentUser!.Id).ConfigureAwait(false) ?? throw new ServerException(DataModel.Resources.Errors.ElementNotExists);
                 set.Remove(itemExists);
-                await SaveChangesAsync(context).ConfigureAwait(false);
+                await SaveChangesAsync(_context).ConfigureAwait(false);
 
                 return true;
             }
@@ -266,6 +247,15 @@
             {
                 throw new InternalServerException(string.Format(DataModel.Resources.Errors.NotSaved, typeof(TU).Name));
             }
+        }
+
+        private static bool ValidateObject(object obj, out List<ValidationResult> results)
+        {
+            ArgumentNullException.ThrowIfNull(obj);
+
+            var validationContext = new ValidationContext(obj, serviceProvider: null, items: null);
+            results = new();
+            return Validator.TryValidateObject(obj, validationContext, results, true);
         }
     }
 }
