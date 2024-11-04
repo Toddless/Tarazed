@@ -4,7 +4,7 @@
     using Workout.Planner.Strings;
 
     /// <summary>
-    /// Hauptstelle wo man alle benötigte properties validiert.
+    /// Validation Extensions method.
     /// </summary>
     public static partial class ValidationExtensions
     {

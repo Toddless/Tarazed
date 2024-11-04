@@ -52,7 +52,7 @@
                 // userpage noch nicht komplett bearbeitet. Erste Entwurf hatte ich schon gemacht
                 // aber im großen und ganzen noch keine gedanken.
                 token = GetCancelationToken();
-                await EnsureAccesTokenAsync().ConfigureAwait(false);
+                await EnsureAccesTokenAsync(token).ConfigureAwait(false);
                 Customer changedUser = new() { Email = Email!, UId = Customer!.UId };
                 await _userService.UpdateCustomerAsync(token, changedUser).ConfigureAwait(false);
             }
@@ -70,10 +70,8 @@
         {
             try
             {
-                await EnsureAccesTokenAsync().ConfigureAwait(false);
-
                 token.ThrowIfCancellationRequested();
-
+                await EnsureAccesTokenAsync(token).ConfigureAwait(false);
                 var user = await _userService.GetCurrentUser(token);
 
                 await DispatchToUI(() =>

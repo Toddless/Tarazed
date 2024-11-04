@@ -57,7 +57,7 @@
             try
             {
                 token.ThrowIfCancellationRequested();
-                await EnsureAccesTokenAsync().ConfigureAwait(false);
+                await EnsureAccesTokenAsync(token).ConfigureAwait(false);
                 var plans = await _trainingService.GetDataAsync(false, token).ConfigureAwait(false);
                 await DispatchToUI(() =>
                 {
@@ -84,8 +84,9 @@
                     throw new ArgumentNullException();
                 }
 
-                await EnsureAccesTokenAsync().ConfigureAwait(false);
                 token = GetCancelationToken();
+
+                await EnsureAccesTokenAsync(token).ConfigureAwait(false);
                 var result = _trainingService.DeleteDataAsync([model.Plan.Id], token);
                 if (result == true)
                 {

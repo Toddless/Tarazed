@@ -42,7 +42,7 @@
 
         public async Task LoginAsync(UserRequest user)
         {
-            var response = await _restAPIService.PostAsync<UserRequest, AccessTokenResponse>(RouteNames.LoginRoute, user, CancellationToken.None)
+            var response = await _restAPIService.PostAsync<UserRequest, TokenHandlingModel>(RouteNames.LoginRoute, user, CancellationToken.None)
                 .ConfigureAwait(false);
             if (response == null)
             {

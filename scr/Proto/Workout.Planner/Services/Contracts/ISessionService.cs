@@ -6,9 +6,9 @@
     {
         void Initialize(LoginService loginService);
 
-        Task SetTokenAsync(AccessTokenResponse token);
+        Task SetTokenAsync(TokenHandlingModel token);
 
-        Task EnsureAccessTokenNotExpiredAsync();
+        Task EnsureAccessTokenNotExpiredAsync(CancellationToken token);
 
         Task UserLogoutAsync();
     }

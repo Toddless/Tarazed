@@ -93,7 +93,8 @@
         {
             try
             {
-                await EnsureAccesTokenAsync().ConfigureAwait(false);
+                token.ThrowIfCancellationRequested();
+                await EnsureAccesTokenAsync(token).ConfigureAwait(false);
 
 #pragma warning disable SA1010 // Opening square brackets should be spaced correctly
                 var unit = await _unitService.GetDataAsync(true, token, [Id!.Value])

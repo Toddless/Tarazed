@@ -37,7 +37,7 @@
             RegisterProperties();
         }
 
-        public ICommand EntryUnfocusedCommand { get; private set; }
+        public ICommand EntryUnfocusedCommand { get; }
 
         public Command RecoveryPasswordCommand { get; }
 

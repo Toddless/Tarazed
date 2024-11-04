@@ -89,9 +89,6 @@
                 Cts.Dispose();
                 _cts = null;
                 CancellationTokenSources.Clear();
-                //GC.Collect();
-                //GC.WaitForPendingFinalizers();
-                //GC.Collect();
             }
             catch (Exception ex)
             {
@@ -99,9 +96,13 @@
             }
         }
 
+        /// <summary>
+        /// Register object properties to validate.
+        /// </summary>
         protected void RegisterProperties()
         {
-            var properties = GetType().GetProperties().Where(x => x.GetCustomAttributes(typeof(PropertyToValidateAttribute), false).Length > 0);
+            var properties = GetType().GetProperties().Where(
+                x => x.GetCustomAttributes(typeof(PropertyToValidateAttribute), false).Length > 0);
 
             foreach (var property in properties)
             {
@@ -150,6 +151,10 @@
             return token;
         }
 
+        /// <summary>
+        /// Validate properties, when unfocused.
+        /// </summary>
+        /// <param name="sender">Property to validate.</param>
         protected virtual void OnEntryUnfocused(object sender)
         {
             if (sender is not string property)

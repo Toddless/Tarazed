@@ -48,6 +48,15 @@
             get { return _manager; }
         }
 
+        /// <summary>
+        ///  Retrieves a collection of items of type <typeparamref name="TU"/> associated with the current user.
+        ///  Optionally filters the items by the provided IDs and includes additional data if specified.
+        /// </summary>
+        /// <param name="ids"> A collection of IDs representing the items to retrieve. If <see langword="null"/>, retrieves all items belonging to the current user.</param>
+        /// <param name="loadAdditionalData">A boolean flag indicating whether to include additional related data with each item. Defaults to <see langword="false"/>.</param>
+        /// <returns>The task result is an <see cref="IEnumerable{TU}"/> containing
+        /// the items associated with the current user. Returns <c>null</c> if no items are found.</returns>
+        /// <exception cref="InternalServerException">Thrown if an unexpected error occurs during the operation.</exception>
         [HttpGet]
         public async virtual Task<IEnumerable<TU>?> GetAsync(IEnumerable<long>? ids, bool loadAdditionalData = false)
         {
@@ -90,6 +99,14 @@
             }
         }
 
+        /// <summary>
+        /// Creates a new instance of <typeparamref name="TU"/> and saves it to the database.
+        /// Validates the item before creation and assigns the current user's ID as the CustomerId.
+        /// </summary>
+        /// <param name="item"> The item to create. Must not be null and must have an unset primary key (Id = 0).</param>
+        /// <returns>The task result contains the created item of type <typeparamref name="TU"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the provided item is null.</exception>
+        /// <exception cref="InternalServerException">Thrown if an unexpected error occurs during the operation.</exception>
         [HttpPut]
         public async virtual Task<TU?> CreateAsync(TU item)
         {
@@ -134,6 +151,12 @@
             }
         }
 
+        /// <summary>
+        ///  Updates an existing instance of <typeparamref name="TU"/> in the database.
+        /// </summary>
+        /// <param name="item"> The item to update. Must not be null and must have a valid primary key (Id > 0).</param>
+        /// <returns>The task result contains the updated item of type <typeparamref name="TU"/>.</returns>
+        /// <exception cref="InternalServerException">Thrown if an unexpected error occurs during the operation.</exception>
         [HttpPost]
         public async virtual Task<TU?> UpdateAsync(TU item)
         {
@@ -186,6 +209,12 @@
             }
         }
 
+        /// <summary>
+        /// Deletes an existing instance of <typeparamref name="TU"/> from the database based on the provided identifier.
+        /// </summary>
+        /// <param name="id">The identifier of the item to delete. Must not be null or zero.</param>
+        /// <returns>The task result is <see langword="true"/> if the item was successfully deleted.</returns>
+        /// <exception cref="InternalServerException">Thrown if an unexpected error occurs during the operation.</exception>
         [HttpDelete]
         public virtual async Task<bool> DeleteAsync(long? id)
         {

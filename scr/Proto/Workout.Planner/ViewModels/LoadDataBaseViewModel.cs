@@ -50,11 +50,12 @@
 
         protected abstract Task LoadDataAsync(CancellationToken token);
 
-        protected async Task EnsureAccesTokenAsync()
+        protected async Task EnsureAccesTokenAsync(CancellationToken token)
         {
             try
             {
-                await _sessionService.EnsureAccessTokenNotExpiredAsync().ConfigureAwait(false);
+                token.ThrowIfCancellationRequested();
+                await _sessionService.EnsureAccessTokenNotExpiredAsync(token).ConfigureAwait(false);
             }
             catch (UnauthorizedAccessException ex)
             {

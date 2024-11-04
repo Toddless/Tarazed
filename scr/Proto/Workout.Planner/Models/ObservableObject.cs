@@ -7,6 +7,14 @@
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        /// <summary>
+        /// Checks if the field has been changed. If yes, triggers the PropertyChanged event.
+        /// </summary>
+        /// <typeparam name="T">Data type.</typeparam>
+        /// <param name="field">Field.</param>
+        /// <param name="value">Property value.</param>
+        /// <param name="propertyName">Property name.</param>
+        /// <returns>Returns <see langword="false"/> if field equals value, otherwise <see langword="true"/>.</returns>
         protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
         {
             if (Equals(field, value))
@@ -19,6 +27,10 @@
             return true;
         }
 
+        /// <summary>
+        /// Triggers the PropertyChanged event.Create new EventArgs with passed property name.
+        /// </summary>
+        /// <param name="propertyName">Name of the changed property.</param>
         protected void RaisePropertyChanged(string? propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

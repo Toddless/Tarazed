@@ -94,7 +94,7 @@
             try
             {
                 token.ThrowIfCancellationRequested();
-                await EnsureAccesTokenAsync().ConfigureAwait(false);
+                await EnsureAccesTokenAsync(token).ConfigureAwait(false);
 
                 // default wert fürs long = 0. Statt HasValue sollte man != 0 nutzen
                 if (Id != 0)
@@ -137,7 +137,7 @@
             try
             {
                 token = GetCancelationToken();
-                await EnsureAccesTokenAsync().ConfigureAwait(false);
+                await EnsureAccesTokenAsync(token).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(Name))
                 {
                     return;

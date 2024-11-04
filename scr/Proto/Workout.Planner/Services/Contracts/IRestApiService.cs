@@ -14,7 +14,7 @@
 
         Task<bool> DeleteAsync(string route, CancellationToken token);
 
-        void RemoveBearerToken(string token);
+        void RemoveBearerToken();
 
         void SetBearerToken(string token);
     }

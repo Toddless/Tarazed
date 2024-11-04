@@ -51,6 +51,17 @@
             }
         }
 
+        /// <summary>
+        /// Sends a GET request to the specified route.
+        /// </summary>
+        /// <typeparam name="TV">The type of objects in the returned enumerable.</typeparam>
+        /// <param name="route">The endpoint route relative to the base URL of the HTTP client.</param>
+        /// <param name="token">A cancellation token to cancel the request if needed.</param>
+        /// <returns>The task result contains an enumerable of objects of type <typeparamref name="TV"/>
+        /// representing the response data from the API.</returns>
+        /// <exception cref="NotSupportedException">Thrown if the HTTP client has not been initialized.</exception>
+        /// <exception cref="HttpRequestException">Thrown if the request fails due to an expired login or if the HTTP response status is not OK.</exception>
+        /// <exception cref="JsonException">Thrown if the response content could not be deserialized.</exception>
         public async Task<IEnumerable<TV>> GetAsync<TV>(string route, CancellationToken token)
         {
             HttpResponseMessage? request = null;
@@ -79,7 +90,7 @@
                 // objecte, die in sich noch ein object enthalten, sind nicht ganz richtig deserialisiert.
                 var result = await JsonSerializer.DeserializeAsync<TV[]>(responce, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }, token).ConfigureAwait(false);
 
-                // falls accessToken während der Ausführung des codes abläuft, ist hier result = null und Exceprion wird geworfen
+                // If the accessToken expires during the execution of the code, result here is null and Exception will be thrown.
                 if (result == null)
                 {
                     throw new JsonException(ExceptionMessages.TokenExpired);
@@ -89,6 +100,19 @@
             }
         }
 
+        /// <summary>
+        /// Sends a POST request to the specified route.
+        /// </summary>
+        /// <typeparam name="TU">Request to server. Contains the object to be passed to the server.</typeparam>
+        /// <typeparam name="TV">Responce from server. Contains an object received from the server.</typeparam>
+        /// <param name="route">The endpoint route relative to the base URL of the HTTP client.</param>
+        /// <param name="payload">The data to include in the body of the POST request.</param>
+        /// <param name="token">A cancellation token to cancel the request if needed.</param>
+        /// <returns>The task result contains an enumerable of objects of type <typeparamref name="TV"/>
+        ///  representing the response data from the API.</returns>
+        /// <exception cref="NotSupportedException">Thrown if the HTTP client has not been initialized.</exception>
+        /// <exception cref="HttpRequestException">Thrown if the request fails due to an expired login or if the HTTP response status is not OK.</exception>
+        /// <exception cref="JsonException">Thrown if the response content could not be deserialized.</exception>
         public async Task<TV> PostAsync<TU, TV>(string route, TU payload, CancellationToken token)
         {
             if (_httpClient == null)
@@ -116,7 +140,7 @@
                 {
                     var result = await JsonSerializer.DeserializeAsync<TV>(responce, new JsonSerializerOptions(JsonSerializerDefaults.Web), token).ConfigureAwait(false);
 
-                    // falls accessToken während der Ausführung des codes abläuft, ist hier result = null und Exceprion wird geworfen
+                    // If the accessToken expires during the execution of the code, result here is null and Exception will be thrown.
                     if (result == null)
                     {
                         throw new JsonException(ExceptionMessages.TokenExpired);
@@ -127,6 +151,19 @@
             }
         }
 
+        /// <summary>
+        /// Sends a PUT request to the specified route.
+        /// </summary>
+        /// <typeparam name="TV">Responce from server. Contains an object received from the server.</typeparam>
+        /// <typeparam name="TU">Request to server. Contains the object to be passed to the server.</typeparam>
+        /// <param name="route">The endpoint route relative to the base URL of the HTTP client.</param>
+        /// <param name="payload">The data to include in the body of the PUT request.</param>
+        /// <param name="token">A cancellation token to cancel the request if needed.</param>
+        /// <returns>The task result contains an enumerable of objects of type <typeparamref name="TV"/>
+        ///  representing the response data from the API.</returns>
+        /// <exception cref="NotSupportedException">Thrown if the HTTP client has not been initialized.</exception>
+        /// <exception cref="HttpRequestException">Thrown if the request fails due to an expired login or if the HTTP response status is not OK.</exception>
+        /// <exception cref="JsonException">Thrown if the response content could not be deserialized.</exception>
         public async Task<TV> PutAsync<TV, TU>(string route, TU payload, CancellationToken token)
         {
             if (_httpClient == null)
@@ -155,7 +192,7 @@
                 {
                     var result = await JsonSerializer.DeserializeAsync<TV>(responce, new JsonSerializerOptions(JsonSerializerDefaults.Web)).ConfigureAwait(false);
 
-                    // falls accessToken während der Ausführung des codes abläuft, ist hier result = null und Exceprion wird geworfen
+                    // If the accessToken expires during the execution of the code, result here is null and Exception will be thrown.
                     if (result == null)
                     {
                         throw new JsonException(ExceptionMessages.TokenExpired);
@@ -192,6 +229,11 @@
             return true;
         }
 
+        /// <summary>
+        /// Set bearer token as default request header for authorisation.
+        /// </summary>
+        /// <param name="token">Bearer token.</param>
+        /// <exception cref="NotSupportedException">Thrown if the HTTP client has not been initialized.</exception>
         public void SetBearerToken(string token)
         {
             if (_httpClient == null)
@@ -205,11 +247,15 @@
             }
         }
 
-        public void RemoveBearerToken(string token)
+        /// <summary>
+        /// Remove the default request headers from the http client.
+        /// </summary>
+        /// <exception cref="NotSupportedException">Thrown if the HTTP client has not been initialized.</exception>
+        public void RemoveBearerToken()
         {
             if (_httpClient == null)
             {
-                throw new NotSupportedException(nameof(this.SetBearerToken) + ExceptionMessages.NotSupportedException);
+                throw new NotSupportedException(nameof(this.RemoveBearerToken) + ExceptionMessages.NotSupportedException);
             }
 
             if (_httpClient.DefaultRequestHeaders.Authorization == null)
@@ -222,6 +268,11 @@
             }
         }
 
+        /// <summary>
+        /// Initializes the HTTP client with the specified base URL and sets a function for token refreshing.
+        /// </summary>
+        /// <param name="baseUrl">The base URL for the HTTP client, used as the base address for API requests.</param>
+        /// <param name="refreshTokenAsync"> An optional asynchronous function that refreshes the access token if it expires.</param>
         public void Initialize(string baseUrl, Func<Task<bool>>? refreshTokenAsync)
         {
             _httpClient?.Dispose();

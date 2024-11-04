@@ -110,7 +110,7 @@
 
                 token = GetCancelationToken();
 
-                await EnsureAccesTokenAsync().ConfigureAwait(false);
+                await EnsureAccesTokenAsync(token).ConfigureAwait(false);
 
                 var result = _unitService.DeleteDataAsync([model.Unit.Id], token);
                 if (!result)
