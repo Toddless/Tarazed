@@ -10,6 +10,8 @@
 
     public static class MauiProgram
     {
+        private const string PathToLogFile = "D:\\Workspace\\Tarazed\\scr\\Proto\\Workout.Planner\\bin\\Debug\\net8.0-windows10.0.19041.0\\win10-x64";
+
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
@@ -67,7 +69,11 @@
 
         private static void SetupSerilog()
         {
+#if DEBUG
+            var direct = Path.Combine(PathToLogFile, "log");
+#else
             var direct = Path.Combine(FileSystem.Current.AppDataDirectory, "log");
+#endif
             if (!Directory.Exists(direct))
             {
                 Directory.CreateDirectory(direct);

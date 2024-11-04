@@ -24,7 +24,7 @@
              Grid.Column="0"
              ItemsSource="{x:Binding Exercises}"
              ItemTemplate="{StaticResource ExercisesDataTemplate}"
-             SelectedItem="{x:Binding Exercise}"
+             SelectedItem="{x:Binding Exercise, Mode=TwoWay}"
              Margin="15"
              SelectionMode="Single">
                 <CollectionView.ItemsLayout>

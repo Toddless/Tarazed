@@ -16,25 +16,25 @@
             _restApiService = restApiService;
         }
 
-        public virtual Task<IEnumerable<TU>> GetDataAsync(bool additionalData, CancellationToken token, IEnumerable<long>? ids = null)
+        public virtual async Task<IEnumerable<TU>> GetDataAsync(bool additionalData, CancellationToken token, IEnumerable<long>? ids = null)
         {
             string route = RouteNames.GetRouteName(typeof(TU).Name);
             route = CreateRouteExtensions.CreateGetStringRoute(ids, route, additionalData);
-            return _restApiService.GetAsync<TU>(route, token);
+            return await _restApiService.GetAsync<TU>(route, token).ConfigureAwait(false);
         }
 
-        public virtual Task<TU> UpdataDataAsync(TU item, CancellationToken token)
+        public virtual async Task<TU> UpdataDataAsync(TU item, CancellationToken token)
         {
             string route = RouteNames.GetRouteName(typeof(TU).Name);
             route = CreateRouteExtensions.ObjToQuery(item, route);
-            return _restApiService.PostAsync<TU, TU>(route, item, token);
+            return await _restApiService.PostAsync<TU, TU>(route, item, token).ConfigureAwait(false);
         }
 
-        public virtual Task<TU> CreateDataAsync(TU item, CancellationToken token)
+        public virtual async Task<TU> CreateDataAsync(TU item, CancellationToken token)
         {
             string route = RouteNames.GetRouteName(typeof(TU).Name);
             route = CreateRouteExtensions.ObjToQuery(item, route);
-            return _restApiService.PutAsync<TU, TU>(route, item, token);
+            return await _restApiService.PutAsync<TU, TU>(route, item, token).ConfigureAwait(false);
         }
 
         public virtual bool DeleteDataAsync(IEnumerable<long>? ids, CancellationToken token)

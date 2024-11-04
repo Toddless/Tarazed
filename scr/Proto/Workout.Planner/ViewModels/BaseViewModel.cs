@@ -89,6 +89,9 @@
                 Cts.Dispose();
                 _cts = null;
                 CancellationTokenSources.Clear();
+                //GC.Collect();
+                //GC.WaitForPendingFinalizers();
+                //GC.Collect();
             }
             catch (Exception ex)
             {
