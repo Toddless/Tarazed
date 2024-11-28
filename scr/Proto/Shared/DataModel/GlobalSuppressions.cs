@@ -5,6 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "Ignored until release", Scope = "type", Target = "~T:DataModel.Muscle")]
+[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "Ignored until release", Scope = "type", Target = "~T:DataModel.Enums.Muscle")]
 [assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "Ignored until release", Scope = "type", Target = "~T:DataModel.Intensity")]
 [assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "Ignored until release", Scope = "type", Target = "~T:DataModel.MesurementUnit")]

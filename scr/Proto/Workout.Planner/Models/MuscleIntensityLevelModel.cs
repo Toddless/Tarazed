@@ -30,19 +30,13 @@
         /// <returns>Gibt das neue MuscleIntensityLevelModel zurück.</returns>
         public static IEnumerable<MuscleIntensityLevelModel> Import(IEnumerable<MuscleIntensityLevel>? intensities)
         {
-            if (intensities == null)
+#pragma warning disable SA1010 // Opening square brackets should be spaced correctly
+            return intensities?.Where(x => x != null).Select(item => new MuscleIntensityLevelModel()
             {
-                yield break;
-            }
-
-            foreach (var item in intensities)
-            {
-                yield return new MuscleIntensityLevelModel()
-                {
-                    Intensity = item.Intensity,
-                    Muscle = item.Muscle.ToString(),
-                };
-            }
+                Intensity = item.Intensity,
+                Muscle = item.Muscle.ToString(),
+            }) ?? [];
+#pragma warning restore SA1010 // Opening square brackets should be spaced correctly
         }
     }
 }

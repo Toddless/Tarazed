@@ -1,4 +1,4 @@
-﻿namespace DataModel
+﻿namespace DataModel.Enums
 {
     public enum Muscle
     {

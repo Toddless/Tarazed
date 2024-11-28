@@ -20,6 +20,6 @@
         DbSet<TU> Set<TU>()
             where TU : class;
 
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

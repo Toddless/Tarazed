@@ -18,26 +18,12 @@
         /// Der Pfad zur SVG-Datei. Der Name der Datei soll
         /// kleingeschrieben und im SVG-Format (.svg) sein.
         /// </summary>
-        public static readonly BindableProperty SourceProperty = BindableProperty.Create(
-            nameof(SourceProperty),
-            typeof(string),
-            typeof(CustomSKCanvasView),
-            null,
-            BindingMode.OneWay,
-            null,
-            propertyChanged: OnSourcePropertyChanged);
+        public static readonly BindableProperty SourceProperty = BindableProperty.Create(nameof(SourceProperty), typeof(string), typeof(CustomSKCanvasView), null, BindingMode.OneWay, null, propertyChanged: OnSourcePropertyChanged);
 
         /// <summary>
         /// Reagiert auf Änderungen in einer verknüpften Kollektion.
         /// </summary>
-        public static readonly BindableProperty MuscleGroupChangeProperty = BindableProperty.Create(
-            nameof(MuscleGroupChangeProperty),
-            typeof(IEnumerable),
-            typeof(CustomSKCanvasView),
-            null,
-            BindingMode.OneWay,
-            null,
-            propertyChanged: OnMuscleGroupChange);
+        public static readonly BindableProperty MuscleGroupChangeProperty = BindableProperty.Create(nameof(MuscleGroupChangeProperty), typeof(IEnumerable), typeof(CustomSKCanvasView), null, BindingMode.OneWay, null, propertyChanged: OnMuscleGroupChange);
 
         private const string IdAttributeName = "id";
 

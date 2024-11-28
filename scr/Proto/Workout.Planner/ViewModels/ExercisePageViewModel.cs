@@ -97,8 +97,7 @@
                 await EnsureAccesTokenAsync(token).ConfigureAwait(false);
 
 #pragma warning disable SA1010 // Opening square brackets should be spaced correctly
-                var unit = await _unitService.GetDataAsync(true, token, [Id!.Value])
-                .ConfigureAwait(false);
+                var unit = await _unitService.GetDataAsync(true, token, [Id!.Value]).ConfigureAwait(false);
 #pragma warning restore SA1010 // Opening square brackets should be spaced correctly
 
                 await DispatchToUI(() =>
@@ -119,39 +118,10 @@
             }
         }
 
-        /// <summary>
-        /// Lädt die Muskelgruppen mit der Belastungsintensität
-        /// für die ausgewählte Übung aus der Datenbank.
-        /// </summary>
-        protected async void ExecuteExerciseSelected()
+        protected void ExecuteExerciseSelected()
         {
-            CancellationToken token = default;
-            try
-            {
-                token = GetCancelationToken();
-
-#pragma warning disable SA1010 // Opening square brackets should be spaced correctly
-                var exercise = await _exerciseService.GetDataAsync(true, token, [Exercise!.Id])
-                .ConfigureAwait(false);
-#pragma warning restore SA1010 // Opening square brackets should be spaced correctly
-
-                await DispatchToUI(() =>
-                 {
-                     MuscleIntensities = new ObservableCollection<MuscleIntensityLevelModel>(
-                     exercise
-                         .SelectMany(x => MuscleIntensityLevelModel
-                         .Import(x.MuscleIntensityLevelId)));
-                 }).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Logger.LoggingException(this, ex);
-            }
-            finally
-            {
-                await DispatchToUI(() => ReleaseCancelationToken(token))
-                .ConfigureAwait(false);
-            }
+            MuscleIntensities = new ObservableCollection<MuscleIntensityLevelModel>(
+                MuscleIntensityLevelModel.Import(Exercise?.Exercise?.MuscleIntensityLevelId));
         }
 
         /// <summary>
