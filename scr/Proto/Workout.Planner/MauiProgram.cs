@@ -74,7 +74,14 @@
         private static void SetupSerilog()
         {
 #if DEBUG
-            var direct = Path.Combine(PathToLogFile, "log");
+            var logDirectoryPath = Path.GetDirectoryName(typeof(MauiProgram).GetType().Assembly.Location);
+
+            if (string.IsNullOrEmpty(logDirectoryPath))
+            {
+                logDirectoryPath = FileSystem.Current.AppDataDirectory;
+            }
+
+            var direct = Path.Combine(logDirectoryPath, "log");
 #else
             var direct = Path.Combine(FileSystem.Current.AppDataDirectory, "log");
 #endif
