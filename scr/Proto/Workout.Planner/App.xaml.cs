@@ -8,18 +8,19 @@
     /// </summary>
     public partial class App : Application
     {
+        private readonly AppShellViewModel? _viewModel;
+
         public App(AppShellViewModel appShellViewModel)
         {
+            ArgumentNullException.ThrowIfNull(appShellViewModel);
             InitializeComponent();
-            MainPage = new AppShell(appShellViewModel);
+            _viewModel = appShellViewModel;
         }
 
-        /// <summary>
-        /// Create new Window.
-        /// </summary>
-        /// <param name="activationState">To be added.</param>
-        /// <returns> Return new window with Minimum Width and Height. X and Y define initial window position.</returns>
-        protected override Window CreateWindow(IActivationState? activationState) =>
-            new(MainPage!) { MinimumHeight = 300, MinimumWidth = 300 };
+        protected override Window CreateWindow(IActivationState? activationState)
+        {
+            var windowWithHeightWidth = new Window(new AppShell(_viewModel!)) { MinimumWidth = 750, MinimumHeight = 650 };
+            return windowWithHeightWidth;
+        }
     }
 }

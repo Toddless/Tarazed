@@ -74,7 +74,7 @@
         private static void SetupSerilog()
         {
 #if DEBUG
-            var logDirectoryPath = Path.GetDirectoryName(typeof(MauiProgram).GetType().Assembly.Location);
+            var logDirectoryPath = Path.GetDirectoryName(AppContext.BaseDirectory);
 
             if (string.IsNullOrEmpty(logDirectoryPath))
             {

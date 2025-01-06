@@ -4,8 +4,8 @@
     {
         public static void PoppingIn(ContentPage page)
         {
-            var contentSize = page.Content.Measure(page.Window.Width, page.Window.Height, MeasureFlags.IncludeMargins);
-            var contentHeight = contentSize.Request.Height;
+            var contentSize = page.Content.Measure(page.Window.Width, page.Window.Height);
+            var contentHeight = contentSize.Height;
 
             page.Content.TranslationY = contentHeight;
 
@@ -33,8 +33,8 @@
         {
             var done = new TaskCompletionSource();
 
-            var contentSize = page.Content.Measure(page.Window.Width, page.Window.Height, MeasureFlags.IncludeMargins);
-            var windowHeight = contentSize.Request.Height;
+            var contentSize = page.Content.Measure(page.Window.Width, page.Window.Height);
+            var windowHeight = contentSize.Height;
             page.Animate(
                 "Background",
                 callback: v => page.Background = new SolidColorBrush(Colors.Black.WithAlpha((float)v)),

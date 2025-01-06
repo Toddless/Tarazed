@@ -89,7 +89,7 @@
                 var scaleX = info.Width / original.Width;
                 var scaleY = info.Height / original.Height;
                 var matrix = SKMatrix.CreateScale(scaleX, scaleY);
-                canvas.DrawPicture(svg.Picture, ref matrix);
+                canvas.DrawPicture(svg.Picture, in matrix);
             }
         }
 
