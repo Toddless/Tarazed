@@ -20,6 +20,6 @@
         /// <param name="activationState">To be added.</param>
         /// <returns> Return new window with Minimum Width and Height. X and Y define initial window position.</returns>
         protected override Window CreateWindow(IActivationState? activationState) =>
-            new(MainPage!) { MinimumWidth = 600, MinimumHeight = 500, X = 200, Y = 200};
+            new(MainPage!) { MinimumHeight = 300, MinimumWidth = 300 };
     }
 }

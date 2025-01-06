@@ -1,5 +1,6 @@
 ﻿namespace Workout.Planner
 {
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Serilog;
     using SkiaSharp.Views.Maui.Controls.Hosting;
@@ -10,7 +11,10 @@
 
     public static class MauiProgram
     {
-        private const string PathToLogFile = "D:\\Workspace\\Tarazed\\scr\\Proto\\Workout.Planner\\bin\\Debug\\net8.0-windows10.0.19041.0\\win10-x64";
+#if DEBUG
+        // used only for debug
+        private const string PathToLogFile = "D:\\Workspace\\Tarazed\\scr\\Proto\\Workout.Planner\\bin\\Debug\\net9.0-windows10.0.19041.0\\win10-x64";
+#endif
 
         public static MauiApp CreateMauiApp()
         {
@@ -24,8 +28,8 @@
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
-            builder.Services.AddKeyedSingleton(typeof(IRestApiService), "AuthRestAPI", typeof(RestApiService));
-            builder.Services.AddKeyedSingleton(typeof(IRestApiService), "UnAuthRestAPI", typeof(RestApiService));
+            builder.Services.AddKeyedSingleton<IRestApiService, RestApiService>("AuthRestAPI");
+            builder.Services.AddKeyedSingleton<IRestApiService, RestApiService>("UnAuthRestAPI");
             builder.Services.AddSingleton<ISessionService, SessionService>();
             builder.Services.AddSingleton<ILoginService, LoginService>();
             builder.Services.AddSingleton<INavigationService, NavigationService>();

@@ -6,48 +6,6 @@
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore.Query;
 
-    public class AsyncEnumerable<T> : EnumerableQuery<T>, IAsyncEnumerable<T>, IQueryable<T>
-    {
-        public AsyncEnumerable(IEnumerable<T> enumerable) : base(enumerable) { }
-
-        public AsyncEnumerable(Expression expression) : base(expression) { }
-
-        public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            return new AsyncEnumerator<T>(this.AsEnumerable().GetEnumerator());
-        }
-
-        IQueryProvider IQueryable.Provider => new AsyncQueryProvider<T>(this);
-    }
-
-    public class AsyncEnumerator<T> : IAsyncEnumerator<T>
-    {
-        private readonly IEnumerator<T> _inner;
-
-        public AsyncEnumerator(IEnumerator<T> inner)
-        {
-            _inner = inner;
-        }
-
-        public void Dispose()
-        {
-            _inner.Dispose();
-        }
-
-        public T Current => _inner.Current;
-
-        public ValueTask<bool> MoveNextAsync()
-        {
-            return ValueTask.FromResult(_inner.MoveNext());
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return ValueTask.CompletedTask;
-        }
-    }
-
     public class AsyncQueryProvider<TEntity> : IAsyncQueryProvider
     {
         private readonly IQueryProvider _inner;
@@ -67,7 +25,7 @@
             return new AsyncEnumerable<TElement>(expression);
         }
 
-        public object Execute(Expression expression)
+        public object? Execute(Expression expression)
         {
             return _inner.Execute(expression);
         }
