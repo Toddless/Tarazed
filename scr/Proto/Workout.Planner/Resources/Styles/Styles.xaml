@@ -2,7 +2,8 @@
 <?xaml-comp compile="true" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:Workout.Planner.Models">
 
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
@@ -30,7 +31,7 @@
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="BorderWidth" Value="0"/>
         <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="Padding" Value="14,10"/>
+        <Setter Property="Padding" Value="20,10"/>
         <Setter Property="MinimumHeightRequest" Value="44"/>
         <Setter Property="MinimumWidthRequest" Value="44"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
@@ -160,7 +161,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Label">
+    <Style x:Key="LabelBaseStyle" TargetType="Label">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
@@ -179,22 +180,29 @@
         </Setter>
     </Style>
 
+    <Style TargetType="Label" BasedOn="{StaticResource LabelBaseStyle}"/>
+
+
     <Style TargetType="Span">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="Headline">
+    <Style TargetType="Label" x:Key="Headline" BasedOn="{StaticResource LabelBaseStyle}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource White}}" />
         <Setter Property="FontSize" Value="32" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
 
-    <Style TargetType="Label" x:Key="SubHeadline">
+    <Style TargetType="Label" x:Key="SubHeadline" BasedOn="{StaticResource LabelBaseStyle}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource White}}" />
         <Setter Property="FontSize" Value="24" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="HyperlinkLabelStyle" TargetType="Label" BasedOn="{StaticResource LabelBaseStyle}">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource LightBlue}}"/>
     </Style>
 
     <Style TargetType="ListView">
@@ -423,4 +431,73 @@
         <Setter Property="SelectedTabColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
     </Style>
 
+    <Style TargetType="Grid"
+           x:Key="GridChangeBackgroundSelectedItem">
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup Name="CommonStates">
+                    <VisualState Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="Gray"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState Name="Selected">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="#9335FF"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <DataTemplate x:Key="TrainingPlanDataTemplate" x:DataType="models:TrainingPlanModel">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Label
+                    Grid.Column="0"
+                    BackgroundColor="Gray"
+                    FontSize="Medium"
+                    Padding="6"
+                    FontAttributes="Bold"
+                    Text="{x:Binding Name}" HorizontalOptions="Fill"/>
+            <ImageButton
+                    Grid.Column="1"
+                    Background="Gray"
+                    Source="editicon.png"
+                    WidthRequest="2"
+                    HeightRequest="2"
+                    Command="{x:Binding EditCommand}" HorizontalOptions="End"/>
+            <ImageButton
+                    Grid.Column="2"
+                    Source="trash.png"
+                    WidthRequest="2"
+                    HeightRequest="2"
+                    Background="Gray"
+                    Command="{x:Binding DeleteCommand}" HorizontalOptions="End"/>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="UnitsDataTemplate" x:DataType="models:UnitModel">
+        <HorizontalStackLayout>
+            <Label Text="{x:Binding UnitName}"/>
+            <Button Text="Edit" Command="{x:Binding EditCommand}"/>
+            <Button Text="Delete" Command="{x:Binding DeleteCommand}"/>
+        </HorizontalStackLayout>
+    </DataTemplate>
+    <DataTemplate x:Key="ExercisesDataTemplate" x:DataType="models:ExerciseModel">
+        <Grid Style="{StaticResource GridChangeBackgroundSelectedItem}">
+            <Label
+                     FontSize="Small"
+                     Padding="6"
+                     FontAttributes="None"
+                     Text="{x:Binding Name}"/>
+        </Grid>
+    </DataTemplate>
 </ResourceDictionary>

@@ -20,7 +20,7 @@
 
         protected override IQueryable<Unit> AddIncludes(IQueryable<Unit> query)
         {
-            return query.Include(x => x.Exercises);
+            return query.Where(x => x.Exercises != null).Include(x => x.Exercises!).ThenInclude(x => x.MuscleIntensityLevelId);
         }
     }
 }

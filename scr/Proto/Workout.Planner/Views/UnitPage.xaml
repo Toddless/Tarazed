@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BaseView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Workout.Planner.ViewModels"
+             xmlns:strings="clr-namespace:Workout.Planner.Strings"
+             xmlns:views="clr-namespace:Workout.Planner.Views"
+             x:Class="Workout.Planner.Views.UnitPage"
+             Shell.FlyoutBehavior="Disabled"
+             x:DataType="viewModels:UnitPageViewModel"
+             Title="My Units">
+    
+    <StackLayout  Spacing="10" Margin="10">
+        <Frame HorizontalOptions="StartAndExpand">
+
+            <CollectionView
+             ItemsSource="{x:Binding Units}"
+             ItemTemplate="{StaticResource UnitsDataTemplate}"
+             SelectedItem="{x:Binding Unit, Mode=TwoWay}"
+             SelectionMode="Single"/>
+        </Frame>
+        <Button Text="{x:Static strings:AppStrings.Add}"
+         Command="{x:Binding AddUnitCommand}"/>
+    </StackLayout>
+</views:BaseView>

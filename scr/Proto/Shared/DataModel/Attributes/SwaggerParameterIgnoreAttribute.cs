@@ -5,5 +5,4 @@
     public class SwaggerParameterIgnoreAttribute : Attribute
     {
     }
-
 }

@@ -3,7 +3,9 @@
     using System.Text;
     using System.Text.Json;
     using DataModel;
-    using Workout.Planner.Extensions;
+    using Workout.Planner.Helper;
+    using Workout.Planner.Models;
+    using Workout.Planner.Services.Contracts;
 
     public class LoginService : ILoginService
     {
@@ -20,17 +22,6 @@
             _sessionService.Initialize(this);
         }
 
-        public async Task LoginAsync(UserRequest user)
-        {
-            var response = await _restAPIService.PostAsync<UserRequest, AccessTokenResponse>(RouteNames.LoginControllerRoute, user, CancellationToken.None).ConfigureAwait(false);
-            if (response == null)
-            {
-                throw new UnauthorizedAccessException(ExceptionMessages.IncorrectEmailOrPassword);
-            }
-
-            await _sessionService.SetTokenAsync(response).ConfigureAwait(false);
-        }
-
         public async Task RegisterAsync(UserRequest user)
         {
             using (var client = new HttpClient())
@@ -44,6 +35,46 @@
                         {
                             throw new UnauthorizedAccessException(ExceptionMessages.EmailAlreadyExists);
                         }
+                    }
+                }
+            }
+        }
+
+        public async Task LoginAsync(UserRequest user)
+        {
+            var response = await _restAPIService.PostAsync<UserRequest, TokenHandlingModel>(RouteNames.LoginRoute, user, CancellationToken.None)
+                .ConfigureAwait(false);
+            if (response == null)
+            {
+                throw new UnauthorizedAccessException(ExceptionMessages.IncorrectEmailOrPassword);
+            }
+
+            await _sessionService.SetTokenAsync(response).ConfigureAwait(false);
+        }
+
+        public async Task RecoverUserPasswordAsync(PasswordRecoveryModel recoveryPassword, bool forgotPassword)
+        {
+            using (var client = new HttpClient())
+            {
+                var json = JsonSerializer.Serialize(recoveryPassword);
+                using (var content = new StringContent(json, Encoding.UTF8, System.Net.Mime.MediaTypeNames.Application.Json))
+                {
+                    // damit man zwei mal dieselbe methode nicht schreibt, habe ein flag gemacht
+                    HttpResponseMessage? responce = default;
+                    if (forgotPassword)
+                    {
+                        responce = await client.PostAsync(RouteNames.ForgotPassword, content, CancellationToken.None)
+                                               .ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        responce = await client.PostAsync(RouteNames.RecoveryPassword, content, CancellationToken.None)
+                                               .ConfigureAwait(false);
+                    }
+
+                    if (responce.StatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        throw new FormatException(ExceptionMessages.ResetCodeOrEmail);
                     }
                 }
             }

@@ -2,45 +2,37 @@
 {
     using Microsoft.Extensions.Logging;
     using Workout.Planner.Extensions;
-    using Workout.Planner.Services;
+    using Workout.Planner.Helper;
+    using Workout.Planner.Services.Contracts;
 
     public abstract class LoadDataBaseViewModel : BaseViewModel
     {
-        private bool _isBusy;
+        private readonly ISessionService _sessionService;
 
-        private CancellationTokenSource? _cts;
-
-        protected LoadDataBaseViewModel(INavigationService navigationService, ILogger<LoadDataBaseViewModel> logger, IDispatcher dispatcher)
+        protected LoadDataBaseViewModel(
+            INavigationService navigationService,
+            ILogger<LoadDataBaseViewModel> logger,
+            IDispatcher dispatcher,
+            ISessionService sessionService)
             : base(navigationService, logger, dispatcher)
         {
+            ArgumentNullException.ThrowIfNull(sessionService);
+            _sessionService = sessionService;
         }
 
-        public bool IsBusy
+        protected ISessionService SessionService
         {
-            get => _isBusy;
-            set
-            {
-                if (SetProperty(ref _isBusy, value))
-                {
-                    RefreshCommands();
-                }
-            }
+            get { return _sessionService; }
         }
 
         public override async void Activated()
         {
-            base.Activated();
+            CancellationToken token = default;
             try
             {
-                if (_cts != null)
-                {
-                    _cts.Cancel();
-                    _cts.Dispose();
-                }
+                token = GetCancelationToken();
 
-                IsBusy = true;
-                _cts = new CancellationTokenSource();
-                await Task.Run(async () => await LoadDataAsync(_cts.Token)).ConfigureAwait(false);
+                await Task.Run(async () => await LoadDataAsync(token)).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
@@ -52,25 +44,24 @@
             }
             finally
             {
-                IsBusy = false;
-            }
-        }
-
-        public override void Deactivated()
-        {
-            try
-            {
-                base.Deactivated();
-                _cts?.Cancel();
-                _cts?.Dispose();
-                _cts = null;
-            }
-            catch (Exception ex)
-            {
-                Logger.LoggingException(this, ex);
+                await DispatchToUI(() => ReleaseCancelationToken(token)).ConfigureAwait(false);
             }
         }
 
         protected abstract Task LoadDataAsync(CancellationToken token);
+
+        protected async Task EnsureAccesTokenAsync(CancellationToken token)
+        {
+            try
+            {
+                token.ThrowIfCancellationRequested();
+                await _sessionService.EnsureAccessTokenNotExpiredAsync(token).ConfigureAwait(false);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Logger.LoggingException(this, ex);
+                await NavigationService.ShowModalAsync(RouteNames.LoginPage).ConfigureAwait(false);
+            }
+        }
     }
 }

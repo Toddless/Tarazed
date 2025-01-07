@@ -1,6 +1,6 @@
 ﻿namespace Workout.Planner.Views
 {
-    using Workout.Planner.Services;
+    using Workout.Planner.Services.Contracts;
 
     public class BaseView : ContentPage
     {

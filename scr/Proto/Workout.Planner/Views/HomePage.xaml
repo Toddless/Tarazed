@@ -2,17 +2,69 @@
 <views:BaseView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:Workout.Planner.ViewModels"
+             xmlns:strings="clr-namespace:Workout.Planner.Strings"
              xmlns:views="clr-namespace:Workout.Planner.Views"
              x:Class="Workout.Planner.Views.HomePage"
-             x:DataType="viewModels:HomePageViewModel"
-             Title="HomePage"
-             Shell.PresentationMode="Animated">
-    <StackLayout  Spacing="10" Margin="10">
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-        <ListView ItemsSource="{x:Binding Plans, Mode=OneWay}"
-                  SelectedItem="{x:Binding SelectedPlan, Mode=TwoWay}"/>
-    </StackLayout>
+             x:DataType="viewModels:HomePageViewModel">
+
+    <Grid RowSpacing="-40"
+       ColumnSpacing="-35">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <CollectionView
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="25"
+            ItemsSource="{x:Binding Plans}"
+            ItemSizingStrategy="MeasureAllItems"
+            ItemTemplate="{x:StaticResource TrainingPlanDataTemplate}"
+            SelectedItem="{x:Binding Plan, Mode=TwoWay}"
+            SelectionMode="Single">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical"
+                                   ItemSpacing="5"/>
+            </CollectionView.ItemsLayout>
+        </CollectionView>
+        <Image Grid.Row="0"
+            Grid.Column="1"
+            Margin="25"
+            Source="dotnet_bot.png"
+            HorizontalOptions="Center"
+            VerticalOptions="Fill"/>
+        <!--<Button
+            Grid.Row="2"
+            Grid.Column="0"
+            Margin="50"
+            Text="{x:Static strings:AppStrings.Add}"
+            Command="{x:Binding AddCommand}"
+            HorizontalOptions="StartAndExpand"
+            VerticalOptions="Center"/>-->
+        <Frame CornerRadius="5"
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="25"
+            VerticalOptions="Fill"
+            BorderColor="Gray"
+            BackgroundColor="Transparent"
+            HorizontalOptions="Fill">
+            <StackLayout>
+                <Label
+                   Text="Beschreibung"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+                <BoxView
+                   HeightRequest="2"
+                   HorizontalOptions="Fill"/>
+                <Label Text="The Frame class existed in Xamarin.Forms and is present in .NET MAUI for users who are migrating their apps from Xamarin.Forms to .NET MAUI. If you're building a new .NET MAUI app it's recommended to use Border instead, and to set shadows using the Shadow bindable property on VisualElement. For more information, see Border and Shadow."/>
+            </StackLayout>
+        </Frame>
+    </Grid>
+
 </views:BaseView>

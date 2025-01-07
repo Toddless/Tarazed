@@ -61,7 +61,7 @@
             Microsoft.AspNetCore.Mvc.ApiExplorer.ApiParameterDescription parameterDescription,
             IEnumerable<string> propertiesToRemove)
         {
-            var result = propertiesToRemove.Where( x => parameterDescription.Name.StartsWith($"{x}.")).Any();
+            var result = propertiesToRemove.Where(x => parameterDescription.Name.StartsWith($"{x}.")).Any();
             if (result)
             {
                 return true;

@@ -7,9 +7,6 @@
 
     public interface IDatabaseContext : IDisposable
     {
-        DbSet<TU> Set<TU>()
-            where TU : class;
-
         DatabaseFacade Database { get; }
 
         DbSet<Exercise> Exercises { get; set; }
@@ -18,6 +15,11 @@
 
         DbSet<TrainingPlan> TrainingPlans { get; set; }
 
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
+        DbSet<MuscleIntensityLevel> MuscleIntensityLevels { get; set; }
+
+        DbSet<TU> Set<TU>()
+            where TU : class;
+
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

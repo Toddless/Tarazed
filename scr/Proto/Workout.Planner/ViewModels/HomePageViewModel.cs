@@ -1,17 +1,19 @@
 ﻿namespace Workout.Planner.ViewModels
 {
+    using System.Collections.ObjectModel;
     using System.Threading;
-    using DataModel;
     using Microsoft.Extensions.Logging;
     using Workout.Planner.Extensions;
-    using Workout.Planner.Services;
+    using Workout.Planner.Helper;
+    using Workout.Planner.Models;
+    using Workout.Planner.Services.Contracts;
+    using Workout.Planner.Strings;
 
     public class HomePageViewModel : LoadDataBaseViewModel
     {
         private readonly ITrainingService _trainingService;
-        private readonly ISessionService _sessionService;
-        private IEnumerable<TrainingPlan>? _plans;
-        private TrainingPlan? _selectedPlan;
+        private ObservableCollection<TrainingPlanModel>? _plans;
+        private TrainingPlanModel? _plan;
 
         public HomePageViewModel(
             ITrainingService trainingService,
@@ -19,65 +21,120 @@
             IDispatcher dispatcher,
             ISessionService sessionService,
             INavigationService navigationService)
-            : base(navigationService, logger, dispatcher)
+            : base(navigationService, logger, dispatcher, sessionService)
         {
-            ArgumentNullException.ThrowIfNull(sessionService);
             ArgumentNullException.ThrowIfNull(trainingService);
 
-            SelectItemCommand = new Command<TrainingPlan>(async (obj) => await PlanSelectedAsync(obj));
-            AddCommand = new Command(AddPlan, CanAddPlan);
+            SelectItemCommand = new Command(ExecuteSelectPlan, CanSelectPlan);
+            AddCommand = new Command(ExecuteAddPlan, CanAddPlan);
             _trainingService = trainingService;
-            _sessionService = sessionService;
-        }
-
-        public Command AddCommand { get; }
-
-        public TrainingPlan? SelectedPlan
-        {
-            get => _selectedPlan;
-            set
-            {
-                if (SetProperty(ref _selectedPlan, value))
-                {
-                    SelectItemCommand.Execute(SelectedPlan);
-                }
-            }
         }
 
         public Command SelectItemCommand { get; }
 
-        public IEnumerable<TrainingPlan>? Plans
+        public Command AddCommand { get; }
+
+        public ObservableCollection<TrainingPlanModel>? Plans
         {
             get => _plans;
-            set => SetProperty(ref _plans, value);
+            set { SetProperty(ref _plans, value); }
+        }
+
+        public TrainingPlanModel? Plan
+        {
+            get => _plan;
+            set
+            {
+                if (SetProperty(ref _plan, value))
+                {
+                    SelectItemCommand.Execute(Plan);
+                }
+            }
         }
 
         protected override async Task LoadDataAsync(CancellationToken token)
         {
             try
             {
-                await _sessionService.EnsureTokenAsync().ConfigureAwait(false);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                Logger.LoggingInformation("Acces token and refresh token are expired", this);
-                await DispatchToUI(() => NavigationService.PushPopupPageAsync(RouteNames.LoginPage)).ConfigureAwait(false);
-            }
-
-            try
-            {
                 token.ThrowIfCancellationRequested();
-
-                var plans = await _trainingService.GetTrainingAsync(true, token).ConfigureAwait(false);
+                await EnsureAccesTokenAsync(token).ConfigureAwait(false);
+                var plans = await _trainingService.GetDataAsync(false, token).ConfigureAwait(false);
                 await DispatchToUI(() =>
                 {
-                    Plans = plans;
+                    Plans = new ObservableCollection<TrainingPlanModel>(plans.Select(x => TrainingPlanModel.Import(x, EditPlanAsync, CanEditPlan, DeletePlanAsync, CanDeletePlan)));
                 }).ConfigureAwait(false);
             }
             catch (Exception ex) when (ex is OperationCanceledException or ObjectDisposedException)
             {
                 Logger.LoggingInformation("Loading was canceled", this);
             }
+            finally
+            {
+                await DispatchToUI(() => ReleaseCancelationToken(token)).ConfigureAwait(false);
+            }
+        }
+
+        protected async Task DeletePlanAsync(TrainingPlanModel model)
+        {
+            CancellationToken token = default;
+            try
+            {
+                if(model.Plan == null)
+                {
+                    throw new ArgumentNullException();
+                }
+
+                token = GetCancelationToken();
+
+                await EnsureAccesTokenAsync(token).ConfigureAwait(false);
+                var result = _trainingService.DeleteDataAsync([model.Plan.Id], token);
+                if (result == true)
+                {
+                    // todo: popups loswerden
+                    await NavigationService.DisplayAlertOnUiAsync(
+                        AppStrings.Information,
+                        AppStrings.Deleted,
+                        AppStrings.OkButton).ConfigureAwait(false);
+                }
+                else
+                {
+                    // todo: popups loswerden
+                    await NavigationService.DisplayAlertOnUiAsync(
+                        AppStrings.Information,
+                        AppStrings.SomethingWrong,
+                        AppStrings.OkButton).ConfigureAwait(false);
+                }
+
+                await LoadDataAsync(token);
+            }
+            catch (Exception ex)
+            {
+                Logger.LoggingException(this, ex);
+            }
+            finally
+            {
+                await DispatchToUI(() => ReleaseCancelationToken(token)).ConfigureAwait(false);
+            }
+        }
+
+        protected async void ExecuteSelectPlan()
+        {
+            await NavigationService.NavigateToOnUIAsync(
+                RouteNames.UnitPage,
+                new Dictionary<string, object> { { NavigationParameterNames.EntityId, _plan!.Id } })
+                .ConfigureAwait(false);
+        }
+
+        protected async Task EditPlanAsync(TrainingPlanModel model)
+        {
+           await NavigationService.NavigateToOnUIAsync(
+               RouteNames.EditTrainingPage,
+               new Dictionary<string, object> { { NavigationParameterNames.EntityId, model.Plan!.Id } }).ConfigureAwait(false);
+        }
+
+        protected async void ExecuteAddPlan()
+        {
+           await NavigationService.NavigateToOnUIAsync(RouteNames.EditTrainingPage).ConfigureAwait(false);
         }
 
         protected override void RefreshCommands()
@@ -85,17 +142,36 @@
             base.RefreshCommands();
             SelectItemCommand?.ChangeCanExecute();
             AddCommand?.ChangeCanExecute();
+
+            if (Plans != null)
+            {
+                foreach (var plan in Plans)
+                {
+                    plan.RefreshCommands();
+                }
+            }
         }
 
-        private async Task PlanSelectedAsync(TrainingPlan plan)
+        protected override string? Validate(string collumName)
         {
-            await DispatchToUI(() => NavigationService.NavigateToAsync(RouteNames.UnitPage)).ConfigureAwait(false);
+            return string.Empty;
         }
 
-        private void AddPlan()
+        private bool CanEditPlan(TrainingPlanModel model)
         {
+            return !IsBusy && model != null;
+        }
+
+        private bool CanDeletePlan(TrainingPlanModel model)
+        {
+            return !IsBusy && model != null;
         }
 
         private bool CanAddPlan() => !IsBusy;
+
+        private bool CanSelectPlan()
+        {
+            return !IsBusy;
+        }
     }
 }

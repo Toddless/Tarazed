@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="DataModel.Exercise">
-    <Position X="0.75" Y="6.25" Width="1.5" />
+    <Position X="6.75" Y="2.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAgBAAAAAAAAAQAADAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACAAABAAAgBAAAAAAAAAQAADAAABAAAAAEAAAAAAA=</HashCode>
       <FileName>Exercise.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -11,26 +11,61 @@
   <Class Name="DataModel.TrainingPlan">
     <Position X="0.75" Y="2.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAABAAEAAAAAAAAAA=</HashCode>
       <FileName>TrainingPlan.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="DataModel.ExerciseSet">
-    <Position X="0.75" Y="4" Width="1.5" />
+  <Class Name="DataModel.Unit">
+    <Position X="4.75" Y="2.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAABAAAgAAAQAAAAAAAAAQAAAAAAAAAA=</HashCode>
-      <FileName>ExerciseSet.cs</FileName>
+      <HashCode>AAACAAAAAAAAAABAAAEAAAQAAAAAABAAQAAAAAAAAAA=</HashCode>
+      <FileName>Unit.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DataModel.Customer">
-    <Position X="0.75" Y="0.5" Width="1.5" />
+    <Position X="2.75" Y="2.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAA=</HashCode>
       <FileName>Customer.cs</FileName>
     </TypeIdentifier>
+  </Class>
+  <Class Name="DataModel.UserRequest">
+    <Position X="9" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>UserRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DataModel.UnitExercise">
+    <Position X="0.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>UnitExercise.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DataModel.MuscleIntensityLevel">
+    <Position X="2.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAIEAAAAJAAAAAAAAAAAAA=</HashCode>
+      <FileName>MuscleIntensityLevel.cs</FileName>
+    </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
+  <Interface Name="DataModel.IHaveName" Collapsed="true">
+    <Position X="1.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IHaveName.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DataModel.IEntity">
+    <Position X="3.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IEntity.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

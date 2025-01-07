@@ -8,7 +8,6 @@
     public class DatabaseContext
         : IdentityDbContext<ApplicationUser, IdentityRole, string>, IDatabaseContext
     {
-        /// <exception cref="ArgumentNullException">Throws if null.</exception>
         public DatabaseContext(DbContextOptions<DatabaseContext> options)
             : base(options)
         {
@@ -19,6 +18,8 @@
         public DbSet<Unit> Units { get; set; }
 
         public DbSet<TrainingPlan> TrainingPlans { get; set; }
+
+        public DbSet<MuscleIntensityLevel> MuscleIntensityLevels { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,16 +35,23 @@
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<TrainingPlan>()
-                .HasMany(o => o.Units)
+                .HasMany(x => x.Units)
                 .WithOne()
-                .HasForeignKey(e => e.TrainingPlanId)
+                .HasForeignKey(x => x.TrainingPlanId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             modelBuilder.Entity<Unit>()
                 .HasMany(x => x.Exercises)
                 .WithOne()
-                .HasForeignKey(o => o.UnitId)
+                .HasForeignKey(x => x.UnitId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+
+            modelBuilder.Entity<Exercise>()
+                .HasMany(x => x.MuscleIntensityLevelId)
+                .WithOne()
+                .HasForeignKey(x => x.ExerciseId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
         }

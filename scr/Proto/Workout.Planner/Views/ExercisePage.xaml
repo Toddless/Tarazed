@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BaseView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Workout.Planner.ViewModels"
+             xmlns:controls="clr-namespace:Workout.Planner.Controls"
+             xmlns:strings="clr-namespace:Workout.Planner.Strings"
+             xmlns:views="clr-namespace:Workout.Planner.Views"
+             x:DataType="viewModels:ExercisePageViewModel"
+             x:Class="Workout.Planner.Views.ExercisePage"
+             Shell.FlyoutBehavior="Disabled"
+             Title="Meine Übungen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <CollectionView
+             Grid.Row="0"
+             Grid.Column="0"
+             ItemsSource="{x:Binding Exercises}"
+             ItemTemplate="{StaticResource ExercisesDataTemplate}"
+             SelectedItem="{x:Binding Exercise, Mode=TwoWay}"
+             Margin="15"
+             SelectionMode="Single">
+                <CollectionView.ItemsLayout>
+                <LinearItemsLayout
+                    Orientation="Vertical"
+                    ItemSpacing="5"/>
+            </CollectionView.ItemsLayout>
+        </CollectionView>
+        <Frame
+                Grid.Row="0"
+                Grid.Column="1"
+                BorderColor="Gray"
+                BackgroundColor="Transparent"
+                Margin="15"
+                HorizontalOptions="Fill">
+            <controls:CustomSKCanvasView
+                 Source="muskelmappe.svg"
+                 MuscleGroupChange="{x:Binding MuscleIntensities}"
+                 HeightRequest="300"
+                 WidthRequest="300"/>
+        </Frame>
+        <Label
+            Grid.Row="1"
+            Grid.Column="1"
+            HorizontalOptions="Center"
+            FontSize="Title"
+            FontAttributes="Bold"
+            Margin="7"
+            Text="Beschreibung"/>
+        <Label
+            Grid.Row="2"
+            Grid.Column="1"
+            FontSize ="Small"
+            Text="{x:Binding Exercise.Description}"/>
+    </Grid>
+</views:BaseView>

@@ -100,7 +100,6 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(800)
                         .HasColumnType("nvarchar(800)");
 
@@ -126,6 +125,34 @@ namespace DataAccessLayer.Migrations
                     b.HasIndex("UnitId");
 
                     b.ToTable("Exercises");
+                });
+
+            modelBuilder.Entity("DataModel.MuscleIntensityLevel", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("ExerciseId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Intensity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Muscle")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExerciseId");
+
+                    b.ToTable("MuscleIntensityLevels");
                 });
 
             modelBuilder.Entity("DataModel.TrainingPlan", b =>
@@ -324,6 +351,15 @@ namespace DataAccessLayer.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("DataModel.MuscleIntensityLevel", b =>
+                {
+                    b.HasOne("DataModel.Exercise", null)
+                        .WithMany("MuscleIntensityLevelId")
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DataModel.TrainingPlan", b =>
                 {
                     b.HasOne("DataAccessLayer.ApplicationUser", null)
@@ -391,6 +427,11 @@ namespace DataAccessLayer.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DataModel.Exercise", b =>
+                {
+                    b.Navigation("MuscleIntensityLevelId");
                 });
 
             modelBuilder.Entity("DataModel.TrainingPlan", b =>

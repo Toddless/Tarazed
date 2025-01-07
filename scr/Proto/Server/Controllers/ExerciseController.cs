@@ -4,6 +4,7 @@
     using DataAccessLayer;
     using DataModel;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
 
     public class ExerciseController
         : AbstractBaseController<Exercise>
@@ -18,7 +19,7 @@
 
         protected override IQueryable<Exercise> AddIncludes(IQueryable<Exercise> query)
         {
-            return query;
+            return query.Include(x => x.MuscleIntensityLevelId);
         }
     }
 }

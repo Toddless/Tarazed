@@ -27,7 +27,10 @@
         {
             services.AddMvc((x) => { x.EnableEndpointRouting = false; });
             services.AddSingleton<ExceptionFilter>();
-            services.AddTransient<IUserStore<ApplicationUser>, MyUserStore>();
+
+            // userroles sind ausgeschaltet für jetzt, da es ArgumentNullException verursacht, da bei der erstellung
+            // ein neuen user versucht MyUserStore eine role hunzifügen, die es noch nicht existiert.
+            // services.AddTransient<IUserStore<ApplicationUser>, MyUserStore>();
             services.AddControllers(o =>
             {
                 o.Filters.AddService<ExceptionFilter>();
@@ -37,24 +40,24 @@
 #if !DEBUG
                 options.UseSqlServer(Configuration["DatabaseInfo:ConnectionString"], o => o.EnableRetryOnFailure()));
 #else
-                options.UseSqlServer(
-                    Configuration["DatabaseInfo:LocalConnectionString"], o => o.EnableRetryOnFailure()));
+                 options.UseSqlServer(
+                     Configuration["DatabaseInfo:LocalConnectionString"], o => o.EnableRetryOnFailure()));
 #endif
             services.AddAuthentication().AddBearerToken();
             services.AddOptions<BearerTokenOptions>(IdentityConstants.BearerScheme).Configure(o =>
             {
-                o.BearerTokenExpiration = TimeSpan.FromMinutes(10);
-                o.RefreshTokenExpiration = TimeSpan.FromMinutes(30);
+                o.BearerTokenExpiration = TimeSpan.FromDays(10);
+                o.RefreshTokenExpiration = TimeSpan.FromDays(30);
             });
             services.AddAuthorization();
             services.AddIdentityApiEndpoints<ApplicationUser>(o =>
             {
-                o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(20);
                 o.Password.RequiredLength = 5;
                 o.User.RequireUniqueEmail = true;
                 o.Password.RequireNonAlphanumeric = false;
-                o.SignIn.RequireConfirmedPhoneNumber = false;
-            }).AddRoles<IdentityRole>()
+            })
+
+                // .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<DatabaseContext>()
             .AddDefaultTokenProviders();
             services.AddHttpContextAccessor();
@@ -91,7 +94,7 @@
             {
                 var context = serviceScope?.ServiceProvider.GetRequiredService<DatabaseContext>();
 
-                if (!context.Database.IsInMemory())
+                if (!context!.Database.IsInMemory())
                 {
                     context?.Database.Migrate();
                 }

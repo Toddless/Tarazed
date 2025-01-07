@@ -1,13 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Shell
-    x:Class="Workout.Planner.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:Workout.Planner.Views"
-    Shell.FlyoutBehavior="Disabled"
+    xmlns:models="clr-namespace:Workout.Planner.Models"
+    xmlns:viewModels="clr-namespace:Workout.Planner.ViewModels"
+    x:DataType="viewModels:AppShellViewModel"
+    FlyoutBehavior="Flyout"
+    x:Class="Workout.Planner.AppShell"
     Title="Workout.Planner">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate views:HomePage}"/>
+    <Shell.FlyoutContent>
+        <CollectionView ItemsSource="{x:Binding MenuItems}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:NavigationEntry">
+                    <Grid>
+                        <Label>
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{x:Binding Title}"/>
+                                    <Span>
+                                        <Span.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{x:Binding Command}"/>
+                                        </Span.GestureRecognizers>
+                                    </Span>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <ImageButton
+                             Source="{x:Binding Title}"
+                             Command="{x:Binding Command}"
+                             CommandParameter="{x:Binding CommandParameter}"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Shell.FlyoutContent>
+    <ShellContent Title="Home"
+               ContentTemplate="{DataTemplate views:HomePage}"/>
 </Shell>
