@@ -33,10 +33,9 @@
                     ItemSpacing="5"/>
             </CollectionView.ItemsLayout>
         </CollectionView>
-        <Frame
+        <Border
                 Grid.Row="0"
                 Grid.Column="1"
-                BorderColor="Gray"
                 BackgroundColor="Transparent"
                 Margin="15"
                 HorizontalOptions="Fill">
@@ -45,7 +44,7 @@
                  MuscleGroupChange="{x:Binding MuscleIntensities}"
                  HeightRequest="300"
                  WidthRequest="300"/>
-        </Frame>
+        </Border>
         <Label
             Grid.Row="1"
             Grid.Column="1"

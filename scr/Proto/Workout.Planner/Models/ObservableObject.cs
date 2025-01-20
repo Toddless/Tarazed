@@ -8,11 +8,11 @@
         public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
-        /// Checks if the field has been changed. If yes, triggers the PropertyChanged event.
+        /// Checks if the new value is different from the field's value. If it is, triggers the PropertyChanged event.
         /// </summary>
         /// <typeparam name="T">Data type.</typeparam>
         /// <param name="field">Field.</param>
-        /// <param name="value">Property value.</param>
+        /// <param name="value">New property value.</param>
         /// <param name="propertyName">Property name.</param>
         /// <returns>Returns <see langword="false"/> if field equals value, otherwise <see langword="true"/>.</returns>
         protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
