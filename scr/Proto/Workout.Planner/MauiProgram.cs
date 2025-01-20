@@ -11,11 +11,6 @@
 
     public static class MauiProgram
     {
-#if DEBUG
-        // used only for debug
-        private const string PathToLogFile = "D:\\Workspace\\Tarazed\\scr\\Proto\\Workout.Planner\\bin\\Debug\\net9.0-windows10.0.19041.0\\win10-x64";
-#endif
-
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();

@@ -74,10 +74,7 @@
             {
                 using (var memoryStream = new MemoryStream())
                 {
-                    if (_document == null)
-                    {
-                        _document = new();
-                    }
+                    _document ??= new();
 
                     _document.Save(memoryStream);
                     memoryStream.Seek(0, SeekOrigin.Begin);
@@ -115,7 +112,6 @@
             if (bindable is CustomSKCanvasView canvas)
             {
                 canvas.LoadXmlDocument();
-                canvas.InvalidateSurface();
             }
         }
 
@@ -166,8 +162,7 @@
                     }
 
                     XElement element = _xElementsIds[item.Muscle];
-                    element.Descendants()
-                        .ToList()
+                    element.Descendants().ToList()
                         .ForEach(x => x.Attribute("class") !.Value = IntensityHelper.GetIntensity(item.Intensity));
                     _changedXElementsIds.Add(item.Muscle, element);
                 }
@@ -179,13 +174,7 @@
         /// </summary>
         private void SetColorToDefault()
         {
-            foreach (var item in _changedXElementsIds)
-            {
-                item.Value.Descendants()
-                    .ToList()
-                    .ForEach(x => x.Attribute("class") !.Value = IntensityHelper.GetIntensity(Intensity.None));
-            }
-
+            _changedXElementsIds.Values.Descendants().ToList().ForEach(x => x.Attribute("class") !.Value = IntensityHelper.GetIntensity(Intensity.None));
             _changedXElementsIds.Clear();
         }
 
