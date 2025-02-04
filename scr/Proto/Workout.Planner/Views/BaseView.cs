@@ -2,7 +2,10 @@
 {
     using Workout.Planner.Services.Contracts;
 
-    public class BaseView : ContentPage
+   /// <summary>
+   /// Basis view with overrided OnApperaring and OnDisappearing.
+   /// </summary>
+    public partial class BaseView : ContentPage
     {
         private readonly IActiveAware _viewModel;
 

@@ -45,7 +45,7 @@
             Command="{x:Binding AddCommand}"
             HorizontalOptions="StartAndExpand"
             VerticalOptions="Center"/>
-        <Border
+        <Border 
             Grid.Row="1"
             Grid.Column="1"
             Margin="25"
@@ -61,7 +61,10 @@
                 <BoxView
                    HeightRequest="2"
                    HorizontalOptions="Fill"/>
-                <Label Text="The Frame class existed in Xamarin.Forms and is present in .NET MAUI for users who are migrating their apps from Xamarin.Forms to .NET MAUI. If you're building a new .NET MAUI app it's recommended to use Border instead, and to set shadows using the Shadow bindable property on VisualElement. For more information, see Border and Shadow."/>
+                <Label Text="The Frame class existed in Xamarin.Forms and is present in .NET MAUI for users who
+                       are migrating their apps from Xamarin.Forms to .NET MAUI. If you're building a new .NET
+                       MAUI app it's recommended to use Border instead, and to set shadows using the Shadow bindable
+                       property on VisualElement. For more information, see Border and Shadow."/>
             </StackLayout>
         </Border>
     </Grid>
