@@ -9,7 +9,3 @@ The server side is implemented on ASP.NET Core, which provides high performance,
 
 # Data synchronisation:
 User data is stored on the server, making it accessible from any device. Synchronisation between client applications and the server is implemented via REST API to ensure instant data updates.
-
-
-E-Mail: [rafpro@heires.net]
-GitHub Issues: [[Link zu den Issues des Repositories](https://github.com/Toddless/Tarazed/issues)]
