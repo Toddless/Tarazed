@@ -25,18 +25,19 @@
             UserManager<ApplicationUser> manager,
             ILogger<CustomerController> logger)
         {
-            ArgumentNullException.ThrowIfNull(_manager);
-            ArgumentNullException.ThrowIfNull(_logger);
-            ArgumentNullException.ThrowIfNull(_context);
+            ArgumentNullException.ThrowIfNull(manager);
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(context);
             _logger = logger;
             _context = context;
             _manager = manager;
         }
 
         [HttpPut("UpdateCustomer")]
-        public async Task<Customer?> UpdateCustomerAsync([FromBody]Customer customer)
+        public async Task<Customer?> UpdateCustomerAsync(/*TODO: Why?[FromBody]*/Customer customer)
         {
-            var body = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+            // TODO: Why?
+           // var body = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
             if (User == null)
             {
                 throw new ServerException(DataModel.Resources.Errors.NullObject);

@@ -23,7 +23,7 @@
         {
             if (RelatedId != 0)
             {
-                Entity!.UnitId = (long)RelatedId!;
+                Entity!.WorkoutId = (long)RelatedId!;
                 Entity.Weight = 1;
                 Entity.Reps = 1;
                 Entity.Set = 1;

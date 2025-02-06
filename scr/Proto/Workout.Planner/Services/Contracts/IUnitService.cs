@@ -2,7 +2,7 @@
 {
     using DataModel;
 
-    public interface IUnitService : IService<Unit>
+    public interface IUnitService : IService<Workout>
     {
     }
 }

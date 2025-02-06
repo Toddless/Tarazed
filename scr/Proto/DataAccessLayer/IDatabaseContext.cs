@@ -11,7 +11,7 @@
 
         DbSet<Exercise> Exercises { get; set; }
 
-        DbSet<Unit> Units { get; set; }
+        DbSet<Workout> Units { get; set; }
 
         DbSet<TrainingPlan> TrainingPlans { get; set; }
 
