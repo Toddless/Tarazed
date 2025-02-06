@@ -20,7 +20,7 @@
 
         protected override IQueryable<TrainingPlan> AddIncludes(IQueryable<TrainingPlan> query)
         {
-            return query.Include(x => x.Units);
+            return query.Include(x => x.Workout);
         }
     }
 }

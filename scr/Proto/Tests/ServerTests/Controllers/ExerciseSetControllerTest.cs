@@ -10,7 +10,7 @@
     using Server.Controllers.Tests;
 
     [TestClass]
-    public class ExerciseSetControllerTest : AbstractControllerTest<Unit, UnitController>
+    public class ExerciseSetControllerTest : AbstractControllerTest<Workout, UnitController>
     {
         [DataTestMethod]
         [DynamicData(nameof(ConstructorTestData), DynamicDataSourceType.Method)]
@@ -25,33 +25,33 @@
 
         [TestMethod]
         [DynamicData(nameof(DeleteExerciseSetData), DynamicDataSourceType.Method)]
-        public async Task DeleteAsyncTest(Unit exerciseSets, long id, bool exceptionThrown, string expectedExceptions)
+        public async Task DeleteAsyncTest(Workout exerciseSets, long id, bool exceptionThrown, string expectedExceptions)
         {
             await OnDeleteAsyncTest(exerciseSets, id, exceptionThrown, expectedExceptions);
         }
 
         [TestMethod]
         [DynamicData(nameof(GetExerciseSetData), DynamicDataSourceType.Method)]
-        public async Task GetAsyncTest(List<long> longs, List<Unit> exerciseSets)
+        public async Task GetAsyncTest(List<long> longs, List<Workout> exerciseSets)
         {
             await OnGetAsyncTest(longs, exerciseSets);
         }
 
         [DataTestMethod]
         [DynamicData(nameof(CreateExerciseSetData), DynamicDataSourceType.Method)]
-        public async Task CreateAsyncTest(Unit exerciseSets, bool exceptionThrown, string expectedExceptions)
+        public async Task CreateAsyncTest(Workout exerciseSets, bool exceptionThrown, string expectedExceptions)
         {
             await OnCreateAsyncTest(exerciseSets, exceptionThrown, expectedExceptions);
         }
 
         [TestMethod]
         [DynamicData(nameof(UpdateExerciseSetData), DynamicDataSourceType.Method)]
-        public async Task UpdateAsyncTest(Unit exerciseSets, bool exceptionsThrown, string expectedExceptions)
+        public async Task UpdateAsyncTest(Workout exerciseSets, bool exceptionsThrown, string expectedExceptions)
         {
             await OnUpdateAsyncTest(exerciseSets, exceptionsThrown, expectedExceptions);
         }
 
-        protected override AbstractBaseController<Unit> SetupController(Mock<IDatabaseContext> context, ILogger<UnitController> logger, Mock<UserManager<ApplicationUser>> userManager)
+        protected override AbstractBaseController<Workout> SetupController(Mock<IDatabaseContext> context, ILogger<UnitController> logger, Mock<UserManager<ApplicationUser>> userManager)
         {
             return new UnitController(context.Object, userManager.Object, logger);
         }
@@ -75,7 +75,7 @@
             yield return new object[] { null, null, true, Errors.NullObject };
             yield return new object[]
             {
-                new Unit
+                new Workout
                 {
                     CustomerId = "1",
                     Id = 1,
@@ -86,7 +86,7 @@
             };
             yield return new object[]
             {
-                new Unit
+                new Workout
                 {
                     CustomerId = "2",
                     Id = 1,
@@ -97,7 +97,7 @@
             };
             yield return new object[]
             {
-                new Unit
+                new Workout
                 {
                     CustomerId = "1",
                     Id = 1,
@@ -108,7 +108,7 @@
             };
             yield return new object[]
             {
-                new Unit
+                new Workout
                 {
                     CustomerId = "1",
                     Id = 1,
@@ -130,29 +130,29 @@
                    6,
                    3,
                 },
-                new List<Unit>
+                new List<Workout>
                 {
-                    new Unit
+                    new Workout
                     {
                          CustomerId = "1",
                          Id = 1,
                     },
-                    new Unit
+                    new Workout
                     {
                         CustomerId = "1",
                         Id = 2,
                     },
-                    new Unit
+                    new Workout
                     {
                         CustomerId = "2",
                         Id = 2,
                     },
-                    new Unit
+                    new Workout
                     {
                         CustomerId = "2",
                         Id = 3,
                     },
-                    new Unit
+                    new Workout
                     {
                         CustomerId = "1",
                         Id = 3,
@@ -167,7 +167,7 @@
 
             yield return new object[]
             {
-                new Unit
+                new Workout
             {
                 CustomerId = "2",
                 Name = "Names",
@@ -178,7 +178,7 @@
             };
             yield return new object[]
             {
-                new Unit
+                new Workout
             {
                 CustomerId = "1",
                 Name = "Names",
@@ -189,7 +189,7 @@
             };
             yield return new object[]
             {
-                new Unit
+                new Workout
             {
                 CustomerId = "1",
                 Name = "Names",
@@ -200,7 +200,7 @@
             };
             yield return new object[]
             {
-                new Unit
+                new Workout
             {
                 CustomerId = "3",
                 Name = "Names",
@@ -221,7 +221,7 @@
             };
             yield return new object[]
             {
-                new Unit
+                new Workout
                 {
                     CustomerId = string.Empty,
                     Id = 1,
@@ -234,7 +234,7 @@
             };
             yield return new object[]
             {
-                new Unit
+                new Workout
                 {
                     CustomerId = string.Empty,
                     Id = 0,
@@ -247,7 +247,7 @@
             };
             yield return new object[]
             {
-                new Unit
+                new Workout
                 {
                     CustomerId = string.Empty,
                     Id = 0,
@@ -258,7 +258,7 @@
             };
             yield return new object[]
             {
-                new Unit
+                new Workout
                 {
                     CustomerId = " ",
                     Id = 1,
@@ -269,7 +269,7 @@
             };
             yield return new object[]
             {
-                new Unit
+                new Workout
                 {
                     CustomerId = "3",
                     Id = 1,
