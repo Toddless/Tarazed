@@ -21,6 +21,6 @@
         public string CustomerId { get; set; } = string.Empty;
 
         [SwaggerParameterIgnore]
-        public Collection<Workout>? Workout { get;  set; }
+        public Collection<Unit>? Units { get;  set; }
     }
 }

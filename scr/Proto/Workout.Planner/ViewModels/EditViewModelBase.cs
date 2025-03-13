@@ -178,6 +178,7 @@
             switch (collumName)
             {
                 case nameof(Name):
+                    // die methode kümmert sich um mögliche null, das als argument übergeben werden kann.
 #pragma warning disable CS8604 // Possible null reference argument.
                     result = ValidationExtensions.ValidateName(Name);
 #pragma warning restore CS8604 // Possible null reference argument.

@@ -15,7 +15,7 @@
 
         public DbSet<Exercise> Exercises { get; set; }
 
-        public DbSet<Workout> Units { get; set; }
+        public DbSet<Unit> Units { get; set; }
 
         public DbSet<TrainingPlan> TrainingPlans { get; set; }
 
@@ -35,16 +35,16 @@
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<TrainingPlan>()
-                .HasMany(x => x.Workout)
+                .HasMany(x => x.Units)
                 .WithOne()
                 .HasForeignKey(x => x.TrainingPlanId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
-            modelBuilder.Entity<Workout>()
+            modelBuilder.Entity<Unit>()
                 .HasMany(x => x.Exercises)
                 .WithOne()
-                .HasForeignKey(x => x.WorkoutId)
+                .HasForeignKey(x => x.UnitId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 

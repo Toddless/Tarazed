@@ -203,7 +203,7 @@
 #pragma warning disable EF1001 // Internal EF Core API usage. Suppresing ok here only for Unittests
             var mockISnapshot = new Mock<ISnapshot>().Object;
 
-            mockIEntityType.As<IRuntimeEntityType>().Setup(x => x.GetFlattenedProperties()).Returns(Array.Empty<IProperty>);
+            mockIEntityType.As<IRuntimeEntityType>().Setup(x => x.GetFlattenedProperties()).Returns(() => Array.Empty<IProperty>());
             mockIEntityType.As<IRuntimeEntityType>().Setup(x => x.EmptyShadowValuesFactory).Returns(() => mockISnapshot);
 
             var internalEntityEntry = new InternalEntityEntry(mockIStateManager.Object, mockIEntityType.Object, exercise);

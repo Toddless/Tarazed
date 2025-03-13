@@ -8,7 +8,7 @@
     using Microsoft.Extensions.Logging;
 
     public class UnitController
-        : AbstractBaseController<Workout>
+        : AbstractBaseController<Unit>
     {
         public UnitController(
             IDatabaseContext context,
@@ -18,7 +18,7 @@
         {
         }
 
-        protected override IQueryable<Workout> AddIncludes(IQueryable<Workout> query)
+        protected override IQueryable<Unit> AddIncludes(IQueryable<Unit> query)
         {
             return query.Where(x => x.Exercises != null).Include(x => x.Exercises!).ThenInclude(x => x.MuscleIntensityLevelId);
         }

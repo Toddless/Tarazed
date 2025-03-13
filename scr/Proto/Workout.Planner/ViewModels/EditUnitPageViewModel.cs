@@ -5,7 +5,7 @@
     using Microsoft.Maui.Dispatching;
     using Workout.Planner.Services.Contracts;
 
-    public class EditUnitPageViewModel : EditViewModelBase<Workout>
+    public class EditUnitPageViewModel : EditViewModelBase<Unit>
     {
         public EditUnitPageViewModel(
             INavigationService navigationService,
@@ -19,12 +19,12 @@
 
         protected override string EntityName => Strings.AppStrings.UnitEntityName;
 
-        protected override void LoadOnUI(Workout unit)
+        protected override void LoadOnUI(Unit unit)
         {
             Name = unit.Name;
         }
 
-        protected override Workout GetUpdateEntity()
+        protected override Unit GetUpdateEntity()
         {
             if (RelatedId != 0)
             {

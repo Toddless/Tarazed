@@ -84,7 +84,7 @@
                 await DispatchToUI(() =>
                 {
                     Units = new ObservableCollection<UnitModel>(trainingPlan.Where(x => x.Id == Id)
-                        .SelectMany(x => UnitModel.Import(x.Workout, EditUnitAsync, CanEditUnit, DeleteUnitAsync, CanDeleteUnit)));
+                        .SelectMany(x => UnitModel.Import(x.Units, EditUnitAsync, CanEditUnit, DeleteUnitAsync, CanDeleteUnit)));
                 }).ConfigureAwait(false);
             }
             catch (Exception ex) when (ex is OperationCanceledException or ObjectDisposedException)

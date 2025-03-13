@@ -10,8 +10,8 @@
         [Key]
         public long Id { get; set; }
 
-        [ForeignKey(nameof(Workout))]
-        public long WorkoutId { get; set; }
+        [ForeignKey(nameof(Unit))]
+        public long UnitId { get; set; }
 
         [Range(1, 100)]
         public int Reps { get; set; }

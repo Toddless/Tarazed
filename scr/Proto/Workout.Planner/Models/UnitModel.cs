@@ -9,7 +9,7 @@
         private Func<UnitModel, bool>? _canEditUnit;
         private Func<UnitModel, bool>? _canDeleteUnit;
         private string? _unitName;
-        private Workout? _unit;
+        private Unit? _unit;
         private long _id;
 
         private UnitModel()
@@ -22,7 +22,7 @@
 
         public Command DeleteCommand { get; }
 
-        public Workout? Unit
+        public Unit? Unit
         {
             get => _unit;
             private set => SetProperty(ref _unit, value);
@@ -41,7 +41,7 @@
         }
 
         public static IEnumerable<UnitModel> Import(
-            IEnumerable<Workout>? units,
+            IEnumerable<Unit>? units,
             Func<UnitModel, Task> editUnitAsync,
             Func<UnitModel, bool> canEditUnit,
             Func<UnitModel, Task> deleteUnitAsync,
