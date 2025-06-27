@@ -1,5 +1,8 @@
+# REMARK
+This project was a playground for learning the basic principles of software development. At the time of creation of this project, the developer had zero knowledge in this topic. 
+
 # Tarazed
-A simple app for creating and tracking personalised workout plans. Available on Android, Windows and Linux, the app allows you to synchronise your data so you can easily switch between devices without losing progress.
+A simple app for creating and tracking personalised workout plans.
 
 # Client
 The application is developed using .NET MAUI (Multi-platform App UI), providing high performance and native integration with platforms.
